@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="60" viewBox="0 0 150 60">
+  <!-- Simplified Compass Circle -->
+  <circle cx="30" cy="30" r="25" fill="none" stroke="#000000" stroke-width="2.5"/>
+  
+  <!-- Simplified Compass Needle -->
+  <path d="M30,15 L25,45 L30,40 L35,45 Z" fill="#000000"/>
+  <path d="M30,15 L30,40" fill="none" stroke="#D4AF37" stroke-width="4"/>
+  
+  <!-- Simplified Text -->
+  <text x="65" y="35" font-family="Merriweather, serif" font-size="20" font-weight="normal" fill="#000000">how-to guides</text>
+</svg>
