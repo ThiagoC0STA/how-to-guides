@@ -23,7 +23,7 @@ export default function PopularGuidesSection() {
         maxWidth: 1300,
         mx: "auto",
         mt: { xs: 6, md: 12 },
-        px: { xs: 1, md: 2 },
+        px: { xs: 2, md: 2 },
       }}
     >
       <Typography
@@ -33,7 +33,6 @@ export default function PopularGuidesSection() {
           mb: 4,
           color: "var(--foreground)",
           fontSize: { xs: 24, md: 32 },
-          marginLeft: { xs: 2, md: 0 },
         }}
       >
         Popular Guides
@@ -50,7 +49,7 @@ export default function PopularGuidesSection() {
           <Card
             key={guide.id}
             sx={{
-              width: 400,
+              width: { xs: "100%", md: 400 },
               minHeight: 340,
               display: "flex",
               flexDirection: "column",
