@@ -42,6 +42,7 @@ export default function Footer() {
         right: "50%",
         marginLeft: "-50vw",
         marginRight: "-50vw",
+        bottom: 0,
       }}
     >
       <Container
@@ -61,7 +62,7 @@ export default function Footer() {
                 component="img"
                 src="/images/logo/logo-footer.svg"
                 alt="How-ToGuides.com"
-                sx={{ width: 220, height: 80, marginLeft: "-22px" }}
+                sx={{ width: 160, height: 80, marginLeft: "-10px" }}
               />
             </Box>
             <Typography
