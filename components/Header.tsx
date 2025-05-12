@@ -35,8 +35,8 @@ export default function Header() {
     <Box
       component="header"
       sx={{
-        bgcolor: "#fff",
-        borderBottom: "1px solid var(--footer-border)",
+        bgcolor: "var(--background)",
+        // borderBottom: "1px solid var(--footer-border)",
         py: { xs: 2, md: 2 },
         width: "100vw",
         position: "relative",
