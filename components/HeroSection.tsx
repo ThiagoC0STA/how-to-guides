@@ -6,7 +6,6 @@ import { Box, Typography, Button, Stack, Chip } from "@mui/material";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import { Particles } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
-import type { Engine } from "@tsparticles/engine";
 
 export default function HeroSection() {
   const currentYear = new Date().getFullYear();

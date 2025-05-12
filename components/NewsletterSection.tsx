@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, Chip, Fade } from "@mui/material";
+import { Box, Typography, TextField, Button, Chip } from "@mui/material";
 
 export default function NewsletterSection() {
   const [email, setEmail] = useState("");
