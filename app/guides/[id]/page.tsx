@@ -3,7 +3,7 @@
 import { notFound } from "next/navigation";
 import { GUIDES } from "@/data/guides";
 import { useState, useMemo } from "react";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaLock } from "react-icons/fa";
 import {
   Box,
   Paper,
@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import ExpandableSection from "@/components/ExpandableSection";
 import KnowledgeCheck from "@/components/KnowledgeCheck";
+import LockedModuleOverlay from "@/components/LockedModuleOverlay";
 
 function hexToRgb(hex: string) {
   hex = hex.replace("#", "");
@@ -136,6 +137,8 @@ function ModuleContent({
 
 export default function GuidePage({ params }: { params: { id: string } }) {
   const guide = GUIDES.find((g) => g.id === params.id);
+  console.log('Loaded guide:', guide);
+  console.log('Modules:', guide?.modules?.length, guide?.modules);
   const [currentModule, setCurrentModule] = useState(0);
   const [unlocked, setUnlocked] = useState(false);
   const [completedModules, setCompletedModules] = useState<number[]>([]);
@@ -147,7 +150,15 @@ export default function GuidePage({ params }: { params: { id: string } }) {
 
   const modules = guide.modules || [];
   const isLocked = modules[currentModule]?.locked && !unlocked;
-  const progress = Math.floor((completedModules.length / modules.length) * 100);
+  const accessibleModules = modules.filter(
+    (mod, idx) => !mod.locked || unlocked || completedModules.includes(idx)
+  );
+  const completedAccessibleModules = accessibleModules.filter((_, idx) =>
+    completedModules.includes(modules.indexOf(accessibleModules[idx]))
+  );
+  console.log('modules.length:', modules.length);
+  console.log('completedModules:', completedModules);
+  const progress = modules.length > 0 ? Math.floor((completedModules.length / modules.length) * 100) : 0;
   const current = modules[currentModule];
 
   const guideColor = guide.color || "#2563eb";
@@ -172,7 +183,7 @@ export default function GuidePage({ params }: { params: { id: string } }) {
   // Marcar módulo como completo ao acertar todas as perguntas
   useMemo(() => {
     if (allQuestionsCorrect && !completedModules.includes(currentModule)) {
-      setCompletedModules((prev) => [...prev, currentModule]);
+      setCompletedModules((prev) => Array.from(new Set([...prev, currentModule])));
     }
   }, [allQuestionsCorrect, currentModule, completedModules]);
 
@@ -206,17 +217,17 @@ export default function GuidePage({ params }: { params: { id: string } }) {
           <Typography variant="body2" color="text.secondary" mb={0.5}>
             Your Progress: {progress}%
           </Typography>
-          <LinearProgress 
-            variant="determinate" 
-            value={progress} 
+          <LinearProgress
+            variant="determinate"
+            value={progress}
             sx={{
               height: 8,
               borderRadius: 4,
               bgcolor: `rgba(${guideColorRgb}, 0.1)`,
-              '& .MuiLinearProgress-bar': {
+              "& .MuiLinearProgress-bar": {
                 bgcolor: guideColor,
                 borderRadius: 4,
-              }
+              },
             }}
           />
         </Box>
@@ -227,7 +238,9 @@ export default function GuidePage({ params }: { params: { id: string } }) {
                 onClick={() => setCurrentModule(idx)}
                 disabled={
                   (mod.locked && !unlocked) ||
-                  (idx > 0 && !completedModules.includes(idx - 1) && idx !== currentModule)
+                  (idx > 0 &&
+                    !completedModules.includes(idx - 1) &&
+                    idx !== currentModule)
                 }
                 fullWidth
                 variant="text"
@@ -292,42 +305,13 @@ export default function GuidePage({ params }: { params: { id: string } }) {
         }}
       >
         {isLocked ? (
-          <Box>
-            <Typography variant="h5" fontWeight={700} mb={2}>
-              Este módulo está bloqueado
-            </Typography>
-            <Typography variant="body1" mb={2}>
-              Para acessar todos os módulos, insira seu e-mail abaixo:
-            </Typography>
-            <Box
-              component="form"
-              onSubmit={(e) => {
-                e.preventDefault();
-                setUnlocked(true);
-              }}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 2,
-                maxWidth: 320,
-              }}
-            >
-              <TextField
-                type="email"
-                required
-                label="Seu e-mail"
-                size="medium"
-              />
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                sx={{ fontWeight: 700, fontSize: 16, py: 1.5 }}
-              >
-                Desbloquear módulos
-              </Button>
-            </Box>
-          </Box>
+          <LockedModuleOverlay
+            moduleTitle={current.title}
+            onUnlock={() => setUnlocked(true)}
+            onBack={() => setCurrentModule(currentModule - 1)}
+            guideColor={guideColor}
+            guideColorRgb={guideColorRgb}
+          />
         ) : (
           <Box>
             <ModuleContent
