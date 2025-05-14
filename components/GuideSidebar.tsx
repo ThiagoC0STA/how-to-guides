@@ -24,7 +24,7 @@ export default function GuideSidebar({
 }: GuideSidebarProps) {
   return (
     <Paper
-      elevation={2}
+      elevation={0}
       sx={{
         width: 320,
         borderRadius: 3,

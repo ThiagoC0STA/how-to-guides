@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Box, Paper } from "@mui/material";
+import { Box, Paper, Container } from "@mui/material";
 import GuideSidebar from "@/components/GuideSidebar";
 import ModuleContent from "@/components/ModuleContent";
 import ModuleNavigation from "@/components/ModuleNavigation";
 import LockedModuleOverlay from "@/components/LockedModuleOverlay";
 import GuideHero from "@/components/GuideHero";
+import GuideOverview from "@/components/GuideOverview";
 
 function hexToRgb(hex: string) {
   hex = hex.replace("#", "");
@@ -65,21 +66,28 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
     }
   }, [allQuestionsCorrect, currentModule, completedModules]);
 
+  const overview = guide?.overview;
+
   return (
-    <Box sx={{ backgroundColor: "var(--background)" }}>
+    <Container maxWidth="lg" sx={{ backgroundColor: "var(--background)", px: 4 }}>
       <GuideHero
         title={guide.title}
         description={guide.description}
         lastUpdated={guide.lastUpdated}
       />
+      {overview && (
+        <GuideOverview
+          title={overview.title}
+          description={overview.description}
+          bullets={overview.bullets}
+        />
+      )}
       <Box
         display="flex"
         gap={4}
         alignItems="flex-start"
-        maxWidth={1300}
         mx="auto"
         my={6}
-        px={2}
       >
         <GuideSidebar
           modules={modules}
@@ -92,7 +100,7 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
           onModuleClick={setCurrentModule}
         />
         <Paper
-          elevation={2}
+          elevation={0}
           sx={{
             flex: 1,
             borderRadius: 3,
@@ -134,6 +142,6 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
           )}
         </Paper>
       </Box>
-    </Box>
+    </Container>
   );
 }

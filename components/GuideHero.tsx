@@ -38,7 +38,13 @@ export default function GuideHero({
         <Typography
           variant="h5"
           color="text.secondary"
-          sx={{ mb: 3, fontWeight: 400, maxWidth: 700, mx: "auto" }}
+          sx={{
+            mb: 3,
+            fontWeight: 400,
+            maxWidth: 700,
+            mx: "auto",
+            fontSize: { xs: 16, md: 20 },
+          }}
         >
           {description}
         </Typography>

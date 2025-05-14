@@ -49,6 +49,21 @@ export const GUIDES = [
         images: ["/images/logos/chatgpt-logo.png"],
       },
     },
+    overview: {
+      title: "Guide Overview",
+      description:
+        "This guide will take you from beginner to advanced in ChatGPT, covering everything from account creation to advanced prompt engineering and troubleshooting.",
+      bullets: [
+        "Understand what ChatGPT is and how it works",
+        "Learn how to create and manage your ChatGPT account",
+        "Navigate the ChatGPT interface with confidence",
+        "Write effective prompts for better results",
+        "Explore the differences between GPT-3.5, GPT-4o, and other models",
+        "Discover practical and creative applications for ChatGPT",
+        "Troubleshoot common issues and get the most out of the tool",
+        "Estimated reading time: 25 minutes",
+      ],
+    },
     modules: [
       {
         title: "Introduction",
@@ -517,6 +532,19 @@ export const GUIDES = [
           "Learn proven techniques to get more detailed and comprehensive responses from ChatGPT. Step-by-step strategies for maximizing output length in 2025.",
         images: ["/images/logos/chatgpt-logo.png"],
       },
+    },
+    overview: {
+      title: "Guide Overview",
+      description:
+        "This comprehensive guide will teach you everything you need to know about getting longer, more detailed responses from ChatGPT in 2025.",
+      bullets: [
+        "Learn why ChatGPT sometimes gives short responses",
+        "Master techniques to encourage more detailed outputs",
+        "Discover how to continue responses when ChatGPT stops",
+        "Optimize your approach for different ChatGPT versions",
+        "Create structural frameworks for comprehensive content",
+        "Estimated reading time: 20 minutes",
+      ],
     },
     modules: [
       {
