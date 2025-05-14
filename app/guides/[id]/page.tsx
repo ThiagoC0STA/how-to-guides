@@ -37,6 +37,7 @@ function ModuleContent({
   completedQuestions,
   guideColor,
   guideColorRgb,
+  moduleIndex,
 }: any) {
   return (
     <Box>
@@ -124,6 +125,9 @@ function ModuleContent({
             onSuccess={() => onQuestionSuccess(idx)}
             guideColor={guideColor}
             guideColorRgb={guideColorRgb}
+            completedQuestions={completedQuestions}
+            questionIndex={idx}
+            moduleIndex={moduleIndex}
           />
         ))}
     </Box>
@@ -202,19 +206,28 @@ export default function GuidePage({ params }: { params: { id: string } }) {
           <Typography variant="body2" color="text.secondary" mb={0.5}>
             Your Progress: {progress}%
           </Typography>
+          <LinearProgress 
+            variant="determinate" 
+            value={progress} 
+            sx={{
+              height: 8,
+              borderRadius: 4,
+              bgcolor: `rgba(${guideColorRgb}, 0.1)`,
+              '& .MuiLinearProgress-bar': {
+                bgcolor: guideColor,
+                borderRadius: 4,
+              }
+            }}
+          />
         </Box>
         <List sx={{ p: 0 }}>
           {modules.map((mod, idx) => (
             <ListItem key={mod.title} disableGutters sx={{ mb: 1, p: 0 }}>
               <Button
-                onClick={() =>
-                  completedModules.includes(idx) || idx === currentModule
-                    ? setCurrentModule(idx)
-                    : null
-                }
+                onClick={() => setCurrentModule(idx)}
                 disabled={
                   (mod.locked && !unlocked) ||
-                  (!completedModules.includes(idx) && idx !== currentModule)
+                  (idx > 0 && !completedModules.includes(idx - 1) && idx !== currentModule)
                 }
                 fullWidth
                 variant="text"
@@ -246,7 +259,7 @@ export default function GuidePage({ params }: { params: { id: string } }) {
                   transition: "background 0.18s",
                 }}
                 endIcon={
-                  completedModules.includes(idx) && idx !== currentModule ? (
+                  completedModules.includes(idx) ? (
                     <FaCheckCircle
                       style={{
                         color: guideColor,
@@ -320,9 +333,10 @@ export default function GuidePage({ params }: { params: { id: string } }) {
             <ModuleContent
               module={current}
               onQuestionSuccess={(qIdx: number) => handleQuestionSuccess(qIdx)}
-              completedQuestions={completedQuestions[currentModule] || []}
+              completedQuestions={completedQuestions}
               guideColor={guideColor}
               guideColorRgb={guideColorRgb}
+              moduleIndex={currentModule}
             />
             <Box mt={3} display="flex" gap={2}>
               {currentModule > 0 && (

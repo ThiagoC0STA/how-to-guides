@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Typography, Radio, RadioGroup, FormControlLabel, Button, Alert, Paper } from '@mui/material';
 
 interface KnowledgeCheckProps {
@@ -8,12 +8,39 @@ interface KnowledgeCheckProps {
   onSuccess?: () => void;
   guideColor?: string;
   guideColorRgb?: string;
+  completedQuestions?: { [key: number]: boolean[] };
+  questionIndex?: number;
+  moduleIndex?: number;
 }
 
-export default function KnowledgeCheck({ question, options, correctAnswer, onSuccess, guideColor = '#2563eb', guideColorRgb = '37,99,235' }: KnowledgeCheckProps) {
+export default function KnowledgeCheck({ 
+  question, 
+  options, 
+  correctAnswer, 
+  onSuccess, 
+  guideColor = '#2563eb', 
+  guideColorRgb = '37,99,235',
+  completedQuestions = {},
+  questionIndex = 0,
+  moduleIndex = 0
+}: KnowledgeCheckProps) {
   const [selected, setSelected] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+
+  // Reset state when question changes
+  useEffect(() => {
+    const moduleQuestions = completedQuestions[moduleIndex] || [];
+    if (moduleQuestions[questionIndex]) {
+      setSubmitted(true);
+      setIsCorrect(true);
+      setSelected(correctAnswer);
+    } else {
+      setSelected(null);
+      setSubmitted(false);
+      setIsCorrect(false);
+    }
+  }, [questionIndex, moduleIndex, completedQuestions, correctAnswer]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,9 +54,12 @@ export default function KnowledgeCheck({ question, options, correctAnswer, onSuc
   };
 
   const handleTryAgain = () => {
-    setSubmitted(false);
-    setIsCorrect(false);
-    setSelected(null);
+    const moduleQuestions = completedQuestions[moduleIndex] || [];
+    if (!moduleQuestions[questionIndex]) {
+      setSubmitted(false);
+      setIsCorrect(false);
+      setSelected(null);
+    }
   };
 
   return (
@@ -47,7 +77,7 @@ export default function KnowledgeCheck({ question, options, correctAnswer, onSuc
               value={idx}
               control={<Radio sx={{ color: guideColor, '&.Mui-checked': { color: guideColor } }} />}
               label={opt}
-              disabled={submitted && isCorrect}
+              disabled={submitted}
               sx={{ mb: 1 }}
             />
           ))}
@@ -79,7 +109,7 @@ export default function KnowledgeCheck({ question, options, correctAnswer, onSuc
             Submit
           </Button>
         )}
-        {submitted && !isCorrect && (
+        {submitted && !isCorrect && !(completedQuestions[moduleIndex] || [])[questionIndex] && (
           <Box mt={2}>
             <Alert severity="error" sx={{ mb: 2 }}>
               Incorrect. Try again!
