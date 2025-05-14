@@ -6,6 +6,7 @@ import GuideSidebar from "@/components/GuideSidebar";
 import ModuleContent from "@/components/ModuleContent";
 import ModuleNavigation from "@/components/ModuleNavigation";
 import LockedModuleOverlay from "@/components/LockedModuleOverlay";
+import GuideHero from "@/components/GuideHero";
 
 function hexToRgb(hex: string) {
   hex = hex.replace("#", "");
@@ -33,7 +34,10 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
 
   const modules = guide.modules || [];
   const isLocked = modules[currentModule]?.locked && !unlocked;
-  const progress = modules.length > 0 ? Math.floor((completedModules.length / modules.length) * 100) : 0;
+  const progress =
+    modules.length > 0
+      ? Math.floor((completedModules.length / modules.length) * 100)
+      : 0;
   const current = modules[currentModule];
 
   const guideColor = guide.color || "#2563eb";
@@ -55,72 +59,81 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
 
   useMemo(() => {
     if (allQuestionsCorrect && !completedModules.includes(currentModule)) {
-      setCompletedModules((prev) => Array.from(new Set([...prev, currentModule])));
+      setCompletedModules((prev) =>
+        Array.from(new Set([...prev, currentModule]))
+      );
     }
   }, [allQuestionsCorrect, currentModule, completedModules]);
 
   return (
-    <Box
-      display="flex"
-      gap={4}
-      alignItems="flex-start"
-      maxWidth={1300}
-      mx="auto"
-      my={6}
-      px={2}
-    >
-      <GuideSidebar
-        modules={modules}
-        currentModule={currentModule}
-        completedModules={completedModules}
-        progress={progress}
-        guideColor={guideColor}
-        guideColorRgb={guideColorRgb}
-        unlocked={unlocked}
-        onModuleClick={setCurrentModule}
+    <Box sx={{ backgroundColor: "var(--background)" }}>
+      <GuideHero
+        title={guide.title}
+        description={guide.description}
+        lastUpdated={guide.lastUpdated}
       />
-      <Paper
-        elevation={2}
-        sx={{
-          flex: 1,
-          borderRadius: 3,
-          p: 5,
-          border: "1.5px solid",
-          borderColor: "grey.200",
-          bgcolor: "#fff",
-          minHeight: 600,
-        }}
+      <Box
+        display="flex"
+        gap={4}
+        alignItems="flex-start"
+        maxWidth={1300}
+        mx="auto"
+        my={6}
+        px={2}
       >
-        {isLocked ? (
-          <LockedModuleOverlay
-            moduleTitle={current.title}
-            onUnlock={() => setUnlocked(true)}
-            onBack={() => setCurrentModule(currentModule - 1)}
-            guideColor={guideColor}
-            guideColorRgb={guideColorRgb}
-          />
-        ) : (
-          <Box>
-            <ModuleContent
-              module={current}
-              onQuestionSuccess={handleQuestionSuccess}
-              completedQuestions={completedQuestions}
+        <GuideSidebar
+          modules={modules}
+          currentModule={currentModule}
+          completedModules={completedModules}
+          progress={progress}
+          guideColor={guideColor}
+          guideColorRgb={guideColorRgb}
+          unlocked={unlocked}
+          onModuleClick={setCurrentModule}
+        />
+        <Paper
+          elevation={2}
+          sx={{
+            flex: 1,
+            borderRadius: 3,
+            p: 5,
+            border: "1.5px solid",
+            borderColor: "grey.200",
+            bgcolor: "#fff",
+            minHeight: 600,
+          }}
+        >
+          {isLocked ? (
+            <LockedModuleOverlay
+              moduleTitle={current.title}
+              onUnlock={() => setUnlocked(true)}
+              onBack={() => setCurrentModule(currentModule - 1)}
               guideColor={guideColor}
               guideColorRgb={guideColorRgb}
-              moduleIndex={currentModule}
             />
-            <ModuleNavigation
-              currentModule={currentModule}
-              totalModules={modules.length}
-              allQuestionsCorrect={allQuestionsCorrect}
-              guideColor={guideColor}
-              guideColorRgb={guideColorRgb}
-              onPrevious={() => setCurrentModule(currentModule - 1)}
-              onNext={() => setCurrentModule(currentModule + 1)}
-            />
-          </Box>
-        )}
-      </Paper>
+          ) : (
+            <Box>
+              <ModuleContent
+                module={current}
+                onQuestionSuccess={handleQuestionSuccess}
+                completedQuestions={completedQuestions}
+                guideColor={guideColor}
+                guideColorRgb={guideColorRgb}
+                moduleIndex={currentModule}
+              />
+              <ModuleNavigation
+                currentModule={currentModule}
+                totalModules={modules.length}
+                allQuestionsCorrect={allQuestionsCorrect}
+                guideColor={guideColor}
+                guideColorRgb={guideColorRgb}
+                onPrevious={() => setCurrentModule(currentModule - 1)}
+                onNext={() => setCurrentModule(currentModule + 1)}
+              />
+            </Box>
+          )}
+        </Paper>
+      </Box>
     </Box>
   );
-} 
+}
