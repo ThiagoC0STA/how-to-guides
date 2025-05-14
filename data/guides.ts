@@ -10,6 +10,16 @@ export const GUIDES = [
     color: "#74aa9c",
     lastUpdated: "2025-04-19",
     updateNotes: "Updated with GPT-4o information",
+    modules: [
+      { title: "Introduction", locked: false },
+      { title: "Creating Your ChatGPT Account", locked: false },
+      { title: "Navigating the ChatGPT Interface", locked: false },
+      { title: "Writing Your First Prompts", locked: true },
+      { title: "Understanding Different ChatGPT Models", locked: true },
+      { title: "Practical Applications", locked: true },
+      { title: "Troubleshooting Common Issues", locked: true },
+      { title: "Frequently Asked Questions", locked: true },
+    ],
   },
   {
     id: "chatgptLongerResponses",
