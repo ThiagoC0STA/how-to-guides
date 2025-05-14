@@ -1,5 +1,13 @@
-import { Paper, Typography, Box, List, ListItem, Button, LinearProgress } from "@mui/material";
-import { FaCheckCircle, FaLock } from "react-icons/fa";
+import {
+  Paper,
+  Typography,
+  Box,
+  List,
+  ListItem,
+  Button,
+  LinearProgress,
+} from "@mui/material";
+import { FaCheckCircle } from "react-icons/fa";
 import { SxProps, Theme } from "@mui/material/styles";
 
 interface GuideSidebarProps {
@@ -120,4 +128,4 @@ export default function GuideSidebar({
       </List>
     </Paper>
   );
-} 
+}

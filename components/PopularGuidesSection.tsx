@@ -7,7 +7,6 @@ import {
   CardMedia,
   Button,
   Chip,
-  Stack,
 } from "@mui/material";
 import { GUIDES } from "../data/guides";
 import Link from "next/link";

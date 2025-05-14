@@ -81,7 +81,7 @@ export default function LockedModuleOverlay({
           This Module is Locked
         </Typography>
         <Typography variant="body1" mb={3} color="text.secondary" textAlign="center">
-          To access the remaining modules and get the complete ChatGPT Beginner's Kit, please enter your email below.
+          To access the remaining modules and get the complete Kit, please enter your email below.
         </Typography>
         <List sx={{ mb: 3, width: '100%' }}>
           <ListItem sx={{ p: 0, mb: 1, color: 'success.main', fontWeight: 600, alignItems: 'center' }}>
