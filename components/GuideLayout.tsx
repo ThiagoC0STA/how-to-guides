@@ -8,6 +8,7 @@ import ModuleNavigation from "@/components/ModuleNavigation";
 import LockedModuleOverlay from "@/components/LockedModuleOverlay";
 import GuideHero from "@/components/GuideHero";
 import GuideOverview from "@/components/GuideOverview";
+import LeadMagnetKit from "./LeadMagnetKit";
 
 function hexToRgb(hex: string) {
   hex = hex.replace("#", "");
@@ -69,7 +70,10 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
   const overview = guide?.overview;
 
   return (
-    <Container maxWidth="lg" sx={{ backgroundColor: "var(--background)", px: 4 }}>
+    <Container
+      maxWidth="lg"
+      sx={{ backgroundColor: "var(--background)", px: 4 }}
+    >
       <GuideHero
         title={guide.title}
         description={guide.description}
@@ -82,13 +86,8 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
           bullets={overview.bullets}
         />
       )}
-      <Box
-        display="flex"
-        gap={4}
-        alignItems="flex-start"
-        mx="auto"
-        my={6}
-      >
+      <LeadMagnetKit />
+      <Box display="flex" gap={4} alignItems="flex-start" mx="auto" my={6}>
         <GuideSidebar
           modules={modules}
           currentModule={currentModule}
