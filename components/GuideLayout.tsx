@@ -78,12 +78,15 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
         title={guide.title}
         description={guide.description}
         lastUpdated={guide.lastUpdated}
+        image={guide.image}
       />
       {overview && (
         <GuideOverview
           title={overview.title}
           description={overview.description}
           bullets={overview.bullets}
+          guideColor={guideColor}
+          guideColorRgb={guideColorRgb}
         />
       )}
       <LeadMagnetKit />

@@ -5,12 +5,16 @@ interface GuideOverviewProps {
   title: string;
   description: string;
   bullets: string[];
+  guideColor: string;
+  guideColorRgb: string;
 }
 
 export default function GuideOverview({
   title,
   description,
   bullets,
+  guideColor,
+  guideColorRgb,
 }: GuideOverviewProps) {
   const half = Math.ceil(bullets.length / 2);
   const col1 = bullets.slice(0, half);
@@ -27,7 +31,7 @@ export default function GuideOverview({
         border: "1.5px solid",
         borderColor: "grey.100",
         bgcolor: "#fcfcfd",
-        boxShadow: "0 2px 16px 0 rgba(116,170,156,0.08)",
+        boxShadow: `0 2px 16px 0 rgba(${guideColorRgb},0.08)`,
         position: "relative",
         overflow: "hidden",
         display: "flex",
@@ -43,7 +47,7 @@ export default function GuideOverview({
           left: 0,
           width: "100%",
           height: 7,
-          background: "linear-gradient(90deg, #74aa9c 0%, #e0f7f1 100%)",
+          background: `linear-gradient(90deg, ${guideColor} 0%, rgba(${guideColorRgb},0.1) 100%)`,
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
         }}
@@ -52,8 +56,8 @@ export default function GuideOverview({
       <Box sx={{ display: "flex", justifyContent: "center", mb: 1.5, mt: 0.5 }}>
         <FaCheckCircle
           size={28}
-          color="#74aa9c"
-          style={{ filter: "drop-shadow(0 2px 8px #74aa9c22)" }}
+          color={guideColor}
+          style={{ filter: `drop-shadow(0 2px 8px ${guideColor}22)` }}
         />
       </Box>
       <Typography
@@ -97,14 +101,14 @@ export default function GuideOverview({
                   transition: "background 0.18s",
                   mb: 0.5,
                   "&:hover": {
-                    background: "rgba(116,170,156,0.07)",
+                    background: `rgba(${guideColorRgb},0.07)`,
                   },
                 }}
               >
                 <Box sx={{ mt: 0.1, mr: 1 }}>
                   <FaCheckCircle
                     size={16}
-                    color="#74aa9c"
+                    color={guideColor}
                     style={{ minWidth: 16 }}
                   />
                 </Box>

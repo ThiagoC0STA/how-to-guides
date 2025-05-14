@@ -1,15 +1,18 @@
 import { Box, Typography } from "@mui/material";
+import Image from "next/image";
 
 interface GuideHeroProps {
   title: string;
   description: string;
   lastUpdated?: string;
+  image: string;
 }
 
 export default function GuideHero({
   title,
   description,
   lastUpdated,
+  image,
 }: GuideHeroProps) {
   return (
     <Box
@@ -23,6 +26,18 @@ export default function GuideHero({
       }}
     >
       <Box sx={{ maxWidth: 1100, mx: "auto" }}>
+        <Box sx={{ mb: 5, display: "flex", justifyContent: "center" }}>
+          <Image
+            src={image}
+            alt={title}
+            width={80}
+            height={80}
+            style={{
+              objectFit: "contain",
+              filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.08))",
+            }}
+          />
+        </Box>
         <Typography
           variant="h2"
           fontWeight={800}

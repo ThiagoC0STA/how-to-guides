@@ -714,8 +714,111 @@ In the following sections, we'll explore specific techniques that address these 
     featured: true,
     image: "/images/logos/dalle-logo.png",
     color: "#e74c3c",
-    lastUpdated: "today", // Replace with actual date if needed
-    updateNotes: "Initial version published",
+    lastUpdated: "2025-04-15",
+    updateNotes: "Updated with DALL-E 3 features",
+    metadata: {
+      title: "How to Use DALL-E: Complete 2025 Tutorial",
+      description:
+        "Master DALL-E 3 and create stunning AI-generated images. Learn advanced prompting techniques, image editing, and best practices for 2025.",
+      keywords: [
+        "DALL-E guide",
+        "DALL-E 3 tutorial",
+        "AI image generation",
+        "OpenAI DALL-E",
+        "AI art creation",
+        "DALL-E prompts",
+        "Image generation AI",
+        "DALL-E tips",
+        "AI art guide",
+        "DALL-E 3 features",
+      ],
+      openGraph: {
+        title: "How to Use DALL-E: Complete 2025 Tutorial",
+        description:
+          "Master DALL-E 3 and create stunning AI-generated images. Learn advanced prompting techniques, image editing, and best practices for 2025.",
+        url: "https://how-to-guides-gamma.vercel.app/guides/dalle",
+        type: "article",
+        images: [
+          {
+            url: "/images/logos/dalle-logo.png",
+            width: 1200,
+            height: 630,
+            alt: "DALL-E Logo",
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "How to Use DALL-E: Complete 2025 Tutorial",
+        description:
+          "Master DALL-E 3 and create stunning AI-generated images. Learn advanced prompting techniques, image editing, and best practices for 2025.",
+        images: ["/images/logos/dalle-logo.png"],
+      },
+    },
+    overview: {
+      title: "Guide Overview",
+      description:
+        "This comprehensive guide will teach you everything you need to know about using DALL-E 3 to create amazing AI-generated images in 2025.",
+      bullets: [
+        "Understand DALL-E 3's capabilities and limitations",
+        "Learn how to write effective image prompts",
+        "Master advanced image generation techniques",
+        "Explore image editing and refinement features",
+        "Discover best practices for different use cases",
+        "Learn how to optimize image quality and style",
+        "Understand ethical considerations and usage rights",
+        "Estimated reading time: 30 minutes",
+      ],
+    },
+    modules: [
+      {
+        title: "Introduction to DALL-E",
+        locked: false,
+        content: {
+          sections: [
+            {
+              heading: "What is DALL-E?",
+              text: "DALL-E is an AI system developed by OpenAI that can create realistic images and art from natural language descriptions. DALL-E 3, the latest version as of 2025, represents a significant advancement in AI image generation capabilities.",
+            },
+            {
+              heading: "Key Features of DALL-E 3",
+              expandable: true,
+              text: "DALL-E 3 offers several powerful features:",
+              list: [
+                "High-resolution image generation",
+                "Advanced prompt understanding",
+                "Style consistency and control",
+                "Image editing and variations",
+                "Integration with ChatGPT Plus",
+                "Commercial usage rights",
+              ],
+            },
+            {
+              heading: "Getting Started with DALL-E",
+              text: "To begin using DALL-E 3, you'll need:",
+              list: [
+                "A ChatGPT Plus subscription",
+                "Access to the DALL-E interface",
+                "Basic understanding of image generation concepts",
+                "Clear ideas for what you want to create",
+              ],
+            },
+          ],
+        },
+        questions: [
+          {
+            question: "What is required to use DALL-E 3?",
+            options: [
+              "A free OpenAI account",
+              "A ChatGPT Plus subscription",
+              "A professional artist license",
+              "No requirements",
+            ],
+            correctAnswer: 1,
+          },
+        ],
+      },
+    ],
   },
   {
     id: "midjourney",
@@ -729,6 +832,104 @@ In the following sections, we'll explore specific techniques that address these 
     color: "#3498db",
     lastUpdated: "2025-03-28",
     updateNotes: "Updated with v6 features",
+    metadata: {
+      title: "How to Use Midjourney: Complete 2025 Guide",
+      description:
+        "Master Midjourney v6 and create stunning AI art. Learn advanced prompting, image refinement, and professional techniques for 2025.",
+      keywords: [
+        "Midjourney guide",
+        "Midjourney v6 tutorial",
+        "AI art generation",
+        "Midjourney prompts",
+        "AI image creation",
+        "Midjourney tips",
+        "AI art guide",
+        "Midjourney v6 features",
+        "Digital art AI",
+        "Midjourney workflow",
+      ],
+      openGraph: {
+        title: "How to Use Midjourney: Complete 2025 Guide",
+        description:
+          "Master Midjourney v6 and create stunning AI art. Learn advanced prompting, image refinement, and professional techniques for 2025.",
+        url: "https://how-to-guides-gamma.vercel.app/guides/midjourney",
+        type: "article",
+        images: [
+          {
+            url: "/images/logos/midjourney-logo.png",
+            width: 1200,
+            height: 630,
+            alt: "Midjourney Logo",
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "How to Use Midjourney: Complete 2025 Guide",
+        description:
+          "Master Midjourney v6 and create stunning AI art. Learn advanced prompting, image refinement, and professional techniques for 2025.",
+        images: ["/images/logos/midjourney-logo.png"],
+      },
+    },
+    overview: {
+      title: "Guide Overview",
+      description:
+        "This comprehensive guide will teach you everything you need to know about using Midjourney v6 to create professional-quality AI art in 2025.",
+      bullets: [
+        "Set up your Midjourney account and Discord integration",
+        "Master the Midjourney v6 interface and commands",
+        "Learn advanced prompting techniques for better results",
+        "Understand image parameters and modifiers",
+        "Explore image refinement and upscaling options",
+        "Discover professional workflows and best practices",
+        "Learn about commercial usage and licensing",
+        "Estimated reading time: 35 minutes",
+      ],
+    },
+    modules: [
+      {
+        title: "Getting Started with Midjourney",
+        locked: false,
+        content: {
+          sections: [
+            {
+              heading: "What is Midjourney?",
+              text: "Midjourney is a powerful AI art generation tool that creates high-quality images from text descriptions. Version 6, released in 2025, offers significant improvements in image quality and control.",
+            },
+            {
+              heading: "Setting Up Your Account",
+              expandable: true,
+              text: "To get started with Midjourney, you'll need to:",
+              list: [
+                "Create a Discord account",
+                "Join the Midjourney Discord server",
+                "Subscribe to a Midjourney plan",
+                "Set up your workspace",
+                "Learn basic commands",
+              ],
+            },
+            {
+              heading: "Understanding Midjourney v6",
+              text: "Key improvements in Midjourney v6 include:",
+              list: [
+                "Enhanced image quality and detail",
+                "Better prompt understanding",
+                "Improved style consistency",
+                "New parameter controls",
+                "Advanced upscaling options",
+              ],
+            },
+          ],
+        },
+        questions: [
+          {
+            question: "What platform is required to use Midjourney?",
+            options: ["Telegram", "Discord", "Slack", "Microsoft Teams"],
+            correctAnswer: 1,
+          },
+        ],
+      },
+    ],
   },
   {
     id: "gemini",
@@ -742,6 +943,109 @@ In the following sections, we'll explore specific techniques that address these 
     color: "#8e44ad",
     lastUpdated: "2025-04-10",
     updateNotes: "Updated with v6 features",
+    metadata: {
+      title: "How to Use Gemini AI: Complete 2025 Guide",
+      description:
+        "Master Google's Gemini AI assistant. Learn how to use its multimodal capabilities, advanced features, and integration with Google services in 2025.",
+      keywords: [
+        "Gemini AI guide",
+        "Google Gemini tutorial",
+        "Multimodal AI assistant",
+        "Gemini AI features",
+        "AI assistant guide",
+        "Google AI tools",
+        "Gemini v6 guide",
+        "AI productivity",
+        "Google AI assistant",
+        "Gemini AI tips",
+      ],
+      openGraph: {
+        title: "How to Use Gemini AI: Complete 2025 Guide",
+        description:
+          "Master Google's Gemini AI assistant. Learn how to use its multimodal capabilities, advanced features, and integration with Google services in 2025.",
+        url: "https://how-to-guides-gamma.vercel.app/guides/gemini",
+        type: "article",
+        images: [
+          {
+            url: "/images/logos/gemini-logo.png",
+            width: 1200,
+            height: 630,
+            alt: "Gemini AI Logo",
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "How to Use Gemini AI: Complete 2025 Guide",
+        description:
+          "Master Google's Gemini AI assistant. Learn how to use its multimodal capabilities, advanced features, and integration with Google services in 2025.",
+        images: ["/images/logos/gemini-logo.png"],
+      },
+    },
+    overview: {
+      title: "Guide Overview",
+      description:
+        "This comprehensive guide will teach you everything you need to know about using Google's Gemini AI assistant in 2025.",
+      bullets: [
+        "Understand Gemini's multimodal capabilities",
+        "Learn how to use text, image, and voice interactions",
+        "Master integration with Google services",
+        "Explore advanced features and capabilities",
+        "Discover productivity tips and best practices",
+        "Learn about API access and development",
+        "Understand privacy and security features",
+        "Estimated reading time: 25 minutes",
+      ],
+    },
+    modules: [
+      {
+        title: "Introduction to Gemini AI",
+        locked: false,
+        content: {
+          sections: [
+            {
+              heading: "What is Gemini AI?",
+              text: "Gemini is Google's advanced multimodal AI assistant that can understand and process text, images, and voice inputs. Version 6, released in 2025, offers enhanced capabilities and deeper integration with Google's ecosystem.",
+            },
+            {
+              heading: "Key Features of Gemini v6",
+              expandable: true,
+              text: "Gemini v6 offers several powerful features:",
+              list: [
+                "Multimodal understanding and generation",
+                "Real-time web search integration",
+                "Advanced code generation and analysis",
+                "Image and document analysis",
+                "Voice interaction capabilities",
+                "Google Workspace integration",
+              ],
+            },
+            {
+              heading: "Getting Started with Gemini",
+              text: "To begin using Gemini, you'll need:",
+              list: [
+                "A Google account",
+                "Access to Gemini (web or mobile app)",
+                "Basic understanding of AI assistants",
+                "Clear goals for using the tool",
+              ],
+            },
+          ],
+        },
+        questions: [
+          {
+            question: "What type of AI is Gemini?",
+            options: [
+              "Text-only AI",
+              "Multimodal AI",
+              "Voice-only AI",
+              "Image-only AI",
+            ],
+            correctAnswer: 1,
+          },
+        ],
+      },
+    ],
   },
   {
     id: "aiContentCreation",
@@ -750,11 +1054,115 @@ In the following sections, we'll explore specific techniques that address these 
       "Master AI-powered content creation to produce high-quality blogs, social media, videos, and more",
     schemaFile: "ai-content-creation-guide",
     category: ["content-creation", "productivity"],
-    featured: false,
+    featured: true,
     image: "/images/logos/content-creation-logo.png",
     color: "#2ecc71",
-    lastUpdated: "today", // Replace with actual date if needed
-    updateNotes: "Initial version published",
+    lastUpdated: "2025-04-15",
+    updateNotes: "Updated with latest AI tools and techniques",
+    metadata: {
+      title: "How to Use AI for Content Creation: Complete 2025 Guide",
+      description:
+        "Master AI-powered content creation in 2025. Learn how to use AI tools for writing, video production, social media, and more.",
+      keywords: [
+        "AI content creation",
+        "AI writing tools",
+        "Content generation AI",
+        "AI video creation",
+        "Social media AI",
+        "Content marketing AI",
+        "AI productivity",
+        "AI content strategy",
+        "AI writing guide",
+        "Content automation",
+      ],
+      openGraph: {
+        title: "How to Use AI for Content Creation: Complete 2025 Guide",
+        description:
+          "Master AI-powered content creation in 2025. Learn how to use AI tools for writing, video production, social media, and more.",
+        url: "https://how-to-guides-gamma.vercel.app/guides/aiContentCreation",
+        type: "article",
+        images: [
+          {
+            url: "/images/logos/content-creation-logo.png",
+            width: 1200,
+            height: 630,
+            alt: "AI Content Creation",
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "How to Use AI for Content Creation: Complete 2025 Guide",
+        description:
+          "Master AI-powered content creation in 2025. Learn how to use AI tools for writing, video production, social media, and more.",
+        images: ["/images/logos/content-creation-logo.png"],
+      },
+    },
+    overview: {
+      title: "Guide Overview",
+      description:
+        "This comprehensive guide will teach you how to leverage AI tools for creating high-quality content across different formats in 2025.",
+      bullets: [
+        "Understand AI content creation tools and capabilities",
+        "Learn how to use AI for different content types",
+        "Master content strategy with AI assistance",
+        "Explore video and audio generation tools",
+        "Discover social media automation techniques",
+        "Learn about content optimization with AI",
+        "Understand ethical considerations and best practices",
+        "Estimated reading time: 40 minutes",
+      ],
+    },
+    modules: [
+      {
+        title: "Introduction to AI Content Creation",
+        locked: false,
+        content: {
+          sections: [
+            {
+              heading: "What is AI Content Creation?",
+              text: "AI content creation involves using artificial intelligence tools to generate, optimize, and manage various types of content. In 2025, these tools have become sophisticated enough to handle everything from blog posts to video production.",
+            },
+            {
+              heading: "Types of AI Content Tools",
+              expandable: true,
+              text: "Modern AI content creation tools can help with:",
+              list: [
+                "Text generation and writing",
+                "Video creation and editing",
+                "Image generation and design",
+                "Social media content",
+                "Audio and podcast production",
+                "Content optimization and SEO",
+              ],
+            },
+            {
+              heading: "Getting Started with AI Content Creation",
+              text: "To begin using AI for content creation, you'll need:",
+              list: [
+                "Understanding of your content goals",
+                "Selection of appropriate AI tools",
+                "Basic content strategy",
+                "Quality control process",
+              ],
+            },
+          ],
+        },
+        questions: [
+          {
+            question:
+              "What is the main advantage of using AI for content creation?",
+            options: [
+              "Complete automation without human input",
+              "Increased efficiency and productivity",
+              "Perfect content every time",
+              "No need for content strategy",
+            ],
+            correctAnswer: 1,
+          },
+        ],
+      },
+    ],
   },
   {
     id: "aiPrompts",
@@ -763,10 +1171,112 @@ In the following sections, we'll explore specific techniques that address these 
       "Techniques for crafting prompts that get better results from AI tools",
     schemaFile: "ai-prompts-guide",
     category: ["prompt-engineering", "productivity"],
-    featured: false,
-    image: "/images/logos/content-creation-logo.png", // Consider a dedicated prompt engineering logo
+    featured: true,
+    image: "/images/logos/content-creation-logo.png",
     color: "#2ecc71",
-    lastUpdated: "today", // Replace with actual date if needed
-    updateNotes: "Initial version published",
+    lastUpdated: "2025-04-15",
+    updateNotes: "Updated with latest prompt engineering techniques",
+    metadata: {
+      title: "How to Write Effective AI Prompts: Complete 2025 Guide",
+      description:
+        "Master the art of prompt engineering in 2025. Learn advanced techniques for getting better results from ChatGPT, DALL-E, Midjourney, and other AI tools.",
+      keywords: [
+        "AI prompts guide",
+        "Prompt engineering",
+        "AI prompt writing",
+        "ChatGPT prompts",
+        "DALL-E prompts",
+        "Midjourney prompts",
+        "AI prompt techniques",
+        "Prompt optimization",
+        "AI writing tips",
+        "Prompt engineering 2025",
+      ],
+      openGraph: {
+        title: "How to Write Effective AI Prompts: Complete 2025 Guide",
+        description:
+          "Master the art of prompt engineering in 2025. Learn advanced techniques for getting better results from ChatGPT, DALL-E, Midjourney, and other AI tools.",
+        url: "https://how-to-guides-gamma.vercel.app/guides/aiPrompts",
+        type: "article",
+        images: [
+          {
+            url: "/images/logos/content-creation-logo.png",
+            width: 1200,
+            height: 630,
+            alt: "AI Prompt Engineering",
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "How to Write Effective AI Prompts: Complete 2025 Guide",
+        description:
+          "Master the art of prompt engineering in 2025. Learn advanced techniques for getting better results from ChatGPT, DALL-E, Midjourney, and other AI tools.",
+        images: ["/images/logos/content-creation-logo.png"],
+      },
+    },
+    overview: {
+      title: "Guide Overview",
+      description:
+        "This comprehensive guide will teach you how to write effective prompts for various AI tools in 2025.",
+      bullets: [
+        "Understand the fundamentals of prompt engineering",
+        "Learn techniques for different AI tools",
+        "Master advanced prompt patterns",
+        "Explore prompt optimization strategies",
+        "Discover best practices for specific use cases",
+        "Learn about prompt testing and iteration",
+        "Understand ethical considerations",
+        "Estimated reading time: 30 minutes",
+      ],
+    },
+    modules: [
+      {
+        title: "Introduction to Prompt Engineering",
+        locked: false,
+        content: {
+          sections: [
+            {
+              heading: "What is Prompt Engineering?",
+              text: "Prompt engineering is the art and science of crafting effective instructions for AI tools. In 2025, it has become a crucial skill for getting the best results from various AI systems.",
+            },
+            {
+              heading: "Types of AI Tools and Their Prompts",
+              expandable: true,
+              text: "Different AI tools require different prompt approaches:",
+              list: [
+                "Text generation (ChatGPT, Claude)",
+                "Image generation (DALL-E, Midjourney)",
+                "Code generation (GitHub Copilot)",
+                "Audio generation (ElevenLabs)",
+                "Video generation (Runway)",
+              ],
+            },
+            {
+              heading: "Getting Started with Prompt Engineering",
+              text: "To begin writing effective prompts, you'll need:",
+              list: [
+                "Understanding of your AI tool's capabilities",
+                "Clear goals for your output",
+                "Basic prompt structure knowledge",
+                "Testing and iteration process",
+              ],
+            },
+          ],
+        },
+        questions: [
+          {
+            question: "What is the main purpose of prompt engineering?",
+            options: [
+              "To confuse AI systems",
+              "To get better results from AI tools",
+              "To make AI tools work faster",
+              "To reduce AI tool costs",
+            ],
+            correctAnswer: 1,
+          },
+        ],
+      },
+    ],
   },
 ];
