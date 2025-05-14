@@ -1,5 +1,6 @@
 import { Paper, Typography, Box, List, ListItem, Button, LinearProgress } from "@mui/material";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaLock } from "react-icons/fa";
+import { SxProps, Theme } from "@mui/material/styles";
 
 interface GuideSidebarProps {
   modules: any[];
@@ -10,6 +11,7 @@ interface GuideSidebarProps {
   guideColorRgb: string;
   unlocked: boolean;
   onModuleClick: (index: number) => void;
+  sx?: SxProps<Theme>;
 }
 
 export default function GuideSidebar({
@@ -21,6 +23,7 @@ export default function GuideSidebar({
   guideColorRgb,
   unlocked,
   onModuleClick,
+  sx,
 }: GuideSidebarProps) {
   return (
     <Paper
@@ -33,6 +36,7 @@ export default function GuideSidebar({
         borderColor: "grey.200",
         bgcolor: "#fff",
         minWidth: 260,
+        ...sx,
       }}
     >
       <Typography variant="h5" fontWeight={800} mb={3}>

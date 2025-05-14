@@ -76,6 +76,24 @@ export default function PopularGuidesSection() {
                 borderTopRightRadius: 12,
               }}
             />
+            {/* Last updated chip */}
+            <Chip
+              label={guide.lastUpdated}
+              size="small"
+              sx={{
+                position: "absolute",
+                top: 16,
+                left: 6,
+                bgcolor: "#f3f4f6",
+                color: "#000",
+                fontWeight: 600,
+                fontSize: 10,
+                borderRadius: 2,
+                paddingInline: 0.7,
+                textTransform: "capitalize",
+                opacity: 0.6,
+              }}
+            />
             {/* Guide image */}
             <CardMedia
               component="img"
@@ -120,29 +138,6 @@ export default function PopularGuidesSection() {
               >
                 {guide.description}
               </Typography>
-              <Stack
-                direction="row"
-                spacing={1}
-                alignItems="center"
-                sx={{ mb: 2 }}
-              >
-                <Chip
-                  label={guide.lastUpdated}
-                  size="small"
-                  sx={{
-                    bgcolor: guide.color,
-                    color: "#fff",
-                    fontWeight: 700,
-                    fontSize: 12,
-                  }}
-                />
-                <Typography
-                  variant="caption"
-                  sx={{ color: "var(--footer-text)" }}
-                >
-                  Last update
-                </Typography>
-              </Stack>
               <Box sx={{ flexGrow: 1 }} />
               <Link href={`/guides/${guide.id}`} passHref legacyBehavior>
                 <Button

@@ -72,7 +72,7 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
   return (
     <Container
       maxWidth="lg"
-      sx={{ backgroundColor: "var(--background)", px: 4 }}
+      sx={{ backgroundColor: "var(--background)", px: { xs: 2, md: 4 } }}
     >
       <GuideHero
         title={guide.title}
@@ -90,7 +90,14 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
         />
       )}
       <LeadMagnetKit />
-      <Box display="flex" gap={4} alignItems="flex-start" mx="auto" my={6}>
+      <Box 
+        display="flex" 
+        flexDirection={{ xs: "column", md: "row" }}
+        gap={{ xs: 3, md: 4 }} 
+        alignItems={{ xs: "stretch", md: "flex-start" }} 
+        mx="auto" 
+        my={{ xs: 4, md: 6 }}
+      >
         <GuideSidebar
           modules={modules}
           currentModule={currentModule}
@@ -100,17 +107,24 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
           guideColorRgb={guideColorRgb}
           unlocked={unlocked}
           onModuleClick={setCurrentModule}
+          sx={{
+            width: { xs: "100%", md: 320 },
+            position: { xs: "sticky", md: "static" },
+            top: { xs: 16, md: "auto" },
+            zIndex: 1,
+          }}
         />
         <Paper
           elevation={0}
           sx={{
             flex: 1,
             borderRadius: 3,
-            p: 5,
+            p: { xs: 3, md: 5 },
             border: "1.5px solid",
             borderColor: "grey.200",
             bgcolor: "#fff",
-            minHeight: 600,
+            minHeight: { xs: "auto", md: 600 },
+            width: "100%",
           }}
         >
           {isLocked ? (

@@ -43,7 +43,15 @@ export default function ModuleContent({
 }: ModuleContentProps) {
   return (
     <Box>
-      <Typography variant="h3" fontWeight={800} mb={3}>
+      <Typography 
+        variant="h3" 
+        fontWeight={800} 
+        mb={3}
+        sx={{
+          fontSize: { xs: 32, md: 44 },
+          lineHeight: { xs: 1.3, md: 1.2 },
+        }}
+      >
         {module.title}
       </Typography>
       {module.content &&
@@ -55,6 +63,7 @@ export default function ModuleContent({
                 key={i}
                 title={section.heading}
                 guideColor={guideColor}
+                
               >
                 {Array.isArray(section.text) ? (
                   section.text.map((t: string, idx: number) => (
@@ -73,19 +82,18 @@ export default function ModuleContent({
                       pl: 3,
                       mb: 1,
                       listStyleType: "disc",
-                      listStylePosition: "inside",
+                      "& .MuiListItem-root": {
+                        display: "list-item",
+                        pl: 0,
+                        py: 0.5,
+                        "&::marker": {
+                          color: "var(--foreground)",
+                        },
+                      },
                     }}
                   >
                     {section.list.map((item: string, j: number) => (
-                      <ListItem
-                        key={j}
-                        sx={{
-                          display: "list-item",
-                          pl: 0,
-                          py: 0,
-                          listStyleType: "inherit",
-                        }}
-                      >
+                      <ListItem key={j}>
                         {item}
                       </ListItem>
                     ))}
@@ -101,7 +109,16 @@ export default function ModuleContent({
           }
           return (
             <Box key={i} mb={2}>
-              <Typography variant="h5" fontWeight={700} mb={1.5}>
+              <Typography 
+                variant="h5" 
+                fontWeight={700} 
+                sx={{
+                  fontSize: { xs: 19, md: 24 },
+                  lineHeight: { xs: 1.4, md: 1.3 },
+                  marginBottom: { xs: 1, md: 1.3 },
+                  marginTop: { xs: 2, md: 4.3 },
+                }}
+              >
                 {section.heading}
               </Typography>
               {Array.isArray(section.text) ? (
@@ -116,9 +133,23 @@ export default function ModuleContent({
                 </Typography>
               )}
               {section.list && (
-                <List sx={{ pl: 3, mb: 1 }}>
+                <List
+                  sx={{
+                    pl: 3,
+                    mb: 1,
+                    listStyleType: "disc",
+                    "& .MuiListItem-root": {
+                      display: "list-item",
+                      pl: 0,
+                      py: 0.5,
+                      "&::marker": {
+                        color: "var(--foreground)",
+                      },
+                    },
+                  }}
+                >
                   {section.list.map((item: string, j: number) => (
-                    <ListItem key={j} sx={{ display: "list-item", pl: 0 }}>
+                    <ListItem key={j}>
                       {item}
                     </ListItem>
                   ))}

@@ -71,8 +71,13 @@ export default function GuideOverview({
       <Typography
         variant="body1"
         color="text.secondary"
-        mb={2.5}
-        sx={{ textAlign: "center", maxWidth: 700, mx: "auto", fontSize: 18 }}
+        mb={2}
+        sx={{
+          textAlign: "center",
+          maxWidth: 700,
+          mx: "auto",
+          fontSize: { xs: 16, md: 18 },
+        }}
       >
         {description}
       </Typography>
@@ -82,8 +87,8 @@ export default function GuideOverview({
           flexDirection: { xs: "column", sm: "row" },
           gap: { xs: 0, sm: 4 },
           width: "100%",
-          px: 4,
-          mt: 4,
+          px: { xs: 0, sm: 4 },
+          mt: { xs: 0, sm: 4 },
         }}
       >
         {[col1, col2].map((col, colIdx) => (
@@ -115,7 +120,7 @@ export default function GuideOverview({
                 <Typography
                   variant="body1"
                   color="text.primary"
-                  sx={{ fontSize: 16.5, lineHeight: 1.7 }}
+                  sx={{ fontSize: { xs: 14, md: 16.5 }, lineHeight: 1.7 }}
                 >
                   {item}
                 </Typography>
