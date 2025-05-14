@@ -106,7 +106,7 @@ export default function ModuleContent({
               </Typography>
               {Array.isArray(section.text) ? (
                 section.text.map((t: string, idx: number) => (
-                  <Typography variant="body1" mb={section.list ? 1 : 2} key={idx} paragraph>
+                  <Typography variant="body1" mb={section.list ? 1 : 3} mt={2} key={idx} paragraph>
                     {t}
                   </Typography>
                 ))
