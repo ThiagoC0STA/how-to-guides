@@ -13,7 +13,6 @@ import { GUIDES } from "../data/guides";
 import Link from "next/link";
 
 export default function PopularGuidesSection() {
-  // Only featured guides
   const guides = GUIDES.filter((g) => g.featured);
 
   return (
