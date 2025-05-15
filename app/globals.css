@@ -89,3 +89,11 @@ pre, code {
     "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
     sans-serif !important;
 }
+
+.MuiInputBase-input {
+  margin-top: 6px !important;
+}
+
+.MuiAutocomplete-endAdornment {
+  margin-top: 3px !important;
+}

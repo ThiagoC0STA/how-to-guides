@@ -4,7 +4,7 @@ export const GUIDES = [
     title: "How to Use ChatGPT: Complete 2025 Guide",
     description: "Master ChatGPT from scratch with our step-by-step tutorial",
     schemaFile: "chatgpt-guide",
-    category: ["chatgpt", "text-generation"],
+    category: ["chatgpt", "text-generation", "ai-tools"],
     featured: true,
     image: "/images/logos/chatgpt-logo.png",
     color: "#74aa9c",
@@ -486,7 +486,7 @@ export const GUIDES = [
     description:
       "Learn techniques to get more detailed and comprehensive responses from ChatGPT",
     schemaFile: "chatgpt-longer-responses-guide",
-    category: ["chatgpt", "text-generation"],
+    category: ["chatgpt", "text-generation", "prompt-engineering"],
     featured: true,
     image: "/images/logos/chatgpt-logo.png",
     color: "#74aa9c",
@@ -710,7 +710,7 @@ In the following sections, we'll explore specific techniques that address these 
     description:
       "Learn how to create amazing AI-generated images with OpenAI's DALL-E",
     schemaFile: "dalle-guide",
-    category: ["dalle", "image-generation"],
+    category: ["dalle", "image-generation", "ai-tools"],
     featured: true,
     image: "/images/logos/dalle-logo.png",
     color: "#e74c3c",
@@ -826,7 +826,7 @@ In the following sections, we'll explore specific techniques that address these 
     description:
       "Learn how to create stunning AI-generated images with Midjourney",
     schemaFile: "midjourney-guide",
-    category: ["midjourney", "image-generation"],
+    category: ["midjourney", "image-generation", "ai-tools"],
     featured: true,
     image: "/images/logos/midjourney-logo.png",
     color: "#3498db",
@@ -937,7 +937,7 @@ In the following sections, we'll explore specific techniques that address these 
     description:
       "Master Google's powerful multimodal AI assistant with our comprehensive guide",
     schemaFile: "gemini-guide",
-    category: ["gemini", "multimodal-ai"],
+    category: ["gemini", "multimodal-ai", "ai-tools"],
     featured: true,
     image: "/images/logos/gemini-logo.png",
     color: "#8e44ad",
@@ -1053,7 +1053,7 @@ In the following sections, we'll explore specific techniques that address these 
     description:
       "Master AI-powered content creation to produce high-quality blogs, social media, videos, and more",
     schemaFile: "ai-content-creation-guide",
-    category: ["content-creation", "productivity"],
+    category: ["content-creation", "productivity", "ai-tools"],
     featured: true,
     image: "/images/logos/content-creation-logo.png",
     color: "#2ecc71",
@@ -1170,7 +1170,7 @@ In the following sections, we'll explore specific techniques that address these 
     description:
       "Techniques for crafting prompts that get better results from AI tools",
     schemaFile: "ai-prompts-guide",
-    category: ["prompt-engineering", "productivity"],
+    category: ["prompt-engineering", "productivity", "ai-tools"],
     featured: true,
     image: "/images/logos/content-creation-logo.png",
     color: "#2ecc71",
