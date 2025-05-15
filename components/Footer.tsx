@@ -163,7 +163,7 @@ export default function Footer() {
                 placeholder="Your email address"
                 variant="outlined"
                 sx={{
-                  bgcolor: "white",
+                  bgcolor: "transparent",
                   borderRadius: 2,
                   "& .MuiOutlinedInput-root": {
                     fontSize: 15,
