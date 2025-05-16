@@ -197,7 +197,7 @@ export default function MissionSection() {
               fontWeight: 500,
             }}
           >
-            We're committed to creating the most thorough, accurate, and up-to-date tutorials for popular AI tools
+            We&apos;re committed to creating the most thorough, accurate, and up-to-date tutorials for popular AI tools
             like ChatGPT, Midjourney, DALL-E, and Gemini AI. Our step-by-step approach ensures that beginners can
             get started quickly while also providing advanced techniques for experienced users.
           </Typography>

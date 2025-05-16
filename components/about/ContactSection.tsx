@@ -60,7 +60,7 @@ export default function ContactSection() {
             position: "relative",
           }}
         >
-          Have questions, suggestions, or feedback about our guides? We'd love
+          Have questions, suggestions, or feedback about our guides? We&apos;d love
           to hear from you!
         </Typography>
         <Stack
