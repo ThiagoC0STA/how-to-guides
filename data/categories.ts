@@ -96,20 +96,4 @@ export const categories: Category[] = [
       },
     ],
   },
-  {
-    id: "optimization",
-    title: "Optimization Techniques",
-    description:
-      "Fine-tune your prompts to get the best possible results from AI tools",
-    iconName: "cogs",
-    color: "#f39c12",
-    count: 0,
-    comingSoon: true,
-    guides: [
-      {
-        title: "How to Optimize Prompts for AI Tools",
-        link: "/prompt-engineering/how-to-optimize-prompts-for-ai-tools",
-      },
-    ],
-  },
 ];

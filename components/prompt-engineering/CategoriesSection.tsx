@@ -1,13 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Typography, TextField, InputAdornment, Container } from "@mui/material";
-import { FaSearch } from "react-icons/fa";
+import { Box, Typography, TextField, InputAdornment, IconButton } from "@mui/material";
+import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import CategoryCard from "./CategoryCard";
 import { categories } from "@/data/categories";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Navigation, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 
 export default function CategoriesSection() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [swiper, setSwiper] = useState<any>(null);
 
   const filteredCategories = categories.filter(
     (category) =>
@@ -82,30 +88,81 @@ export default function CategoriesSection() {
           />
         </Box>
 
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              md: "repeat(2, 1fr)",
-              lg: "repeat(3, 1fr)",
-            },
-            gap: { xs: 2, md: 3 },
-          }}
-        >
-          {filteredCategories.map((category) => (
-            <Box 
-              key={category.id}
+        <Box sx={{ position: 'relative', maxWidth: 1200, mx: 'auto' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <IconButton
+              onClick={() => swiper?.slidePrev()}
               sx={{
-                transition: "transform 0.2s ease",
-                "&:hover": {
-                  transform: "translateY(-4px)",
+                display: { xs: 'none', md: 'flex' },
+                bgcolor: 'white',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                '&:hover': {
+                  bgcolor: '#f5f5f5',
                 },
               }}
             >
-              <CategoryCard {...category} />
+              <FaChevronLeft />
+            </IconButton>
+
+            <Box sx={{ flex: 1, overflow: 'hidden' }}>
+              <Swiper
+                onSwiper={setSwiper}
+                modules={[Pagination, Autoplay]}
+                spaceBetween={24}
+                slidesPerView={3}
+                pagination={{ clickable: true }}
+                autoplay={{
+                  delay: 3000,
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: true
+                }}
+                loop={true}
+                breakpoints={{
+                  0: {
+                    slidesPerView: 1,
+                  },
+                  640: {
+                    slidesPerView: 2,
+                  },
+                  1024: {
+                    slidesPerView: 3,
+                  },
+                }}
+                style={{
+                  padding: '20px 0 40px',
+                }}
+              >
+                {filteredCategories.map((category) => (
+                  <SwiperSlide key={category.id}>
+                    <Box
+                      sx={{
+                        transition: "transform 0.2s ease",
+                        "&:hover": {
+                          transform: "translateY(-4px)",
+                        },
+                      }}
+                    >
+                      <CategoryCard {...category} />
+                    </Box>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             </Box>
-          ))}
+
+            <IconButton
+              onClick={() => swiper?.slideNext()}
+              sx={{
+                display: { xs: 'none', md: 'flex' },
+                bgcolor: 'white',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                '&:hover': {
+                  bgcolor: '#f5f5f5',
+                },
+              }}
+            >
+              <FaChevronRight />
+            </IconButton>
+          </Box>
         </Box>
 
         {filteredCategories.length === 0 && (
@@ -125,6 +182,18 @@ export default function CategoriesSection() {
           </Box>
         )}
       </Box>
+
+      <style jsx global>{`
+        .swiper-pagination-bullet {
+          width: 8px;
+          height: 8px;
+          background: #e0e0e0;
+          opacity: 1;
+        }
+        .swiper-pagination-bullet-active {
+          background: #1a237e;
+        }
+      `}</style>
     </Box>
   );
 }
