@@ -82,9 +82,6 @@ export default function HeroSection() {
               fontWeight: 800,
               mb: { xs: 1.5, md: 2 },
               letterSpacing: -0.5,
-              background: "linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
               textShadow: "0 2px 4px rgba(0,0,0,0.1)",
               px: { xs: 2, sm: 0 },
             }}
@@ -112,7 +109,7 @@ export default function HeroSection() {
             elevation={0}
             sx={{
               width: "100%",
-              mt: { xs: 4, sm: 8 },
+              mt: { xs: 6, sm: 8 },
               p: { xs: 1, sm: 1.5 },
               borderRadius: { xs: 2, sm: 3 },
               bgcolor: "white",
