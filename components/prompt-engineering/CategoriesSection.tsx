@@ -6,7 +6,7 @@ import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import CategoryCard from "./CategoryCard";
 import { categories } from "@/data/categories";
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Navigation, Autoplay } from 'swiper/modules';
+import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
@@ -177,7 +177,7 @@ export default function CategoriesSection() {
               No categories found
             </Typography>
             <Typography>
-              Try adjusting your search terms to find what you're looking for.
+              Try adjusting your search terms to find what you&apos;re looking for.
             </Typography>
           </Box>
         )}

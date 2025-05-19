@@ -1,21 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Paper,
-  Container,
-  Button,
-} from "@mui/material";
-import {
-  FaSearch,
-  FaRobot,
-  FaLightbulb,
-  FaCode,
-  FaArrowRight,
-} from "react-icons/fa";
+import { Box, Typography, TextField, Paper, Button } from "@mui/material";
+import { FaSearch, FaArrowRight } from "react-icons/fa";
 
 export default function HeroSection() {
   const [searchTerm, setSearchTerm] = useState("");

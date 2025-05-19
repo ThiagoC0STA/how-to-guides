@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Typography,
-  Paper,
-  List,
-  ListItem,
-  Button,
-  Chip,
-} from "@mui/material";
+import { Box, Typography, Paper, List, ListItem, Button } from "@mui/material";
 import Link from "next/link";
 import {
   FaBook,
@@ -59,7 +51,7 @@ export default function CategoryCard({
       elevation={0}
       sx={{
         height: "100%",
-        minHeight:  380,
+        minHeight: 380,
         display: "flex",
         flexDirection: "column",
         borderRadius: 3,
@@ -144,7 +136,7 @@ export default function CategoryCard({
           {comingSoon ? <FaLock size={20} /> : <Icon size={24} />}
         </Box>
 
-        <Box sx={{ flex: 1, minWidth: 0, }}>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography
             variant="h6"
             sx={{

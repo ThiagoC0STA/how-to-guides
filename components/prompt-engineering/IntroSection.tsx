@@ -10,7 +10,6 @@ import {
 import {
   FaCheckCircle,
   FaRobot,
-  FaLightbulb,
   FaTools,
   FaChartLine,
   FaGraduationCap,
@@ -104,7 +103,7 @@ export default function IntroSection() {
           }}
         >
           Prompt engineering is the art and science of crafting effective
-          instructions for AI models to get the best possible results. It's a
+          instructions for AI models to get the best possible results. It&apos;s a
           crucial skill for anyone working with AI tools like ChatGPT,
           Midjourney, DALL-E, and Gemini AI.
         </Typography>
