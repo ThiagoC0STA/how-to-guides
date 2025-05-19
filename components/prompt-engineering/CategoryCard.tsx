@@ -59,6 +59,7 @@ export default function CategoryCard({
       elevation={0}
       sx={{
         height: "100%",
+        minHeight:  380,
         display: "flex",
         flexDirection: "column",
         borderRadius: 3,

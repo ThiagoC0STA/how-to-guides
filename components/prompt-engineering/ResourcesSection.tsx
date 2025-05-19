@@ -45,7 +45,7 @@ const resources: Resource[] = [
 export default function ResourcesSection() {
   return (
     <Box sx={{ py: 8 }}>
-      <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 } }}>
+      <Box>
         <Typography
           variant="h2"
           sx={{

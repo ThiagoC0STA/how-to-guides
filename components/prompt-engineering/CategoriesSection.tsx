@@ -16,7 +16,7 @@ export default function CategoriesSection() {
   );
 
   return (
-    <Container maxWidth="lg">
+    <Box>
       <Box sx={{ mb: 8 }}>
         <Typography
           variant="h2"
@@ -125,6 +125,6 @@ export default function CategoriesSection() {
           </Box>
         )}
       </Box>
-    </Container>
+    </Box>
   );
 }
