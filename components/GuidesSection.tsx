@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, createElement } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -27,7 +27,6 @@ import { Category } from "@/data/categories";
 import Link from "next/link";
 import { FaSearch } from "react-icons/fa";
 import { FaRobot } from "react-icons/fa";
-import { createRoot } from "react-dom/client";
 
 interface GuidesSectionProps {
   isPopular?: boolean;

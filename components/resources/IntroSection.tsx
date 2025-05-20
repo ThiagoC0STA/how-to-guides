@@ -74,8 +74,8 @@ export default function IntroSection() {
             }}
           >
             Our collection of AI resources is designed to help you navigate the complex world of artificial intelligence tools and techniques.
-            Whether you're looking for definitions of AI terminology, prompt engineering templates, or detailed comparisons of AI models,
-            you'll find everything you need to enhance your AI skills and knowledge.
+            Whether you&apos;re looking for definitions of AI terminology, prompt engineering templates, or detailed comparisons of AI models,
+            you&apos;ll find everything you need to enhance your AI skills and knowledge.
           </Typography>
           <Typography
             variant="body1"

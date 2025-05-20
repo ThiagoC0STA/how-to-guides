@@ -1,4 +1,4 @@
-import { Box, Typography, Stack, Button, Paper } from "@mui/material";
+import { Box, Typography, Button, Paper } from "@mui/material";
 import Link from "next/link";
 import { FaRocket, FaBook, FaLightbulb } from "react-icons/fa";
 

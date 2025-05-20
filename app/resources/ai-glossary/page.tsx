@@ -298,7 +298,7 @@ export default function AIGlossary() {
             No terms found
           </Typography>
           <Typography sx={{ mb: 3, color: "var(--footer-text)" }}>
-            Try adjusting your search terms or filters to find what you're looking for.
+            Try adjusting your search terms or filters to find what you&apos;re looking for.
           </Typography>
           <Button
             variant="outlined"

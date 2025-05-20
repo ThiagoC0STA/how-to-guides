@@ -348,7 +348,7 @@ export default function PromptCheatSheet() {
             No prompt templates found
           </Typography>
           <Typography sx={{ mb: 3, color: "var(--footer-text)" }}>
-            Try adjusting your search terms or filters to find what you're
+            Try adjusting your search terms or filters to find what you&apos;re
             looking for.
           </Typography>
           <Button

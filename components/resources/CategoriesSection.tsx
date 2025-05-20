@@ -4,16 +4,15 @@ import { useState } from "react";
 import { Box, Typography, TextField, InputAdornment } from "@mui/material";
 import { FaSearch } from "react-icons/fa";
 import { resources } from "@/data/resources";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 import ResourceCard from "./ResourceCard";
 
 export default function CategoriesSection() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [swiper, setSwiper] = useState<any>(null);
 
   const filteredResources = resources.filter(
     (resource) =>
@@ -47,7 +46,9 @@ export default function CategoriesSection() {
           mx: "auto",
         }}
       >
-        Explore our comprehensive collection of AI resources, organized by category to help you master different aspects of AI tools and techniques.
+        Explore our comprehensive collection of AI resources, organized by
+        category to help you master different aspects of AI tools and
+        techniques.
       </Typography>
 
       <Box
@@ -87,11 +88,10 @@ export default function CategoriesSection() {
         />
       </Box>
 
-      <Box sx={{ position: 'relative', maxWidth: 1200, mx: 'auto' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ flex: 1, overflow: 'hidden' }}>
+      <Box sx={{ position: "relative", maxWidth: 1200, mx: "auto" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Box sx={{ flex: 1, overflow: "hidden" }}>
             <Swiper
-              onSwiper={setSwiper}
               modules={[Pagination, Autoplay]}
               spaceBetween={24}
               slidesPerView={3}
@@ -99,7 +99,7 @@ export default function CategoriesSection() {
               autoplay={{
                 delay: 3000,
                 disableOnInteraction: false,
-                pauseOnMouseEnter: true
+                pauseOnMouseEnter: true,
               }}
               loop={true}
               breakpoints={{
@@ -114,7 +114,7 @@ export default function CategoriesSection() {
                 },
               }}
               style={{
-                padding: '20px 0 40px',
+                padding: "20px 0 40px",
               }}
             >
               {filteredResources.map((resource) => (
@@ -148,7 +148,8 @@ export default function CategoriesSection() {
             No resources found
           </Typography>
           <Typography>
-            Try adjusting your search terms to find what you&apos;re looking for.
+            Try adjusting your search terms to find what you&apos;re looking
+            for.
           </Typography>
         </Box>
       )}
@@ -166,4 +167,4 @@ export default function CategoriesSection() {
       `}</style>
     </Box>
   );
-} 
+}

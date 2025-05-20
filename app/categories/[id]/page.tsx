@@ -1,23 +1,26 @@
 "use client";
 
-import { Box, Container, Typography, Breadcrumbs, Link as MuiLink, Paper } from "@mui/material";
+import {
+  Box,
+  Container,
+  Typography,
+  Breadcrumbs,
+  Link as MuiLink,
+  Paper,
+} from "@mui/material";
 import Link from "next/link";
 import { categories } from "@/data/categories";
 import { GUIDES } from "@/data/guides";
-import { FaHome, FaBook, FaArrowRight, FaLightbulb, FaChartLine, FaPalette, FaCogs, FaImage, FaLayerGroup, FaEdit, FaQuestionCircle } from "react-icons/fa";
+import { FaHome, FaBook, FaArrowRight, FaQuestionCircle } from "react-icons/fa";
 import { notFound } from "next/navigation";
-import React from "react";
+import React, { use } from "react";
 import iconMap from "@/data/iconMap";
+import Image from "next/image";
 
-interface CategoryPageProps {
-  params: {
-    id: string;
-  };
-}
+export default function CategoryPage({ params }: any) {
+  const { id }: any = use(params);
+  const category = categories.find((cat) => cat.id === id);
 
-export default function CategoryPage({ params }: CategoryPageProps) {
-  const category = categories.find((cat) => cat.id === params.id);
-  
   if (!category) {
     notFound();
   }
@@ -25,10 +28,12 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   const guides = GUIDES.filter((guide) => category.guides.includes(guide.id));
 
   return (
-    <Container maxWidth={false} sx={{ maxWidth: "1440px", px: { xs: 2, md: 6 } }}>
+    <Container
+      maxWidth={false}
+      sx={{ maxWidth: "1440px", px: { xs: 2, md: 6 } }}
+    >
       {/* Breadcrumbs */}
       <Box sx={{ py: 4, display: "flex", alignItems: "center", gap: 2 }}>
-      
         <Breadcrumbs
           separator={<FaArrowRight size={12} />}
           aria-label="breadcrumb"
@@ -40,38 +45,38 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             },
           }}
         >
-          <Link href="/" passHref>
-            <MuiLink
-              underline="hover"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                color: "text.secondary",
-                "&:hover": {
-                  color: "primary.main",
-                },
-              }}
-            >
-              <FaHome size={14} style={{ marginRight: 6 }} />
-              Home
-            </MuiLink>
-          </Link>
-          <Link href="/prompt-engineering" passHref>
-            <MuiLink
-              underline="hover"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                color: "text.secondary",
-                "&:hover": {
-                  color: "primary.main",
-                },
-              }}
-            >
-              <FaBook size={14} style={{ marginRight: 6 }} />
-              Prompt Engineering
-            </MuiLink>
-          </Link>
+          <MuiLink
+            component={Link}
+            href="/"
+            underline="hover"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              color: "text.secondary",
+              "&:hover": {
+                color: "primary.main",
+              },
+            }}
+          >
+            <FaHome size={14} style={{ marginRight: 6 }} />
+            Home
+          </MuiLink>
+          <MuiLink
+            component={Link}
+            href="/prompt-engineering"
+            underline="hover"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              color: "text.secondary",
+              "&:hover": {
+                color: "primary.main",
+              },
+            }}
+          >
+            <FaBook size={14} style={{ marginRight: 6 }} />
+            Prompt Engineering
+          </MuiLink>
           <Typography
             sx={{
               color: "text.primary",
@@ -112,7 +117,10 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             }}
           >
             {iconMap[category.iconName as keyof typeof iconMap] ? (
-              React.createElement(iconMap[category.iconName as keyof typeof iconMap], { size: 36, color: category.color })
+              React.createElement(
+                iconMap[category.iconName as keyof typeof iconMap],
+                { size: 36, color: category.color }
+              )
             ) : (
               <FaQuestionCircle size={36} color={category.color} />
             )}
@@ -151,7 +159,12 @@ export default function CategoryPage({ params }: CategoryPageProps) {
         </Typography>
         <Typography
           variant="subtitle2"
-          sx={{ color: category.color, fontWeight: 700, mb: 1, fontSize: "1.1rem" }}
+          sx={{
+            color: category.color,
+            fontWeight: 700,
+            mb: 1,
+            fontSize: "1.1rem",
+          }}
         >
           {guides.length} {guides.length === 1 ? "Guide" : "Guides"}
         </Typography>
@@ -219,8 +232,27 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                 }}
               >
                 {guide.image && (
-                  <Box sx={{ width: 48, height: 48, mb: 1, borderRadius: 2, overflow: "hidden", boxShadow: `0 2px 8px ${category.color}22` }}>
-                    <img src={guide.image} alt={guide.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <Box
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      mb: 1,
+                      borderRadius: 2,
+                      overflow: "hidden",
+                      boxShadow: `0 2px 8px ${category.color}22`,
+                    }}
+                  >
+                    <Image
+                      src={guide.image}
+                      width={48}
+                      height={48}
+                      alt={guide.title}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
                   </Box>
                 )}
                 <Typography
@@ -243,9 +275,16 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                 >
                   {guide.description}
                 </Typography>
-                {guide.overview?.bullets?.find((b: string) => b.toLowerCase().includes("reading time")) && (
-                  <Typography variant="caption" sx={{ color: category.color, fontWeight: 600, mt: 1 }}>
-                    {guide.overview.bullets.find((b: string) => b.toLowerCase().includes("reading time"))}
+                {guide.overview?.bullets?.find((b: string) =>
+                  b.toLowerCase().includes("reading time")
+                ) && (
+                  <Typography
+                    variant="caption"
+                    sx={{ color: category.color, fontWeight: 600, mt: 1 }}
+                  >
+                    {guide.overview.bullets.find((b: string) =>
+                      b.toLowerCase().includes("reading time")
+                    )}
                   </Typography>
                 )}
                 <Link href={`/guides/${guide.id}`} passHref>
@@ -277,4 +316,4 @@ export default function CategoryPage({ params }: CategoryPageProps) {
       </Box>
     </Container>
   );
-} 
+}

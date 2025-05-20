@@ -17,8 +17,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
-  Link as MuiLink,
 } from "@mui/material";
 import { FaSearch, FaCheck, FaTimes } from "react-icons/fa";
 import Link from "next/link";
@@ -168,7 +166,7 @@ export default function ModelComparison() {
           }}
         >
           Different AI models excel at different tasks. This comparison helps
-          you choose the right tool for your specific needs. We've organized
+          you choose the right tool for your specific needs. We&apos;ve organized
           models by their primary function (text generation, image generation,
           or multimodal capabilities) and provided detailed information about
           their strengths, limitations, and use cases.
@@ -508,7 +506,7 @@ export default function ModelComparison() {
             No models found
           </Typography>
           <Typography sx={{ mb: 3, color: "var(--footer-text)" }}>
-            Try adjusting your search terms or filters to find what you're
+            Try adjusting your search terms or filters to find what you&apos;re
             looking for.
           </Typography>
           <Button

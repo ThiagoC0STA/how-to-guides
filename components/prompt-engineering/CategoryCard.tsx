@@ -2,16 +2,7 @@
 
 import { Box, Typography, Paper, List, ListItem, Button } from "@mui/material";
 import Link from "next/link";
-import {
-  FaBook,
-  FaLightbulb,
-  FaChartLine,
-  FaPalette,
-  FaCogs,
-  FaArrowRight,
-  FaLock,
-  FaQuestionCircle,
-} from "react-icons/fa";
+import { FaArrowRight, FaLock, FaQuestionCircle } from "react-icons/fa";
 import { Category } from "@/data/categories";
 import { GUIDES } from "@/data/guides";
 import iconMap from "../../data/iconMap";
@@ -46,14 +37,16 @@ export default function CategoryCard({
   const Icon = iconMap[iconName as IconName] || FaQuestionCircle;
 
   // Map guide IDs to their full data
-  const guideData = guides.map(guideId => {
-    const guide = GUIDES.find(g => g.id === guideId);
-    if (!guide) return null;
-    return {
-      title: guide.title,
-      link: `/guides/${guide.id}`
-    };
-  }).filter(Boolean) as Guide[];
+  const guideData = guides
+    .map((guideId) => {
+      const guide = GUIDES.find((g) => g.id === guideId);
+      if (!guide) return null;
+      return {
+        title: guide.title,
+        link: `/guides/${guide.id}`,
+      };
+    })
+    .filter(Boolean) as Guide[];
 
   return (
     <Paper
@@ -261,7 +254,6 @@ export default function CategoryCard({
           >
             <Link href={`/categories/${id}`} passHref>
               <Button
-                component="a"
                 variant="outlined"
                 className="view-button"
                 sx={{
@@ -287,4 +279,3 @@ export default function CategoryCard({
     </Paper>
   );
 }
- 

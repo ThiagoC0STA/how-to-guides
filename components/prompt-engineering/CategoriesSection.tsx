@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Box, Typography, TextField, InputAdornment, IconButton } from "@mui/material";
-import { FaSearch, FaChevronLeft, FaChevronRight, FaBook, FaLightbulb, FaChartLine, FaPalette, FaCogs, FaImage, FaLayerGroup, FaEdit, FaQuestionCircle } from "react-icons/fa";
+import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import CategoryCard from "./CategoryCard";
 import { categories } from "@/data/categories";
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -10,7 +10,6 @@ import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import iconMap from "../../data/iconMap";
 
 export default function CategoriesSection() {
   const [searchTerm, setSearchTerm] = useState("");
