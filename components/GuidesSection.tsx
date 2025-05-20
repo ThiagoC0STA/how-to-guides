@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, createElement } from "react";
 import {
   Box,
   Typography,
@@ -24,16 +24,36 @@ import {
 import { GUIDES } from "@/data/guides";
 import Link from "next/link";
 import { FaSearch } from "react-icons/fa";
+import { FaRobot } from "react-icons/fa";
+import { createRoot } from "react-dom/client";
 
 interface GuidesSectionProps {
   isPopular?: boolean;
 }
+
+const FallbackIcon = ({ color }: { color: string }) => (
+  <Box
+    sx={{
+      width: 64,
+      height: 64,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 2,
+      bgcolor: "#fff",
+      boxShadow: `0 2px 8px 0 ${color}22`,
+    }}
+  >
+    <FaRobot size={32} color={color} />
+  </Box>
+);
 
 export default function GuidesSection({
   isPopular = false,
 }: GuidesSectionProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -261,22 +281,38 @@ export default function GuidesSection({
               }}
             />
             {/* Guide image */}
-            <CardMedia
-              component="img"
-              image={guide.image}
-              alt={guide.title}
+            <Box
               sx={{
                 width: 64,
                 height: 64,
-                objectFit: "contain",
                 mx: "auto",
                 mt: 3,
                 mb: 1,
-                borderRadius: 2,
-                boxShadow: `0 2px 8px 0 ${guide.color}22`,
-                background: "#fff",
               }}
-            />
+            >
+              {failedImages.has(guide.image || '') ? (
+                <FallbackIcon color={guide.color} />
+              ) : (
+                <CardMedia
+                  component="img"
+                  image={guide.image || ''}
+                  alt={guide.title}
+                  onError={() => {
+                    if (guide.image) {
+                      setFailedImages((prev) => new Set([...prev, guide.image]));
+                    }
+                  }}
+                  sx={{
+                    width: 64,
+                    height: 64,
+                    objectFit: "contain",
+                    borderRadius: 2,
+                    boxShadow: `0 2px 8px 0 ${guide.color}22`,
+                    background: "#fff",
+                  }}
+                />
+              )}
+            </Box>
             <CardContent
               sx={{
                 flexGrow: 1,

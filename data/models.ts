@@ -52,7 +52,7 @@ export const modelData: ModelData = {
         paid: "GPT-4 requires ChatGPT Plus subscription ($20/month)",
         api: "API access available with token-based pricing",
       },
-      link: "/guides/chatgpt-for-beginners",
+      link: "/guides/chatgpt",
     },
     {
       name: "Claude 2",
@@ -86,7 +86,7 @@ export const modelData: ModelData = {
         paid: "Claude Pro subscription ($20/month)",
         api: "API access available with token-based pricing",
       },
-      link: null,
+      link: "/guides/claude",
     },
     {
       name: "LLaMA 2",
@@ -120,7 +120,7 @@ export const modelData: ModelData = {
         paid: "N/A",
         api: "Self-hosted or through third-party providers",
       },
-      link: null,
+      link: "/guides/llama",
     },
     {
       name: "PaLM 2",
@@ -154,7 +154,7 @@ export const modelData: ModelData = {
         paid: "Varies by product implementation",
         api: "Available through Google Cloud Vertex AI",
       },
-      link: null,
+      link: "/guides/palm",
     },
   ],
   image: [
@@ -190,7 +190,7 @@ export const modelData: ModelData = {
         paid: "Available with ChatGPT Plus ($20/month)",
         api: "API access with credit-based pricing",
       },
-      link: "/guides/dalle-tutorial",
+      link: "/guides/dalle",
     },
     {
       name: "Midjourney",
@@ -224,7 +224,7 @@ export const modelData: ModelData = {
         paid: "Subscription plans from $10-$60/month",
         api: "No public API currently available",
       },
-      link: "/guides/midjourney-tutorial",
+      link: "/guides/midjourney",
     },
     {
       name: "Stable Diffusion",
@@ -258,7 +258,7 @@ export const modelData: ModelData = {
         paid: "Various commercial implementations available",
         api: "Available through Stability AI and third parties",
       },
-      link: null,
+      link: "/guides/stable-diffusion",
     },
     {
       name: "Firefly",
@@ -292,7 +292,7 @@ export const modelData: ModelData = {
         paid: "Included with Creative Cloud subscriptions",
         api: "Available through Adobe Developer Console",
       },
-      link: null,
+      link: "/guides/firefly",
     },
   ],
   multimodal: [
@@ -328,7 +328,7 @@ export const modelData: ModelData = {
         paid: "Gemini Advanced ($20/month)",
         api: "Available through Google AI Studio and Vertex AI",
       },
-      link: "/guides/gemini-ai-tutorial",
+      link: "/guides/gemini",
     },
     {
       name: "GPT-4 Vision",
@@ -362,7 +362,7 @@ export const modelData: ModelData = {
         paid: "Full access with ChatGPT Plus ($20/month)",
         api: "Available through OpenAI API",
       },
-      link: null,
+      link: "/guides/gpt4-vision",
     },
     {
       name: "Claude 3 Opus",
@@ -396,7 +396,7 @@ export const modelData: ModelData = {
         paid: "Claude Pro subscription ($20/month)",
         api: "API access with token-based pricing (premium for Opus)",
       },
-      link: null,
+      link: "/guides/claude3",
     },
     {
       name: "DALL-E 3 + GPT-4",
@@ -430,7 +430,7 @@ export const modelData: ModelData = {
         paid: "Full access with ChatGPT Plus ($20/month)",
         api: "Available through separate OpenAI APIs",
       },
-      link: null,
+      link: "/guides/dalle-gpt4",
     },
   ],
 };
