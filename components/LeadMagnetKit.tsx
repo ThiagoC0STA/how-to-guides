@@ -172,7 +172,12 @@ export default function LeadMagnetKit() {
                   height: 44,
                 }}
                 inputProps={{
-                  style: { fontSize: 15, height: 44, padding: "0 12px" },
+                  style: {
+                    fontSize: 15,
+                    height: 44,
+                    padding: "0 12px",
+                    marginTop: "-1px !important",
+                  },
                 }}
               />
               <Button

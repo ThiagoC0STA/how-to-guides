@@ -85,9 +85,8 @@ export default function Footer() {
             </Typography>
             <Stack spacing={1}>
               {popularGuides.map((item) => (
-                <Link key={item.href} href={item.href} passHref legacyBehavior>
+                <Link key={item.href} href={item.href} passHref>
                   <Typography
-                    component="a"
                     sx={{
                       color: "var(--foreground)",
                       textDecoration: "none",
@@ -119,9 +118,8 @@ export default function Footer() {
             </Typography>
             <Stack spacing={1}>
               {resources.map((item) => (
-                <Link key={item.href} href={item.href} passHref legacyBehavior>
+                <Link key={item.href} href={item.href} passHref>
                   <Typography
-                    component="a"
                     sx={{
                       color: "var(--foreground)",
                       textDecoration: "none",

@@ -60,7 +60,7 @@ export default function Header() {
           }}
         >
           {/* Logo */}
-          <Link href="/" passHref legacyBehavior>
+          <Link href="/" passHref>
             <Box
               component="img"
               src="/images/logo/logo-footer.svg"
@@ -83,16 +83,14 @@ export default function Header() {
             sx={{ display: { xs: "none", md: "flex" } }}
           >
             {navLinks.map((item) => (
-              <Link key={item.href} href={item.href} passHref legacyBehavior>
+              <Link key={item.href} href={item.href} passHref>
                 <Typography
-                  component="a"
                   sx={{
                     color: "var(--foreground)",
-                    fontWeight: 500,
-                    fontSize: 17,
                     textDecoration: "none",
-                    transition: "color 0.2s",
-                    letterSpacing: 0.1,
+                    fontWeight: 600,
+                    fontSize: "0.95rem",
+                    transition: "color 0.2s ease",
                     "&:hover": {
                       color: "var(--primary-blue)",
                     },

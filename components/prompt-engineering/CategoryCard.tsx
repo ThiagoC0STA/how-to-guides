@@ -10,8 +10,10 @@ import {
   FaCogs,
   FaArrowRight,
   FaLock,
+  FaQuestionCircle,
 } from "react-icons/fa";
 import { Category } from "@/data/categories";
+import { GUIDES } from "@/data/guides";
 
 interface Guide {
   title: string;
@@ -23,7 +25,7 @@ interface CategoryCardProps extends Omit<Category, "iconName"> {
   count: number;
   featured?: boolean;
   comingSoon?: boolean;
-  guides: Guide[];
+  guides: string[];
 }
 
 const iconMap = {
@@ -32,7 +34,10 @@ const iconMap = {
   "chart-line": FaChartLine,
   palette: FaPalette,
   cogs: FaCogs,
-};
+  "question-circle": FaQuestionCircle,
+} as const;
+
+type IconName = keyof typeof iconMap;
 
 export default function CategoryCard({
   title,
@@ -44,7 +49,17 @@ export default function CategoryCard({
   comingSoon,
   guides,
 }: CategoryCardProps) {
-  const Icon = iconMap[iconName as keyof typeof iconMap];
+  const Icon = iconMap[iconName as IconName] || FaQuestionCircle;
+
+  // Map guide IDs to their full data
+  const guideData = guides.map(guideId => {
+    const guide = GUIDES.find(g => g.id === guideId);
+    if (!guide) return null;
+    return {
+      title: guide.title,
+      link: `/guides/${guide.id}`
+    };
+  }).filter(Boolean) as Guide[];
 
   return (
     <Paper
@@ -168,7 +183,6 @@ export default function CategoryCard({
                 bgcolor: "action.hover",
                 p: 1.5,
                 borderRadius: 2,
-
                 mb: 1,
               }}
             >
@@ -199,7 +213,7 @@ export default function CategoryCard({
         </Box>
       </Box>
 
-      {!comingSoon && guides.length > 0 && (
+      {!comingSoon && guideData.length > 0 && (
         <>
           <Box
             sx={{
@@ -217,11 +231,10 @@ export default function CategoryCard({
                 },
               }}
             >
-              {guides.map((guide, index) => (
+              {guideData.map((guide, index) => (
                 <ListItem key={index}>
                   <Link href={guide.link} passHref className="guide-link">
                     <Typography
-                      component="a"
                       sx={{
                         color: "text.secondary",
                         textDecoration: "none",
@@ -252,7 +265,7 @@ export default function CategoryCard({
               textAlign: "center",
             }}
           >
-            <Link href={guides[0].link} passHref>
+            <Link href={guideData[0].link} passHref>
               <Button
                 component="a"
                 variant="outlined"
@@ -271,7 +284,7 @@ export default function CategoryCard({
                   },
                 }}
               >
-                View {guides.length === 1 ? "Guide" : "All Guides"}
+                View {guideData.length === 1 ? "Guide" : "All Guides"}
               </Button>
             </Link>
           </Box>

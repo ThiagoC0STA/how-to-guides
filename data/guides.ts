@@ -4,7 +4,6 @@ export const GUIDES = [
     title: "How to Use ChatGPT: Complete 2025 Guide",
     description: "Master ChatGPT from scratch with our step-by-step tutorial",
     schemaFile: "chatgpt-guide",
-    category: ["chatgpt", "text-generation", "ai-tools"],
     featured: true,
     image: "/images/logos/chatgpt-logo.png",
     color: "#74aa9c",
@@ -486,7 +485,6 @@ export const GUIDES = [
     description:
       "Learn techniques to get more detailed and comprehensive responses from ChatGPT",
     schemaFile: "chatgpt-longer-responses-guide",
-    category: ["chatgpt", "text-generation", "prompt-engineering"],
     featured: true,
     image: "/images/logos/chatgpt-logo.png",
     color: "#74aa9c",
@@ -710,7 +708,6 @@ In the following sections, we'll explore specific techniques that address these 
     description:
       "Learn how to create amazing AI-generated images with OpenAI's DALL-E",
     schemaFile: "dalle-guide",
-    category: ["dalle", "image-generation", "ai-tools"],
     featured: true,
     image: "/images/logos/dalle-logo.png",
     color: "#e74c3c",
@@ -986,7 +983,6 @@ In the following sections, we'll explore specific techniques that address these 
     description:
       "Learn how to create stunning AI-generated images with Midjourney",
     schemaFile: "midjourney-guide",
-    category: ["midjourney", "image-generation", "ai-tools"],
     featured: true,
     image: "/images/logos/midjourney-logo.png",
     color: "#3498db",
@@ -1254,7 +1250,6 @@ In the following sections, we'll explore specific techniques that address these 
     description:
       "Master Google's powerful multimodal AI assistant with our comprehensive guide",
     schemaFile: "gemini-guide",
-    category: ["gemini", "multimodal-ai", "ai-tools"],
     featured: true,
     image: "/images/logos/gemini-logo.png",
     color: "#8e44ad",
@@ -1533,7 +1528,6 @@ In the following sections, we'll explore specific techniques that address these 
     description:
       "Master AI-powered content creation to produce high-quality blogs, social media, videos, and more",
     schemaFile: "ai-content-creation-guide",
-    category: ["content-creation", "productivity", "ai-tools"],
     featured: true,
     image: "/images/logos/content-creation-logo.png",
     color: "#2ecc71",
@@ -1645,28 +1639,27 @@ In the following sections, we'll explore specific techniques that address these 
     ],
   },
   {
-    id: "aiPrompts",
+    id: "how-to-write-effective-ai-prompts",
     title: "How to Write Effective AI Prompts: Complete 2025 Guide",
     description:
-      "Techniques for crafting prompts that get better results from AI tools",
+      "Master the art of prompt engineering to get better results from AI models",
     schemaFile: "ai-prompts-guide",
-    category: ["prompt-engineering", "productivity", "ai-tools"],
-    featured: false,
+    featured: true,
     image: "/images/logos/content-creation-logo.png",
     color: "#2ecc71",
-    lastUpdated: "2025-04-15",
-    updateNotes: "Updated with latest prompt engineering techniques",
+    lastUpdated: "2025-04-24",
+    updateNotes: "Initial version published",
     metadata: {
       title: "How to Write Effective AI Prompts: Complete 2025 Guide",
       description:
-        "Master the art of prompt engineering in 2025. Learn advanced techniques for getting better results from ChatGPT, DALL-E, Midjourney, and other AI tools.",
+        "Master the art of prompt engineering to get better results from AI models. Learn advanced techniques for ChatGPT, Claude, Gemini, and other AI tools.",
       keywords: [
         "AI prompts guide",
         "Prompt engineering",
         "AI prompt writing",
         "ChatGPT prompts",
-        "DALL-E prompts",
-        "Midjourney prompts",
+        "Claude prompts",
+        "Gemini prompts",
         "AI prompt techniques",
         "Prompt optimization",
         "AI writing tips",
@@ -1675,8 +1668,8 @@ In the following sections, we'll explore specific techniques that address these 
       openGraph: {
         title: "How to Write Effective AI Prompts: Complete 2025 Guide",
         description:
-          "Master the art of prompt engineering in 2025. Learn advanced techniques for getting better results from ChatGPT, DALL-E, Midjourney, and other AI tools.",
-        url: "https://how-to-guides-gamma.vercel.app/guides/aiPrompts",
+          "Master the art of prompt engineering to get better results from AI models. Learn advanced techniques for ChatGPT, Claude, Gemini, and other AI tools.",
+        url: "https://how-to-guides-gamma.vercel.app/guides/ai-prompts",
         type: "article",
         images: [
           {
@@ -1691,69 +1684,336 @@ In the following sections, we'll explore specific techniques that address these 
         card: "summary_large_image",
         title: "How to Write Effective AI Prompts: Complete 2025 Guide",
         description:
-          "Master the art of prompt engineering in 2025. Learn advanced techniques for getting better results from ChatGPT, DALL-E, Midjourney, and other AI tools.",
+          "Master the art of prompt engineering to get better results from AI models. Learn advanced techniques for ChatGPT, Claude, Gemini, and other AI tools.",
         images: ["/images/logos/content-creation-logo.png"],
       },
     },
     overview: {
       title: "Guide Overview",
       description:
-        "This comprehensive guide will teach you how to write effective prompts for various AI tools in 2025.",
+        "This comprehensive guide will teach you everything you need to know about writing effective prompts for AI models in 2025.",
       bullets: [
-        "Understand the fundamentals of prompt engineering",
-        "Learn techniques for different AI tools",
-        "Master advanced prompt patterns",
-        "Explore prompt optimization strategies",
-        "Discover best practices for specific use cases",
-        "Learn about prompt testing and iteration",
-        "Understand ethical considerations",
-        "Estimated reading time: 30 minutes",
+        "Learn the fundamentals of prompt engineering",
+        "Master techniques for structuring effective prompts",
+        "Discover advanced methods like role-based prompting",
+        "Optimize prompts for different AI models",
+        "Implement iterative refinement for better results",
+        "Estimated reading time: 25 minutes",
       ],
     },
     modules: [
       {
-        title: "Introduction to Prompt Engineering",
+        title: "Introduction",
         locked: false,
         content: {
           sections: [
             {
-              heading: "What is Prompt Engineering?",
-              text: "Prompt engineering is the art and science of crafting effective instructions for AI tools. In 2025, it has become a crucial skill for getting the best results from various AI systems.",
-            },
-            {
-              heading: "Types of AI Tools and Their Prompts",
-              expandable: true,
-              text: "Different AI tools require different prompt approaches:",
-              list: [
-                "Text generation (ChatGPT, Claude)",
-                "Image generation (DALL-E, Midjourney)",
-                "Code generation (GitHub Copilot)",
-                "Audio generation (ElevenLabs)",
-                "Video generation (Runway)",
+              heading: "The Art and Science of AI Prompting",
+              text: [
+                "The quality of results you get from AI models like ChatGPT, Claude, or Gemini depends significantly on how you communicate with them. Prompt engineering—the practice of crafting effective inputs for AI models—has emerged as a crucial skill in the AI era. A well-crafted prompt can be the difference between a generic, unhelpful response and a precise, valuable output that perfectly meets your needs.",
+                "In this comprehensive guide, you'll learn how to write effective AI prompts that get better results across various AI models and use cases. Whether you're using AI for content creation, coding assistance, data analysis, creative work, or business applications, mastering prompt engineering will dramatically improve your outcomes and efficiency.",
               ],
             },
             {
-              heading: "Getting Started with Prompt Engineering",
-              text: "To begin writing effective prompts, you'll need:",
+              heading: "Why Prompt Engineering Matters",
+              text: "As AI models have become more powerful, the way we interact with them has evolved. Consider these compelling reasons why prompt engineering has become essential:",
               list: [
-                "Understanding of your AI tool's capabilities",
-                "Clear goals for your output",
-                "Basic prompt structure knowledge",
-                "Testing and iteration process",
+                "Quality Control: Well-crafted prompts lead to higher-quality, more accurate outputs",
+                "Efficiency: Get better results on the first try, reducing back-and-forth iterations",
+                "Consistency: Create reliable, repeatable results for similar tasks",
+                "Capability Unlocking: Access the full potential of AI models that might be hidden behind poor prompting",
+                "Cost Optimization: Reduce token usage and API costs with more efficient prompts",
+                "Reduced Hallucinations: Minimize AI fabrications and inaccuracies through proper guidance",
+              ],
+            },
+            {
+              heading: "The Evolution of Prompt Engineering",
+              expandable: true,
+              text: [
+                "Prompt engineering has evolved significantly since the early days of large language models. What began as simple text inputs has developed into a sophisticated discipline with established techniques, patterns, and best practices.",
+                "In 2023, basic prompting techniques like role-based prompting and few-shot learning gained popularity. By 2024, more advanced methods emerged, including chain-of-thought prompting, tree-of-thought approaches, and ReAct (Reasoning + Acting) frameworks.",
+                "Now in 2025, prompt engineering has matured further with the rise of multimodal prompting (combining text, images, and other media), model-specific optimization techniques, and even automated prompt optimization tools. As AI models have become more capable, the art of prompting has become both more powerful and more nuanced.",
+              ],
+            },
+            {
+              heading: "What You'll Learn in This Guide",
+              text: "By the end of this comprehensive guide, you will:",
+              list: [
+                "Understand the fundamental principles of effective prompt engineering",
+                "Master techniques for structuring clear, specific prompts that get better results",
+                "Learn how to use role-based prompting to influence AI perspective and expertise",
+                "Implement few-shot learning to teach AI models through examples",
+                "Apply chain-of-thought techniques for complex reasoning tasks",
+                "Optimize your prompts for different AI models (GPT-4o, Claude, Gemini, etc.)",
+                "Develop a systematic approach to refining prompts through iteration",
+                "Build a personal library of effective prompt templates for common tasks",
               ],
             },
           ],
         },
         questions: [
           {
-            question: "What is the main purpose of prompt engineering?",
+            question:
+              "Why is prompt engineering important when using AI models?",
             options: [
-              "To confuse AI systems",
-              "To get better results from AI tools",
-              "To make AI tools work faster",
-              "To reduce AI tool costs",
+              "It's only important for coding tasks",
+              "It helps get higher-quality, more accurate outputs from AI",
+              "It's only necessary for older AI models",
+              "It only matters when using paid AI services",
             ],
             correctAnswer: 1,
+          },
+        ],
+      },
+      {
+        title: "Understanding Prompt Engineering",
+        locked: false,
+        content: {
+          sections: [
+            {
+              heading: "The Fundamentals of Prompt Engineering",
+              text: [
+                "Before diving into specific techniques, it's essential to understand how AI models interpret and respond to prompts. Large language models (LLMs) like GPT-4o, Claude, and Gemini are trained to predict the most likely continuation of text based on patterns they've learned from vast datasets. Your prompt serves as the initial text that the model will continue.",
+                "This fundamental mechanism has important implications for prompt engineering:",
+              ],
+              list: [
+                "Context Matters: The model only has access to the information you provide in your prompt",
+                "Recency Bias: Information at the end of your prompt often has more influence than information at the beginning",
+                "Pattern Recognition: Models will try to continue patterns they detect in your prompt",
+                "Instruction Following: Modern models are trained to follow instructions, but clarity is crucial",
+                "Token Limitations: All models have context window limits that constrain prompt length",
+              ],
+            },
+            {
+              heading: "Key Elements of Effective Prompts",
+              text: "Regardless of the specific technique you're using, all effective prompts share certain key elements:",
+            },
+            {
+              heading: "Clear Instructions",
+              expandable: true,
+              text: [
+                "Explicitly state what you want the AI to do. Be direct and specific about the task, avoiding vague or ambiguous language. For example, instead of asking 'Can you help with my essay?', say 'Please provide feedback on the following essay, focusing on argument structure and evidence use.'",
+                "When appropriate, specify the format you want for the response (bullet points, paragraphs, table, etc.) and any other output requirements. For instance: 'Format your response as a markdown table with three columns: Feature, Benefit, and Example.'",
+              ],
+            },
+            {
+              heading: "Relevant Context",
+              expandable: true,
+              text: [
+                "Provide background information that helps the AI understand the task and generate an appropriate response. This might include:",
+                "Subject matter details",
+                "Audience information",
+                "Purpose of the request",
+                "Relevant constraints or requirements",
+                "Previous attempts or approaches",
+                "For example: 'I'm preparing a presentation for senior executives with limited technical background. The purpose is to explain blockchain technology in simple terms that highlight business applications.'",
+              ],
+            },
+            {
+              heading: "Examples (When Helpful)",
+              expandable: true,
+              text: [
+                "Including examples in your prompt can significantly improve results by showing the AI exactly what you're looking for. Examples are particularly useful when:",
+                "You want a specific format or style",
+                "You're asking for something unusual or complex",
+                "You want to ensure consistency with existing content",
+                "For instance: 'Please generate three product descriptions in the same style as this example: 'Our ergonomic desk chair combines sleek design with all-day comfort. The breathable mesh back provides support while keeping you cool, and the adjustable height and armrests let you customize your perfect position.''",
+              ],
+            },
+            {
+              heading: "Constraints and Limitations",
+              expandable: true,
+              text: [
+                "Setting boundaries helps guide the AI toward more useful responses. Common constraints include:",
+                "Length requirements (word count, paragraph count)",
+                "Tone and style specifications",
+                "Complexity level (technical vs. simplified)",
+                "Specific elements to include or exclude",
+                "Perspective or viewpoint to adopt",
+                "Example: 'Write a 300-400 word blog introduction about renewable energy. Use an optimistic but factual tone, avoid political statements, and include at least three specific statistics from the last two years.'",
+              ],
+            },
+          ],
+        },
+        questions: [
+          {
+            question:
+              "Which of the following is a key element of effective prompts?",
+            options: [
+              "Using as few words as possible",
+              "Always including code examples",
+              "Providing clear instructions about what you want",
+              "Using technical jargon to impress the AI",
+            ],
+            correctAnswer: 2,
+          },
+        ],
+      },
+      {
+        title: "Structuring Your Prompts",
+        locked: true,
+        content: {
+          sections: [
+            {
+              heading: "Basic Prompt Structure",
+              text: "Learn the fundamental components of well-structured prompts.",
+            },
+          ],
+        },
+        questions: [
+          {
+            question: "What is the most important part of a prompt?",
+            options: [
+              "The length",
+              "The technical terms",
+              "The clear instructions",
+              "The examples",
+            ],
+            correctAnswer: 2,
+          },
+        ],
+      },
+      {
+        title: "Role-Based Prompting",
+        locked: true,
+        content: {
+          sections: [
+            {
+              heading: "Using Roles in Prompts",
+              text: "Learn how to use role-based prompting to get better results.",
+            },
+          ],
+        },
+        questions: [
+          {
+            question: "What is role-based prompting?",
+            options: [
+              "Using different AI models",
+              "Assigning a specific role to the AI",
+              "Changing your role as a user",
+              "Using multiple prompts",
+            ],
+            correctAnswer: 1,
+          },
+        ],
+      },
+      {
+        title: "Few-Shot Learning",
+        locked: true,
+        content: {
+          sections: [
+            {
+              heading: "Teaching Through Examples",
+              text: "Learn how to use few-shot learning in your prompts.",
+            },
+          ],
+        },
+        questions: [
+          {
+            question: "What is few-shot learning?",
+            options: [
+              "Learning from many examples",
+              "Learning from a few examples",
+              "Learning without examples",
+              "Learning from mistakes",
+            ],
+            correctAnswer: 1,
+          },
+        ],
+      },
+      {
+        title: "Chain-of-Thought Techniques",
+        locked: true,
+        content: {
+          sections: [
+            {
+              heading: "Step-by-Step Reasoning",
+              text: "Learn how to use chain-of-thought prompting for complex tasks.",
+            },
+          ],
+        },
+        questions: [
+          {
+            question: "What is chain-of-thought prompting?",
+            options: [
+              "Using multiple AI models",
+              "Breaking down complex tasks into steps",
+              "Using long prompts",
+              "Using short prompts",
+            ],
+            correctAnswer: 1,
+          },
+        ],
+      },
+      {
+        title: "Model-Specific Prompting",
+        locked: true,
+        content: {
+          sections: [
+            {
+              heading: "Optimizing for Different Models",
+              text: "Learn how to optimize prompts for different AI models.",
+            },
+          ],
+        },
+        questions: [
+          {
+            question: "Why is model-specific prompting important?",
+            options: [
+              "All models are the same",
+              "Different models have different strengths",
+              "It's not important",
+              "It saves money",
+            ],
+            correctAnswer: 1,
+          },
+        ],
+      },
+      {
+        title: "Prompt Iteration",
+        locked: true,
+        content: {
+          sections: [
+            {
+              heading: "Refining Your Prompts",
+              text: "Learn how to iteratively improve your prompts.",
+            },
+          ],
+        },
+        questions: [
+          {
+            question: "What is prompt iteration?",
+            options: [
+              "Using the same prompt",
+              "Improving prompts through testing",
+              "Using different models",
+              "Using different languages",
+            ],
+            correctAnswer: 1,
+          },
+        ],
+      },
+      {
+        title: "Frequently Asked Questions",
+        locked: true,
+        content: {
+          sections: [
+            {
+              heading: "Common Questions",
+              text: "Answers to frequently asked questions about prompt engineering.",
+            },
+          ],
+        },
+        questions: [
+          {
+            question: "What is the most common mistake in prompt engineering?",
+            options: [
+              "Using long prompts",
+              "Using short prompts",
+              "Being too vague",
+              "Being too specific",
+            ],
+            correctAnswer: 2,
           },
         ],
       },
@@ -1765,7 +2025,6 @@ In the following sections, we'll explore specific techniques that address these 
     description:
       "Master Anthropic's Claude AI assistant with our comprehensive guide",
     schemaFile: "claude-guide",
-    category: ["claude", "text-generation", "ai-tools"],
     featured: false,
     image: "/images/logos/claude-logo.png",
     color: "#8e44ad",
@@ -1781,1180 +2040,6 @@ In the following sections, we'll explore specific techniques that address these 
         "Claude 3 guide",
         "AI assistant guide",
         "Claude AI features",
-        "AI safety guide",
-        "Claude Pro guide",
-        "AI productivity",
-        "Claude AI tips",
-        "Claude 3 features",
-      ],
-      openGraph: {
-        title: "How to Use Claude AI: Complete 2025 Guide",
-        description:
-          "Master Anthropic's Claude AI assistant. Learn how to use its advanced features, safety-focused design, and powerful reasoning capabilities in 2025.",
-        url: "https://how-to-guides-gamma.vercel.app/guides/claude",
-        type: "article",
-        images: [
-          {
-            url: "/images/logos/claude-logo.png",
-            width: 1200,
-            height: 630,
-            alt: "Claude AI Logo",
-          },
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: "How to Use Claude AI: Complete 2025 Guide",
-        description:
-          "Master Anthropic's Claude AI assistant. Learn how to use its advanced features, safety-focused design, and powerful reasoning capabilities in 2025.",
-        images: ["/images/logos/claude-logo.png"],
-      },
-    },
-    overview: {
-      title: "Guide Overview",
-      description:
-        "This comprehensive guide will teach you everything you need to know about using Anthropic's Claude AI assistant in 2025.",
-      bullets: [
-        "Understand Claude's safety-focused design",
-        "Learn how to use Claude Pro features",
-        "Master advanced reasoning capabilities",
-        "Explore Claude 3's improvements",
-        "Discover productivity tips and best practices",
-        "Learn about API access and development",
-        "Understand privacy and security features",
-        "Estimated reading time: 25 minutes",
-      ],
-    },
-    modules: [
-      {
-        title: "Introduction to Claude AI",
-        locked: false,
-        content: {
-          sections: [
-            {
-              heading: "What is Claude AI?",
-              text: "Claude is Anthropic's advanced AI assistant designed with a focus on safety, helpfulness, and honesty. It excels at thoughtful dialogue and complex reasoning tasks.",
-            },
-            {
-              heading: "Key Features of Claude 3",
-              expandable: true,
-              text: "Claude 3 offers several powerful features:",
-              list: [
-                "Advanced reasoning capabilities",
-                "Large context window (200K tokens)",
-                "Safety-focused design",
-                "Strong instruction following",
-                "Multimodal understanding",
-                "Commercial usage rights",
-              ],
-            },
-            {
-              heading: "Getting Started with Claude",
-              text: "To begin using Claude, you'll need:",
-              list: [
-                "An Anthropic account",
-                "Access to Claude (web or API)",
-                "Basic understanding of AI assistants",
-                "Clear goals for using the tool",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question: "What is Claude's main focus in its design?",
-            options: [
-              "Speed and performance",
-              "Safety and helpfulness",
-              "Entertainment value",
-              "Cost efficiency",
-            ],
-            correctAnswer: 1,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "llama",
-    title: "How to Use LLaMA 2: Complete 2025 Guide",
-    description:
-      "Master Meta's open-source LLaMA 2 model with our comprehensive guide",
-    schemaFile: "llama-guide",
-    category: ["llama", "text-generation", "ai-tools"],
-    featured: false,
-    image: "/images/logos/llama-logo.png",
-    color: "#3498db",
-    lastUpdated: "2025-04-15",
-    updateNotes: "Updated with latest features",
-    metadata: {
-      title: "How to Use LLaMA 2: Complete 2025 Guide",
-      description:
-        "Master Meta's open-source LLaMA 2 model. Learn how to deploy, fine-tune, and use this powerful language model for your projects in 2025.",
-      keywords: [
-        "LLaMA 2 guide",
-        "Meta LLaMA tutorial",
-        "Open source AI guide",
-        "LLaMA deployment",
-        "AI model fine-tuning",
-        "LLaMA 2 features",
-        "AI development guide",
-        "LLaMA API guide",
-        "AI model hosting",
-        "LLaMA 2 tips",
-      ],
-      openGraph: {
-        title: "How to Use LLaMA 2: Complete 2025 Guide",
-        description:
-          "Master Meta's open-source LLaMA 2 model. Learn how to deploy, fine-tune, and use this powerful language model for your projects in 2025.",
-        url: "https://how-to-guides-gamma.vercel.app/guides/llama",
-        type: "article",
-        images: [
-          {
-            url: "/images/logos/llama-logo.png",
-            width: 1200,
-            height: 630,
-            alt: "LLaMA 2 Logo",
-          },
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: "How to Use LLaMA 2: Complete 2025 Guide",
-        description:
-          "Master Meta's open-source LLaMA 2 model. Learn how to deploy, fine-tune, and use this powerful language model for your projects in 2025.",
-        images: ["/images/logos/llama-logo.png"],
-      },
-    },
-    overview: {
-      title: "Guide Overview",
-      description:
-        "This comprehensive guide will teach you everything you need to know about using Meta's LLaMA 2 model in 2025.",
-      bullets: [
-        "Understand LLaMA 2's architecture",
-        "Learn how to deploy the model",
-        "Master fine-tuning techniques",
-        "Explore different model sizes",
-        "Discover best practices for deployment",
-        "Learn about API integration",
-        "Understand hardware requirements",
-        "Estimated reading time: 30 minutes",
-      ],
-    },
-    modules: [
-      {
-        title: "Introduction to LLaMA 2",
-        locked: false,
-        content: {
-          sections: [
-            {
-              heading: "What is LLaMA 2?",
-              text: "LLaMA 2 is Meta's open-source large language model designed for research and commercial use. It's available in multiple sizes and can be fine-tuned for specific applications.",
-            },
-            {
-              heading: "Key Features of LLaMA 2",
-              expandable: true,
-              text: "LLaMA 2 offers several powerful features:",
-              list: [
-                "Multiple model sizes (7B, 13B, 70B parameters)",
-                "Open-source and free for commercial use",
-                "Customizable and fine-tunable",
-                "Can be run locally",
-                "Active community support",
-                "Research and commercial applications",
-              ],
-            },
-            {
-              heading: "Getting Started with LLaMA 2",
-              text: "To begin using LLaMA 2, you'll need:",
-              list: [
-                "Technical expertise",
-                "Adequate hardware resources",
-                "Understanding of model deployment",
-                "Clear use case definition",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question: "What is a key advantage of LLaMA 2?",
-            options: [
-              "It's completely free to use",
-              "It's open-source and can be fine-tuned",
-              "It requires no technical knowledge",
-              "It's the fastest AI model available",
-            ],
-            correctAnswer: 1,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "palm",
-    title: "How to Use PaLM 2: Complete 2025 Guide",
-    description:
-      "Master Google's PaLM 2 language model with our comprehensive guide",
-    schemaFile: "palm-guide",
-    category: ["palm", "text-generation", "ai-tools"],
-    featured: false,
-    image: "/images/logos/palm-logo.png",
-    color: "#e74c3c",
-    lastUpdated: "2025-04-15",
-    updateNotes: "Updated with latest features",
-    metadata: {
-      title: "How to Use PaLM 2: Complete 2025 Guide",
-      description:
-        "Master Google's PaLM 2 language model. Learn how to use its multilingual capabilities, advanced reasoning, and integration with Google services in 2025.",
-      keywords: [
-        "PaLM 2 guide",
-        "Google PaLM tutorial",
-        "AI language model guide",
-        "PaLM 2 features",
-        "Google AI tools",
-        "Multilingual AI guide",
-        "PaLM 2 API guide",
-        "AI development guide",
-        "Google Cloud AI",
-        "PaLM 2 tips",
-      ],
-      openGraph: {
-        title: "How to Use PaLM 2: Complete 2025 Guide",
-        description:
-          "Master Google's PaLM 2 language model. Learn how to use its multilingual capabilities, advanced reasoning, and integration with Google services in 2025.",
-        url: "https://how-to-guides-gamma.vercel.app/guides/palm",
-        type: "article",
-        images: [
-          {
-            url: "/images/logos/palm-logo.png",
-            width: 1200,
-            height: 630,
-            alt: "PaLM 2 Logo",
-          },
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: "How to Use PaLM 2: Complete 2025 Guide",
-        description:
-          "Master Google's PaLM 2 language model. Learn how to use its multilingual capabilities, advanced reasoning, and integration with Google services in 2025.",
-        images: ["/images/logos/palm-logo.png"],
-      },
-    },
-    overview: {
-      title: "Guide Overview",
-      description:
-        "This comprehensive guide will teach you everything you need to know about using Google's PaLM 2 language model in 2025.",
-      bullets: [
-        "Understand PaLM 2's capabilities",
-        "Learn how to use multilingual features",
-        "Master integration with Google services",
-        "Explore advanced reasoning features",
-        "Discover API access options",
-        "Learn about deployment options",
-        "Understand best practices",
-        "Estimated reading time: 25 minutes",
-      ],
-    },
-    modules: [
-      {
-        title: "Introduction to PaLM 2",
-        locked: false,
-        content: {
-          sections: [
-            {
-              heading: "What is PaLM 2?",
-              text: "PaLM 2 is Google's large language model that powers many Google AI products. It features improved multilingual capabilities, reasoning, and coding skills.",
-            },
-            {
-              heading: "Key Features of PaLM 2",
-              expandable: true,
-              text: "PaLM 2 offers several powerful features:",
-              list: [
-                "Multilingual support (100+ languages)",
-                "Advanced reasoning capabilities",
-                "Strong coding abilities",
-                "Google ecosystem integration",
-                "Mathematical problem-solving",
-                "API access through Vertex AI",
-              ],
-            },
-            {
-              heading: "Getting Started with PaLM 2",
-              text: "To begin using PaLM 2, you'll need:",
-              list: [
-                "Google Cloud account",
-                "Access to Vertex AI",
-                "Understanding of API integration",
-                "Clear use case definition",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question: "What is a key feature of PaLM 2?",
-            options: [
-              "Image generation",
-              "Multilingual support",
-              "Video processing",
-              "Audio generation",
-            ],
-            correctAnswer: 1,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "stable-diffusion",
-    title: "How to Use Stable Diffusion: Complete 2025 Guide",
-    description:
-      "Master Stability AI's Stable Diffusion model with our comprehensive guide",
-    schemaFile: "stable-diffusion-guide",
-    category: ["stable-diffusion", "image-generation", "ai-tools"],
-    featured: false,
-    image: "/images/logos/stable-diffusion-logo.png",
-    color: "#2ecc71",
-    lastUpdated: "2025-04-15",
-    updateNotes: "Updated with latest features",
-    metadata: {
-      title: "How to Use Stable Diffusion: Complete 2025 Guide",
-      description:
-        "Master Stability AI's Stable Diffusion model. Learn how to generate, customize, and deploy this powerful open-source image generation model in 2025.",
-      keywords: [
-        "Stable Diffusion guide",
-        "AI image generation",
-        "Stable Diffusion tutorial",
-        "Open source AI art",
-        "Stable Diffusion XL",
-        "AI art generation",
-        "Stable Diffusion tips",
-        "AI model deployment",
-        "Custom AI models",
-        "Stable Diffusion features",
-      ],
-      openGraph: {
-        title: "How to Use Stable Diffusion: Complete 2025 Guide",
-        description:
-          "Master Stability AI's Stable Diffusion model. Learn how to generate, customize, and deploy this powerful open-source image generation model in 2025.",
-        url: "https://how-to-guides-gamma.vercel.app/guides/stable-diffusion",
-        type: "article",
-        images: [
-          {
-            url: "/images/logos/stable-diffusion-logo.png",
-            width: 1200,
-            height: 630,
-            alt: "Stable Diffusion Logo",
-          },
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: "How to Use Stable Diffusion: Complete 2025 Guide",
-        description:
-          "Master Stability AI's Stable Diffusion model. Learn how to generate, customize, and deploy this powerful open-source image generation model in 2025.",
-        images: ["/images/logos/stable-diffusion-logo.png"],
-      },
-    },
-    overview: {
-      title: "Guide Overview",
-      description:
-        "This comprehensive guide will teach you everything you need to know about using Stability AI's Stable Diffusion model in 2025.",
-      bullets: [
-        "Understand Stable Diffusion's architecture",
-        "Learn how to run the model locally",
-        "Master prompt engineering techniques",
-        "Explore different model versions",
-        "Discover customization options",
-        "Learn about deployment options",
-        "Understand hardware requirements",
-        "Estimated reading time: 35 minutes",
-      ],
-    },
-    modules: [
-      {
-        title: "Introduction to Stable Diffusion",
-        locked: false,
-        content: {
-          sections: [
-            {
-              heading: "What is Stable Diffusion?",
-              text: "Stable Diffusion is an open-source text-to-image model that can be run locally or through various interfaces. It's known for its flexibility and customization options.",
-            },
-            {
-              heading: "Key Features of Stable Diffusion",
-              expandable: true,
-              text: "Stable Diffusion offers several powerful features:",
-              list: [
-                "Open-source and customizable",
-                "Local deployment capability",
-                "Multiple model versions",
-                "Extensive community resources",
-                "No content restrictions",
-                "Fine-tuning support",
-              ],
-            },
-            {
-              heading: "Getting Started with Stable Diffusion",
-              text: "To begin using Stable Diffusion, you'll need:",
-              list: [
-                "Adequate hardware (GPU recommended)",
-                "Technical knowledge",
-                "Understanding of model deployment",
-                "Clear use case definition",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question: "What is a key advantage of Stable Diffusion?",
-            options: [
-              "It's completely free to use",
-              "It can be run locally",
-              "It requires no technical knowledge",
-              "It's the fastest AI model available",
-            ],
-            correctAnswer: 1,
-          },
-        ],
-      },
-      {
-        title: "Installation and Setup",
-        locked: false,
-        content: {
-          sections: [
-            {
-              heading: "System Requirements",
-              text: "Hardware and software requirements:",
-              list: [
-                "GPU with 8GB+ VRAM",
-                "Python 3.8+",
-                "CUDA support",
-                "Adequate storage space",
-                "Operating system compatibility",
-              ],
-            },
-            {
-              heading: "Installation Steps",
-              expandable: true,
-              text: "Step-by-step installation guide:",
-              list: [
-                "Install Python and dependencies",
-                "Set up CUDA environment",
-                "Clone repository",
-                "Install model weights",
-                "Configure settings",
-              ],
-            },
-            {
-              heading: "Initial Configuration",
-              text: "Basic setup and configuration:",
-              list: [
-                "Model selection",
-                "Parameter tuning",
-                "Interface setup",
-                "Resource allocation",
-                "Performance optimization",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question:
-              "What is the minimum VRAM requirement for Stable Diffusion?",
-            options: ["4GB", "8GB", "12GB", "16GB"],
-            correctAnswer: 1,
-          },
-        ],
-      },
-      {
-        title: "Model Management",
-        locked: true,
-        content: {
-          sections: [
-            {
-              heading: "Available Models",
-              text: "Understanding different model versions:",
-              list: [
-                "Stable Diffusion 1.5",
-                "Stable Diffusion 2.1",
-                "Stable Diffusion XL",
-                "Custom fine-tuned models",
-                "Community models",
-              ],
-            },
-            {
-              heading: "Model Selection",
-              expandable: true,
-              text: "Choosing the right model:",
-              list: [
-                "Performance requirements",
-                "Style preferences",
-                "Hardware limitations",
-                "Use case specifics",
-                "Quality vs. speed trade-offs",
-              ],
-            },
-            {
-              heading: "Model Maintenance",
-              text: "Keeping your models up to date:",
-              list: [
-                "Version updates",
-                "Weight management",
-                "Storage optimization",
-                "Backup procedures",
-                "Performance monitoring",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question: "What is the main advantage of Stable Diffusion XL?",
-            options: [
-              "Faster generation",
-              "Higher quality output",
-              "Lower VRAM usage",
-              "More style options",
-            ],
-            correctAnswer: 1,
-          },
-        ],
-      },
-      {
-        title: "Advanced Techniques",
-        locked: true,
-        content: {
-          sections: [
-            {
-              heading: "Prompt Engineering",
-              text: "Advanced prompting techniques:",
-              list: [
-                "Style control",
-                "Composition guidance",
-                "Negative prompts",
-                "Weighted terms",
-                "Reference images",
-              ],
-            },
-            {
-              heading: "Image Refinement",
-              expandable: true,
-              text: "Techniques for improving results:",
-              list: [
-                "Upscaling methods",
-                "Inpainting",
-                "Outpainting",
-                "Style transfer",
-                "Detail enhancement",
-              ],
-            },
-            {
-              heading: "Workflow Optimization",
-              text: "Efficient generation workflows:",
-              list: [
-                "Batch processing",
-                "Parameter optimization",
-                "Resource management",
-                "Quality control",
-                "Output organization",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question: "What is the purpose of negative prompts?",
-            options: [
-              "To generate faster",
-              "To exclude unwanted elements",
-              "To save VRAM",
-              "To increase quality",
-            ],
-            correctAnswer: 1,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "firefly",
-    title: "How to Use Adobe Firefly: Complete 2025 Guide",
-    description: "Master Adobe's Firefly AI with our comprehensive guide",
-    schemaFile: "firefly-guide",
-    category: ["firefly", "image-generation", "ai-tools"],
-    featured: false,
-    image: "/images/logos/firefly-logo.png",
-    color: "#f39c12",
-    lastUpdated: "2025-04-15",
-    updateNotes: "Updated with latest features",
-    metadata: {
-      title: "How to Use Adobe Firefly: Complete 2025 Guide",
-      description:
-        "Master Adobe's Firefly AI. Learn how to use its commercial-grade image generation and editing capabilities within the Adobe ecosystem in 2025.",
-      keywords: [
-        "Adobe Firefly guide",
-        "AI image generation",
-        "Firefly tutorial",
-        "Adobe AI tools",
-        "Commercial AI art",
-        "Firefly features",
-        "AI design tools",
-        "Adobe Creative Cloud",
-        "AI editing guide",
-        "Firefly tips",
-      ],
-      openGraph: {
-        title: "How to Use Adobe Firefly: Complete 2025 Guide",
-        description:
-          "Master Adobe's Firefly AI. Learn how to use its commercial-grade image generation and editing capabilities within the Adobe ecosystem in 2025.",
-        url: "https://how-to-guides-gamma.vercel.app/guides/firefly",
-        type: "article",
-        images: [
-          {
-            url: "/images/logos/firefly-logo.png",
-            width: 1200,
-            height: 630,
-            alt: "Adobe Firefly Logo",
-          },
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: "How to Use Adobe Firefly: Complete 2025 Guide",
-        description:
-          "Master Adobe's Firefly AI. Learn how to use its commercial-grade image generation and editing capabilities within the Adobe ecosystem in 2025.",
-        images: ["/images/logos/firefly-logo.png"],
-      },
-    },
-    overview: {
-      title: "Guide Overview",
-      description:
-        "This comprehensive guide will teach you everything you need to know about using Adobe's Firefly AI in 2025.",
-      bullets: [
-        "Understand Firefly's capabilities",
-        "Learn how to use Creative Cloud integration",
-        "Master commercial usage rights",
-        "Explore editing features",
-        "Discover best practices",
-        "Learn about API access",
-        "Understand licensing options",
-        "Estimated reading time: 30 minutes",
-      ],
-    },
-    modules: [
-      {
-        title: "Introduction to Adobe Firefly",
-        locked: false,
-        content: {
-          sections: [
-            {
-              heading: "What is Adobe Firefly?",
-              text: "Adobe Firefly is Adobe's creative AI model, designed to integrate seamlessly with Adobe's creative suite. It offers powerful image generation and editing capabilities.",
-            },
-            {
-              heading: "Key Features of Firefly",
-              expandable: true,
-              text: "Firefly offers several powerful features:",
-              list: [
-                "Adobe Creative Cloud integration",
-                "Commercial-safe content",
-                "Style matching",
-                "Text effects",
-                "Image editing",
-                "Vector graphics support",
-              ],
-            },
-            {
-              heading: "Getting Started with Firefly",
-              text: "To begin using Firefly, you'll need:",
-              list: [
-                "Adobe Creative Cloud subscription",
-                "Compatible Adobe applications",
-                "Internet connection",
-                "Basic understanding of Adobe tools",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question: "What is a key advantage of Adobe Firefly?",
-            options: [
-              "It's completely free",
-              "It integrates with Adobe Creative Cloud",
-              "It requires no subscription",
-              "It works offline",
-            ],
-            correctAnswer: 1,
-          },
-        ],
-      },
-      {
-        title: "Basic Image Generation",
-        locked: false,
-        content: {
-          sections: [
-            {
-              heading: "Text to Image",
-              text: "Creating images from text descriptions:",
-              list: [
-                "Writing effective prompts",
-                "Style selection",
-                "Aspect ratio control",
-                "Quality settings",
-                "Output options",
-              ],
-            },
-            {
-              heading: "Style Matching",
-              expandable: true,
-              text: "Using reference images:",
-              list: [
-                "Style transfer",
-                "Color matching",
-                "Composition reference",
-                "Texture matching",
-                "Lighting reference",
-              ],
-            },
-            {
-              heading: "Image Variations",
-              text: "Generating variations:",
-              list: [
-                "Style variations",
-                "Composition changes",
-                "Color variations",
-                "Detail adjustments",
-                "Mood variations",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question: "What is the main purpose of style matching in Firefly?",
-            options: [
-              "To generate faster",
-              "To match existing artwork styles",
-              "To save storage space",
-              "To increase resolution",
-            ],
-            correctAnswer: 1,
-          },
-        ],
-      },
-      {
-        title: "Advanced Editing",
-        locked: true,
-        content: {
-          sections: [
-            {
-              heading: "Image Manipulation",
-              text: "Advanced editing techniques:",
-              list: [
-                "Inpainting",
-                "Outpainting",
-                "Object removal",
-                "Background changes",
-                "Detail enhancement",
-              ],
-            },
-            {
-              heading: "Text Effects",
-              expandable: true,
-              text: "Creating text-based artwork:",
-              list: [
-                "Text to vector",
-                "Style effects",
-                "3D text",
-                "Textures and patterns",
-                "Animation preparation",
-              ],
-            },
-            {
-              heading: "Integration with Adobe Apps",
-              text: "Using Firefly in Adobe applications:",
-              list: [
-                "Photoshop integration",
-                "Illustrator workflow",
-                "After Effects usage",
-                "Premiere Pro integration",
-                "Creative Cloud sync",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question:
-              "Which Adobe application has the most direct Firefly integration?",
-            options: ["After Effects", "Photoshop", "Premiere Pro", "InDesign"],
-            correctAnswer: 1,
-          },
-        ],
-      },
-      {
-        title: "Professional Workflows",
-        locked: true,
-        content: {
-          sections: [
-            {
-              heading: "Creative Projects",
-              text: "Professional use cases:",
-              list: [
-                "Marketing materials",
-                "Social media content",
-                "Print design",
-                "Web graphics",
-                "Brand assets",
-              ],
-            },
-            {
-              heading: "Collaboration",
-              expandable: true,
-              text: "Team workflows:",
-              list: [
-                "Asset sharing",
-                "Style guides",
-                "Version control",
-                "Feedback loops",
-                "Project management",
-              ],
-            },
-            {
-              heading: "Best Practices",
-              text: "Professional tips:",
-              list: [
-                "Asset organization",
-                "Quality control",
-                "Workflow optimization",
-                "Resource management",
-                "Output consistency",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question: "What is the best practice for managing Firefly assets?",
-            options: [
-              "Store locally only",
-              "Use Creative Cloud Libraries",
-              "Share via email",
-              "Use external drives",
-            ],
-            correctAnswer: 1,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "gpt4-vision",
-    title: "How to Use GPT-4 Vision: Complete 2025 Guide",
-    description:
-      "Master OpenAI's GPT-4 Vision model with our comprehensive guide",
-    schemaFile: "gpt4-vision-guide",
-    category: ["gpt4-vision", "multimodal-ai", "ai-tools"],
-    featured: false,
-    image: "/images/logos/gpt4-vision-logo.png",
-    color: "#9b59b6",
-    lastUpdated: "2025-04-15",
-    updateNotes: "Updated with latest features",
-    metadata: {
-      title: "How to Use GPT-4 Vision: Complete 2025 Guide",
-      description:
-        "Master OpenAI's GPT-4 Vision model. Learn how to use its advanced image understanding and analysis capabilities in 2025.",
-      keywords: [
-        "GPT-4 Vision guide",
-        "OpenAI vision model",
-        "GPT-4V tutorial",
-        "AI image analysis",
-        "Multimodal AI guide",
-        "GPT-4 Vision features",
-        "AI visual understanding",
-        "OpenAI tools",
-        "Image analysis AI",
-        "GPT-4 Vision tips",
-      ],
-      openGraph: {
-        title: "How to Use GPT-4 Vision: Complete 2025 Guide",
-        description:
-          "Master OpenAI's GPT-4 Vision model. Learn how to use its advanced image understanding and analysis capabilities in 2025.",
-        url: "https://how-to-guides-gamma.vercel.app/guides/gpt4-vision",
-        type: "article",
-        images: [
-          {
-            url: "/images/logos/gpt4-vision-logo.png",
-            width: 1200,
-            height: 630,
-            alt: "GPT-4 Vision Logo",
-          },
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: "How to Use GPT-4 Vision: Complete 2025 Guide",
-        description:
-          "Master OpenAI's GPT-4 Vision model. Learn how to use its advanced image understanding and analysis capabilities in 2025.",
-        images: ["/images/logos/gpt4-vision-logo.png"],
-      },
-    },
-    overview: {
-      title: "Guide Overview",
-      description:
-        "This comprehensive guide will teach you everything you need to know about using OpenAI's GPT-4 Vision model in 2025.",
-      bullets: [
-        "Understand GPT-4 Vision's capabilities",
-        "Learn how to analyze images",
-        "Master visual reasoning features",
-        "Explore integration options",
-        "Discover best practices",
-        "Learn about API access",
-        "Understand use cases",
-        "Estimated reading time: 25 minutes",
-      ],
-    },
-    modules: [
-      {
-        title: "Introduction to GPT-4 Vision",
-        locked: false,
-        content: {
-          sections: [
-            {
-              heading: "What is GPT-4 Vision?",
-              text: "GPT-4 Vision is OpenAI's multimodal AI model that can understand and analyze both text and images. It combines the power of GPT-4 with advanced computer vision capabilities.",
-            },
-            {
-              heading: "Key Features of GPT-4 Vision",
-              expandable: true,
-              text: "GPT-4 Vision offers several powerful features:",
-              list: [
-                "Image understanding",
-                "Text analysis",
-                "Contextual reasoning",
-                "Detailed descriptions",
-                "Problem solving",
-                "Code interpretation",
-              ],
-            },
-            {
-              heading: "Getting Started with GPT-4 Vision",
-              text: "To begin using GPT-4 Vision, you'll need:",
-              list: [
-                "OpenAI API access",
-                "API key",
-                "Understanding of API usage",
-                "Clear use case definition",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question: "What is the main capability of GPT-4 Vision?",
-            options: [
-              "Only text generation",
-              "Only image generation",
-              "Both text and image understanding",
-              "Only code generation",
-            ],
-            correctAnswer: 2,
-          },
-        ],
-      },
-      {
-        title: "Basic Image Analysis",
-        locked: false,
-        content: {
-          sections: [
-            {
-              heading: "Image Understanding",
-              text: "Core image analysis capabilities:",
-              list: [
-                "Object recognition",
-                "Scene understanding",
-                "Text in images",
-                "Spatial relationships",
-                "Visual context",
-              ],
-            },
-            {
-              heading: "Image Description",
-              expandable: true,
-              text: "Generating detailed descriptions:",
-              list: [
-                "Content analysis",
-                "Style identification",
-                "Context interpretation",
-                "Detail recognition",
-                "Relationship understanding",
-              ],
-            },
-            {
-              heading: "Image Comparison",
-              text: "Comparing multiple images:",
-              list: [
-                "Similarity analysis",
-                "Difference detection",
-                "Style comparison",
-                "Quality assessment",
-                "Content matching",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question: "What can GPT-4 Vision analyze in images?",
-            options: [
-              "Only objects",
-              "Only text",
-              "Objects, text, and context",
-              "Only colors",
-            ],
-            correctAnswer: 2,
-          },
-        ],
-      },
-      {
-        title: "Advanced Applications",
-        locked: true,
-        content: {
-          sections: [
-            {
-              heading: "Code Analysis",
-              text: "Understanding code in images:",
-              list: [
-                "Code recognition",
-                "Syntax analysis",
-                "Function understanding",
-                "Error detection",
-                "Code explanation",
-              ],
-            },
-            {
-              heading: "Document Analysis",
-              expandable: true,
-              text: "Processing documents and diagrams:",
-              list: [
-                "Text extraction",
-                "Layout analysis",
-                "Diagram interpretation",
-                "Table understanding",
-                "Document structure",
-              ],
-            },
-            {
-              heading: "Visual Problem Solving",
-              text: "Solving visual problems:",
-              list: [
-                "Mathematical equations",
-                "Logic puzzles",
-                "Spatial reasoning",
-                "Pattern recognition",
-                "Visual debugging",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question: "What type of visual content can GPT-4 Vision analyze?",
-            options: [
-              "Only photographs",
-              "Only text documents",
-              "Photos, documents, and code",
-              "Only diagrams",
-            ],
-            correctAnswer: 2,
-          },
-        ],
-      },
-      {
-        title: "Integration and Development",
-        locked: true,
-        content: {
-          sections: [
-            {
-              heading: "API Integration",
-              text: "Implementing GPT-4 Vision:",
-              list: [
-                "API setup",
-                "Authentication",
-                "Request handling",
-                "Response processing",
-                "Error management",
-              ],
-            },
-            {
-              heading: "Use Cases",
-              expandable: true,
-              text: "Practical applications:",
-              list: [
-                "Content moderation",
-                "Accessibility tools",
-                "Document processing",
-                "Visual search",
-                "Quality control",
-              ],
-            },
-            {
-              heading: "Best Practices",
-              text: "Development guidelines:",
-              list: [
-                "Image optimization",
-                "API usage limits",
-                "Error handling",
-                "Response caching",
-                "Security measures",
-              ],
-            },
-          ],
-        },
-        questions: [
-          {
-            question: "What is important when integrating GPT-4 Vision?",
-            options: [
-              "Only API key",
-              "Only image size",
-              "API key, limits, and error handling",
-              "Only response format",
-            ],
-            correctAnswer: 2,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "claude3",
-    title: "How to Use Claude 3: Complete 2025 Guide",
-    description:
-      "Master Anthropic's Claude 3 Opus model with our comprehensive guide",
-    schemaFile: "claude3-guide",
-    category: ["claude3", "multimodal-ai", "ai-tools"],
-    featured: false,
-    image: "/images/logos/claude3-logo.png",
-    color: "#8e44ad",
-    lastUpdated: "2025-04-15",
-    updateNotes: "Updated with latest features",
-    metadata: {
-      title: "How to Use Claude 3: Complete 2025 Guide",
-      description:
-        "Master Anthropic's Claude 3 Opus model. Learn how to use its advanced multimodal capabilities and state-of-the-art performance in 2025.",
-      keywords: [
-        "Claude 3 guide",
-        "Anthropic Claude tutorial",
-        "Claude 3 Opus guide",
-        "Multimodal AI guide",
-        "Claude 3 features",
-        "AI assistant guide",
         "Claude Pro guide",
         "AI productivity",
         "Claude 3 tips",
@@ -3216,7 +2301,6 @@ In the following sections, we'll explore specific techniques that address these 
     description:
       "Master the combination of DALL-E 3 and GPT-4 with our comprehensive guide",
     schemaFile: "dalle-gpt4-guide",
-    category: ["dalle", "gpt4", "multimodal-ai", "ai-tools"],
     featured: false,
     image: "/images/logos/dalle-gpt4-logo.png",
     color: "#e74c3c",

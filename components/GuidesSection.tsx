@@ -22,6 +22,8 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { GUIDES } from "@/data/guides";
+import { categories as categoryData } from "@/data/categories";
+import { Category } from "@/data/categories";
 import Link from "next/link";
 import { FaSearch } from "react-icons/fa";
 import { FaRobot } from "react-icons/fa";
@@ -57,10 +59,7 @@ export default function GuidesSection({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const categories = [
-    "all",
-    ...new Set(GUIDES.flatMap((guide) => guide.category)),
-  ].sort();
+  const categories = ["all", ...categoryData.map((cat: Category) => cat.id)].sort();
 
   const filteredGuides = GUIDES.filter((guide) => {
     if (isPopular) {
@@ -70,8 +69,11 @@ export default function GuidesSection({
     const matchesSearch =
       guide.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       guide.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "all" || guide.category.includes(selectedCategory);
+    
+    // Find guides that belong to the selected category
+    const matchesCategory = selectedCategory === "all" || 
+      categoryData.find((cat: Category) => cat.id === selectedCategory)?.guides.includes(guide.id);
+
     return matchesSearch && matchesCategory;
   });
 
@@ -151,7 +153,7 @@ export default function GuidesSection({
                   },
                 }}
               >
-                {categories.map((category) => (
+                {categories.map((category: string) => (
                   <MenuItem
                     key={category}
                     value={category}
@@ -159,7 +161,7 @@ export default function GuidesSection({
                       textTransform: "capitalize",
                     }}
                   >
-                    {category.replace(/-/g, " ")}
+                    {category === "all" ? "All Categories" : category.replace(/-/g, " ")}
                   </MenuItem>
                 ))}
               </Select>
@@ -176,7 +178,7 @@ export default function GuidesSection({
                   mb: 2,
                 }}
               >
-                {categories.map((category) => (
+                {categories.map((category: string) => (
                   <Paper
                     key={category}
                     onClick={() => setSelectedCategory(category)}
@@ -211,7 +213,7 @@ export default function GuidesSection({
                         textTransform: "capitalize",
                       }}
                     >
-                      {category.replace(/-/g, " ")}
+                      {category === "all" ? "All Categories" : category.replace(/-/g, " ")}
                     </Typography>
                   </Paper>
                 ))}
@@ -341,7 +343,7 @@ export default function GuidesSection({
                 {guide.description}
               </Typography>
               <Box sx={{ flexGrow: 1 }} />
-              <Link href={`/guides/${guide.id}`} passHref legacyBehavior>
+              <Link href={`/guides/${guide.id}`} passHref>
                 <Button
                   variant="contained"
                   size="medium"
