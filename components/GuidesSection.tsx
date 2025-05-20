@@ -88,17 +88,17 @@ export default function GuidesSection({
       }}
     >
       {isPopular && (
-        <Typography
-          variant="h3"
-          sx={{
-            fontWeight: 800,
-            color: "var(--foreground)",
-            fontSize: { xs: 24, md: 32 },
+      <Typography
+        variant="h3"
+        sx={{
+          fontWeight: 800,
+          color: "var(--foreground)",
+          fontSize: { xs: 24, md: 32 },
             mb: 4,
-          }}
-        >
-          Popular Guides
-        </Typography>
+        }}
+      >
+        Popular Guides
+      </Typography>
       )}
 
       {!isPopular && (
@@ -308,11 +308,11 @@ export default function GuidesSection({
                     width: 64,
                     height: 64,
                     objectFit: "contain",
-                    borderRadius: 2,
-                    boxShadow: `0 2px 8px 0 ${guide.color}22`,
-                    background: "#fff",
-                  }}
-                />
+                borderRadius: 2,
+                boxShadow: `0 2px 8px 0 ${guide.color}22`,
+                background: "#fff",
+              }}
+            />
               )}
             </Box>
             <CardContent

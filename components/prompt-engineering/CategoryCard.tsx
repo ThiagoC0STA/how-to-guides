@@ -14,6 +14,7 @@ import {
 } from "react-icons/fa";
 import { Category } from "@/data/categories";
 import { GUIDES } from "@/data/guides";
+import iconMap from "../../data/iconMap";
 
 interface Guide {
   title: string;
@@ -26,16 +27,8 @@ interface CategoryCardProps extends Omit<Category, "iconName"> {
   featured?: boolean;
   comingSoon?: boolean;
   guides: string[];
+  id: string;
 }
-
-const iconMap = {
-  book: FaBook,
-  lightbulb: FaLightbulb,
-  "chart-line": FaChartLine,
-  palette: FaPalette,
-  cogs: FaCogs,
-  "question-circle": FaQuestionCircle,
-} as const;
 
 type IconName = keyof typeof iconMap;
 
@@ -48,6 +41,7 @@ export default function CategoryCard({
   featured,
   comingSoon,
   guides,
+  id,
 }: CategoryCardProps) {
   const Icon = iconMap[iconName as IconName] || FaQuestionCircle;
 
@@ -265,7 +259,7 @@ export default function CategoryCard({
               textAlign: "center",
             }}
           >
-            <Link href={guideData[0].link} passHref>
+            <Link href={`/categories/${id}`} passHref>
               <Button
                 component="a"
                 variant="outlined"
@@ -293,3 +287,4 @@ export default function CategoryCard({
     </Paper>
   );
 }
+ 
