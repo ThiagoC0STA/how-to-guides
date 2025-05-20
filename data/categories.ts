@@ -67,3 +67,4 @@ export const categories: Category[] = [
     guides: ["how-to-write-effective-ai-prompts"],
   },
 ];
+ 
