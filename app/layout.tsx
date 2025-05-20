@@ -16,11 +16,13 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
 });
 
+export const viewport = "width=device-width, initial-scale=1";
+export const themeColor = "#ffffff";
+
 export const metadata: Metadata = {
   title: "How-ToGuides.com - Master AI Tools with Step-by-Step Guides",
   description:
     "Comprehensive tutorials for AI tools including ChatGPT, Midjourney, DALL-E, and more. Learn how to use AI effectively with our step-by-step guides.",
-  viewport: "width=device-width, initial-scale=1",
   icons: {
     apple: "/images/logo/favicon/apple-touch-icon.png",
     icon: [
@@ -40,7 +42,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-  themeColor: "#ffffff",
   other: {
     "msapplication-TileColor": "#da532c",
     "msapplication-config": "/images/logo/favicon/browserconfig.xml",
