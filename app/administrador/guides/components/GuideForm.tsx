@@ -155,7 +155,6 @@ export default function GuideForm() {
     } as Guide;
 
     console.log("New Guide:", newGuide);
-    router.push("/administrador/dashboard");
   };
 
   const renderStepContent = (step: number) => {

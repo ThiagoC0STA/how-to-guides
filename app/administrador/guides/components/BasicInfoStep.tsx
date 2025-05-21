@@ -1,6 +1,8 @@
-import { Box, TextField, Typography, Button } from "@mui/material";
+import { useState } from "react";
+import { Box, TextField, Typography, Button, Popover } from "@mui/material";
 import { Image as ImageIcon } from "@mui/icons-material";
 import { Guide } from "../types";
+import { ChromePicker } from "react-color";
 
 interface BasicInfoStepProps {
   formData: Partial<Guide>;
@@ -13,6 +15,22 @@ export default function BasicInfoStep({
   onFormDataChange,
   onImageChange,
 }: BasicInfoStepProps) {
+  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
+
+  const handleColorClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleColorClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleColorChange = (color: any) => {
+    onFormDataChange("color", color.hex);
+  };
+
+  const open = Boolean(anchorEl);
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       <TextField
@@ -60,9 +78,7 @@ export default function BasicInfoStep({
           </Typography>
           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
             <Box
-              onClick={() =>
-                onFormDataChange("showColorPicker", !formData.showColorPicker)
-              }
+              onClick={handleColorClick}
               sx={{
                 width: 40,
                 height: 40,
@@ -91,6 +107,22 @@ export default function BasicInfoStep({
                 },
               }}
             />
+            <Popover
+              open={open}
+              anchorEl={anchorEl}
+              onClose={handleColorClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+            >
+              <Box sx={{ p: 2 }}>
+                <ChromePicker
+                  color={formData.color}
+                  onChange={handleColorChange}
+                />
+              </Box>
+            </Popover>
           </Box>
         </Box>
         <Box sx={{ flex: 1 }}>
