@@ -20,6 +20,7 @@ import {
   Stepper,
   Step,
   StepLabel,
+  Container,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -27,10 +28,14 @@ import {
   Edit as EditIcon,
   Lock as LockIcon,
   LockOpen as LockOpenIcon,
+  List as ListIcon,
+  Quiz as QuizIcon,
+  Image as ImageIcon,
 } from "@mui/icons-material";
 import { categories } from "@/data/categories";
 import { GUIDES } from "@/data/guides";
 import ModuleContentDialog from "./ModuleContentDialog";
+import { SketchPicker } from 'react-color';
 
 interface Section {
   heading: string;
@@ -59,6 +64,7 @@ interface Guide {
   title: string;
   description: string;
   image: File | string;
+  color: string;
   modules: Module[];
   metadata: {
     categories: string[];
@@ -73,9 +79,8 @@ interface Guide {
 const steps = [
   "Basic Information",
   "Categories & Keywords",
-  "Overview",
-  "Module Sections",
-  "Module Questions",
+  "Guide Overview",
+  "Modules",
   "Review",
 ];
 
@@ -87,6 +92,7 @@ export default function GuideForm() {
     title: "",
     description: "",
     image: "",
+    color: "#3f51b5",
     modules: [],
     metadata: {
       categories: [],
@@ -110,6 +116,7 @@ export default function GuideForm() {
   });
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [moduleDialogOpen, setModuleDialogOpen] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
   const handleNext = () => {
     setActiveStep((prevStep) => prevStep + 1);
@@ -264,6 +271,7 @@ export default function GuideForm() {
       title: formData.title,
       description: formData.description,
       image: formData.image,
+      color: formData.color,
       modules: formData.modules || [],
       metadata: {
         categories: formData.metadata?.categories || [],
@@ -277,7 +285,7 @@ export default function GuideForm() {
   };
 
   const renderBasicInfo = () => (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       <TextField
         fullWidth
         label="Title"
@@ -286,6 +294,14 @@ export default function GuideForm() {
           setFormData((prev) => ({ ...prev, title: e.target.value }))
         }
         required
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 2,
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'primary.main',
+            },
+          },
+        }}
       />
       <TextField
         fullWidth
@@ -297,33 +313,164 @@ export default function GuideForm() {
         multiline
         rows={4}
         required
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 2,
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'primary.main',
+            },
+          },
+        }}
       />
-      <Box>
-        <input
-          accept="image/*"
-          style={{ display: "none" }}
-          id="image-upload"
-          type="file"
-          onChange={handleImageChange}
-        />
-        <label htmlFor="image-upload">
-          <Button variant="outlined" component="span" fullWidth sx={{ mb: 1 }}>
-            Upload Image
-          </Button>
-        </label>
-        {formData.image && (
-          <Typography variant="body2" color="text.secondary">
-            {typeof formData.image === "string"
-              ? formData.image
-              : formData.image.name}
+      <Box sx={{ display: 'flex', gap: 3 }}>
+        <Box sx={{ flex: 1 }}>
+          <Typography 
+            variant="subtitle2" 
+            sx={{ 
+              color: 'text.secondary',
+              fontWeight: 500
+            }}
+          >
+            Module Color
           </Typography>
-        )}
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <Box
+              onClick={() => setShowColorPicker(!showColorPicker)}
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: 1,
+                border: '2px solid',
+                borderColor: 'divider',
+                bgcolor: formData.color,
+                transition: 'all 0.2s',
+                cursor: 'pointer',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                }
+              }}
+            />
+            <TextField
+              value={formData.color}
+              onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
+              sx={{
+                flex: 1,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'primary.main',
+                  },
+                },
+              }}
+            />
+            {showColorPicker && (
+              <Box sx={{ 
+                position: 'absolute',
+                zIndex: 2,
+                mt: 1
+              }}>
+                <Box
+                  sx={{
+                    position: 'fixed',
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                  }}
+                  onClick={() => setShowColorPicker(false)}
+                />
+                <SketchPicker
+                  color={formData.color}
+                  onChange={(color) => setFormData(prev => ({ ...prev, color: color.hex }))}
+                />
+              </Box>
+            )}
+          </Box>
+        </Box>
+        <Box sx={{ flex: 1 }}>
+          <Typography 
+            variant="subtitle2" 
+            sx={{ 
+              mb: 1,
+              color: 'text.secondary',
+              fontWeight: 500
+            }}
+          >
+            Cover Image
+          </Typography>
+          <Box>
+            <input
+              accept="image/*"
+              style={{ display: "none" }}
+              id="image-upload"
+              type="file"
+              onChange={handleImageChange}
+            />
+            <label htmlFor="image-upload">
+              <Button 
+                variant="outlined" 
+                component="span" 
+                fullWidth 
+                sx={{ 
+                  mb: 1,
+                  borderRadius: 2,
+                  py: 1.8,
+                  textTransform: 'none',
+                  fontWeight: 500,
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    bgcolor: 'primary.50'
+                  }
+                }}
+              >
+                Upload Image
+              </Button>
+            </label>
+            {formData.image && (
+              <Box sx={{ 
+                mt: 2,
+                position: 'relative',
+                width: '100%',
+                height: 200,
+                borderRadius: 2,
+                overflow: 'hidden',
+                border: '1px solid',
+                borderColor: 'divider'
+              }}>
+                {typeof formData.image === "string" ? (
+                  <Box
+                    component="img"
+                    src={formData.image}
+                    alt="Preview"
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover'
+                    }}
+                  />
+                ) : (
+                  <Box
+                    component="img"
+                    src={URL.createObjectURL(formData.image)}
+                    alt="Preview"
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover'
+                    }}
+                  />
+                )}
+              </Box>
+            )}
+          </Box>
+        </Box>
       </Box>
     </Box>
   );
 
   const renderCategoriesAndKeywords = () => (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       <FormControl fullWidth>
         <InputLabel>Categories</InputLabel>
         <Select
@@ -333,10 +480,33 @@ export default function GuideForm() {
           renderValue={(selected) => (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
               {selected.map((value) => (
-                <Chip key={value} label={value} />
+                <Chip 
+                  key={value} 
+                  label={value}
+                  sx={{
+                    borderRadius: 1,
+                    bgcolor: 'primary.50',
+                    color: 'primary.main',
+                    '& .MuiChip-deleteIcon': {
+                      color: 'primary.main',
+                      '&:hover': {
+                        color: 'primary.dark'
+                      }
+                    }
+                  }}
+                />
               ))}
             </Box>
           )}
+          sx={{
+            borderRadius: 2,
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'divider'
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'primary.main'
+            }
+          }}
         >
           {["Beginner", "Intermediate", "Advanced"].map((category) => (
             <MenuItem key={category} value={category}>
@@ -346,19 +516,45 @@ export default function GuideForm() {
         </Select>
       </FormControl>
 
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-        <Typography variant="subtitle1">Keywords</Typography>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <Typography 
+          variant="subtitle1" 
+          sx={{ 
+            fontWeight: 600,
+            color: 'text.primary'
+          }}
+        >
+          Keywords
+        </Typography>
         <Box sx={{ display: "flex", gap: 1 }}>
           <TextField
             fullWidth
             label="New Keyword"
             value={newKeyword}
             onChange={(e) => setNewKeyword(e.target.value)}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'primary.main',
+                },
+              },
+            }}
           />
           <Button
             variant="contained"
             onClick={handleAddKeyword}
             startIcon={<AddIcon />}
+            sx={{
+              borderRadius: 2,
+              px: 3,
+              textTransform: 'none',
+              fontWeight: 500,
+              boxShadow: 'none',
+              '&:hover': {
+                boxShadow: 'none'
+              }
+            }}
           >
             Add
           </Button>
@@ -369,6 +565,19 @@ export default function GuideForm() {
               key={keyword}
               label={keyword}
               onDelete={() => handleRemoveKeyword(keyword)}
+              sx={{
+                borderRadius: 1,
+                bgcolor: 'grey.100',
+                '&:hover': {
+                  bgcolor: 'grey.200'
+                },
+                '& .MuiChip-deleteIcon': {
+                  color: 'grey.500',
+                  '&:hover': {
+                    color: 'error.main'
+                  }
+                }
+              }}
             />
           ))}
         </Box>
@@ -439,9 +648,15 @@ export default function GuideForm() {
   );
 
   const renderModules = () => (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            fontWeight: 600,
+            color: 'text.primary'
+          }}
+        >
           Modules
         </Typography>
         <Button
@@ -461,6 +676,18 @@ export default function GuideForm() {
             }));
           }}
           startIcon={<AddIcon />}
+          sx={{
+            borderRadius: 2,
+            px: 3,
+            textTransform: 'none',
+            fontWeight: 500,
+            boxShadow: 'none',
+            bgcolor: "var(--primary-blue)",
+            '&:hover': {
+              boxShadow: 'none',
+              opacity: 0.9
+            }
+          }}
         >
           Add Module
         </Button>
@@ -470,17 +697,28 @@ export default function GuideForm() {
         {formData.modules?.map((module, moduleIndex) => (
           <Paper
             key={moduleIndex}
-            elevation={1}
+            elevation={0}
             sx={{
               p: 3,
               border: "1px solid",
               borderColor: "divider",
-              borderRadius: 1,
+              borderRadius: 2,
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                borderColor: formData.color,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+              }
             }}
           >
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography variant="h6" sx={{ fontWeight: 500 }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontWeight: 500,
+                    color: 'text.primary'
+                  }}
+                >
                   {module.title}
                 </Typography>
                 <Box sx={{ display: "flex", gap: 1 }}>
@@ -493,6 +731,12 @@ export default function GuideForm() {
                         ...prev,
                         modules: updatedModules,
                       }));
+                    }}
+                    sx={{
+                      color: module.locked ? formData.color : 'grey.500',
+                      '&:hover': {
+                        bgcolor: `${formData.color}15`
+                      }
                     }}
                   >
                     {module.locked ? <LockIcon /> : <LockOpenIcon />}
@@ -507,6 +751,12 @@ export default function GuideForm() {
                         modules: updatedModules,
                       }));
                     }}
+                    sx={{
+                      color: 'error.main',
+                      '&:hover': {
+                        bgcolor: 'error.50'
+                      }
+                    }}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -514,10 +764,28 @@ export default function GuideForm() {
               </Box>
 
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: 'text.secondary',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                >
+                  <ListIcon fontSize="small" />
                   Sections: {module.content?.sections?.length || 0}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: 'text.secondary',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                >
+                  <QuizIcon fontSize="small" />
                   Questions: {module.questions?.length || 0}
                 </Typography>
               </Box>
@@ -529,6 +797,17 @@ export default function GuideForm() {
                   setModuleDialogOpen(true);
                 }}
                 startIcon={<EditIcon />}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 500,
+                  borderColor: formData.color,
+                  color: formData.color,
+                  '&:hover': {
+                    borderColor: formData.color,
+                    bgcolor: `${formData.color}15`
+                  }
+                }}
               >
                 Edit Content
               </Button>
@@ -538,191 +817,6 @@ export default function GuideForm() {
       </Box>
     </Box>
   );
-
-  const renderModuleQuestions = () => {
-    return (
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-        {formData.modules?.map((module, moduleIndex) => (
-          <Box
-            key={moduleIndex}
-            sx={{
-              p: 3,
-              border: "1px solid #ddd",
-              borderRadius: 1,
-            }}
-          >
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              {module.title} Questions
-            </Typography>
-            {module.questions?.map((question, questionIndex) => (
-              <Box
-                key={questionIndex}
-                sx={{
-                  p: 2,
-                  border: "1px solid #eee",
-                  borderRadius: 1,
-                  mb: 2,
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 2,
-                  }}
-                >
-                  <Typography variant="subtitle1">
-                    Question {questionIndex + 1}
-                  </Typography>
-                  <IconButton
-                    size="small"
-                    onClick={() => {
-                      const updatedModules = [...(formData.modules || [])];
-                      updatedModules[moduleIndex].questions.splice(
-                        questionIndex,
-                        1
-                      );
-                      setFormData((prev) => ({
-                        ...prev,
-                        modules: updatedModules,
-                      }));
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
-                <TextField
-                  fullWidth
-                  label="Question"
-                  value={question.question}
-                  onChange={(e) => {
-                    const updatedModules = [...(formData.modules || [])];
-                    updatedModules[moduleIndex].questions[
-                      questionIndex
-                    ].question = e.target.value;
-                    setFormData((prev) => ({
-                      ...prev,
-                      modules: updatedModules,
-                    }));
-                  }}
-                  sx={{ mb: 2 }}
-                />
-                <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                  Options
-                </Typography>
-                {question.options?.map((option, optionIndex) => (
-                  <Box
-                    key={optionIndex}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      mb: 1,
-                    }}
-                  >
-                    <TextField
-                      fullWidth
-                      label={`Option ${optionIndex + 1}`}
-                      value={option}
-                      onChange={(e) => {
-                        const updatedModules = [...(formData.modules || [])];
-                        updatedModules[moduleIndex].questions[
-                          questionIndex
-                        ].options[optionIndex] = e.target.value;
-                        setFormData((prev) => ({
-                          ...prev,
-                          modules: updatedModules,
-                        }));
-                      }}
-                    />
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={question.correctAnswer === optionIndex}
-                          onChange={() => {
-                            const updatedModules = [
-                              ...(formData.modules || []),
-                            ];
-                            updatedModules[moduleIndex].questions[
-                              questionIndex
-                            ].correctAnswer = optionIndex;
-                            setFormData((prev) => ({
-                              ...prev,
-                              modules: updatedModules,
-                            }));
-                          }}
-                        />
-                      }
-                      label="Correct"
-                    />
-                    <IconButton
-                      size="small"
-                      onClick={() => {
-                        const updatedModules = [...(formData.modules || [])];
-                        updatedModules[moduleIndex].questions[
-                          questionIndex
-                        ].options.splice(optionIndex, 1);
-                        if (
-                          updatedModules[moduleIndex].questions[questionIndex]
-                            .correctAnswer === optionIndex
-                        ) {
-                          updatedModules[moduleIndex].questions[
-                            questionIndex
-                          ].correctAnswer = 0;
-                        }
-                        setFormData((prev) => ({
-                          ...prev,
-                          modules: updatedModules,
-                        }));
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Box>
-                ))}
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    const updatedModules = [...(formData.modules || [])];
-                    updatedModules[moduleIndex].questions[
-                      questionIndex
-                    ].options.push("");
-                    setFormData((prev) => ({
-                      ...prev,
-                      modules: updatedModules,
-                    }));
-                  }}
-                  startIcon={<AddIcon />}
-                  sx={{ mt: 1 }}
-                >
-                  Add Option
-                </Button>
-              </Box>
-            ))}
-            <Button
-              variant="contained"
-              onClick={() => {
-                const updatedModules = [...(formData.modules || [])];
-                updatedModules[moduleIndex].questions.push({
-                  question: "",
-                  options: [""],
-                  correctAnswer: 0,
-                });
-                setFormData((prev) => ({
-                  ...prev,
-                  modules: updatedModules,
-                }));
-              }}
-              startIcon={<AddIcon />}
-            >
-              Add Question
-            </Button>
-          </Box>
-        ))}
-      </Box>
-    );
-  };
 
   const renderReview = () => (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -809,8 +903,6 @@ export default function GuideForm() {
       case 3:
         return renderModules();
       case 4:
-        return renderModuleQuestions();
-      case 5:
         return renderReview();
       default:
         return null;
@@ -818,40 +910,106 @@ export default function GuideForm() {
   };
 
   return (
-    <Box sx={{ maxWidth: 1000, mx: "auto", p: 3 }}>
-      <Typography variant="h4" sx={{ mb: 4, fontWeight: 600 }}>
-        Create New Guide
-      </Typography>
+    <Container maxWidth="lg">
+      <Box sx={{ 
+        py: 4,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 4
+      }}>
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            fontWeight: 700,
+            color: 'text.primary',
+            letterSpacing: '-0.5px'
+          }}
+        >
+          Create New Guide
+        </Typography>
 
-      <Paper elevation={0} sx={{ p: 3, mb: 4 }}>
-        <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-
-        <Box sx={{ mb: 4 }}>
-          {renderStepContent(activeStep)}
-        </Box>
-
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Button
-            disabled={activeStep === 0}
-            onClick={handleBack}
-            variant="outlined"
+        <Paper 
+          elevation={0} 
+          sx={{ 
+            p: 4,
+            borderRadius: 2,
+            border: '1px solid',
+            borderColor: 'divider',
+            bgcolor: 'background.paper'
+          }}
+        >
+          <Stepper 
+            activeStep={activeStep} 
+            sx={{ 
+              mb: 6,
+              '& .MuiStepLabel-label': {
+                fontWeight: 500,
+                fontSize: '0.875rem'
+              },
+              '& .MuiStepIcon-root': {
+                color: 'primary.main',
+                '&.Mui-active': {
+                  color: 'primary.main'
+                },
+                '&.Mui-completed': {
+                  color: 'success.main'
+                }
+              }
+            }}
           >
-            Back
-          </Button>
-          <Button
-            variant="contained"
-            onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-          >
-            {activeStep === steps.length - 1 ? "Submit" : "Next"}
-          </Button>
-        </Box>
-      </Paper>
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+
+          <Box sx={{ 
+            mb: 6,
+            minHeight: '400px'
+          }}>
+            {renderStepContent(activeStep)}
+          </Box>
+
+          <Box sx={{ 
+            display: "flex", 
+            justifyContent: "space-between",
+            pt: 2,
+            borderTop: '1px solid',
+            borderColor: 'divider'
+          }}>
+            <Button
+              disabled={activeStep === 0}
+              onClick={handleBack}
+              variant="outlined"
+              sx={{
+                borderRadius: 2,
+                px: 4,
+                textTransform: 'none',
+                fontWeight: 500
+              }}
+            >
+              Back
+            </Button>
+            <Button
+              variant="contained"
+              onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
+              sx={{
+                borderRadius: 2,
+                px: 4,
+                textTransform: 'none',
+                fontWeight: 500,
+                boxShadow: 'none',
+                '&:hover': {
+                  boxShadow: 'none'
+                }
+              }}
+            >
+              {activeStep === steps.length - 1 ? "Submit" : "Next"}
+            </Button>
+          </Box>
+        </Paper>
+      </Box>
 
       <ModuleContentDialog
         open={moduleDialogOpen}
@@ -878,6 +1036,6 @@ export default function GuideForm() {
           setSelectedModule(null);
         }}
       />
-    </Box>
+    </Container>
   );
 }
