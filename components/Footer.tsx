@@ -60,7 +60,7 @@ export default function Footer() {
             <Box mb={2}>
               <Box
                 component="img"
-                src="/images/logo/logo-footer.svg"
+                src="/images/logo/guides-logo.svg"
                 alt="How-ToGuides.com"
                 sx={{ width: 160, height: 80, marginLeft: "-10px" }}
               />

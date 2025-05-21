@@ -42,12 +42,12 @@ export async function middleware(req: NextRequest) {
   if (!session && req.nextUrl.pathname.startsWith("/administrador/dashboard")) {
     console.log("⚠️ Redirecting to login page");
     const redirectUrl = req.nextUrl.clone();
-    redirectUrl.pathname = "/administrador/site";
+    redirectUrl.pathname = "/administrador/login";
     return NextResponse.redirect(redirectUrl);
   }
 
   // Se estiver logado e tentar acessar a página de login
-  if (session && req.nextUrl.pathname === "/administrador/site") {
+  if (session && req.nextUrl.pathname === "/administrador/login") {
     console.log("⚠️ Redirecting to dashboard");
     const redirectUrl = req.nextUrl.clone();
     redirectUrl.pathname = "/administrador/dashboard";

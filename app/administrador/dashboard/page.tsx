@@ -33,7 +33,7 @@ export default function AdminDashboard() {
       });
 
       // Redirecionar para a página de login
-      router.push("/administrador/site");
+      router.push("/administrador/login");
       router.refresh();
     } catch (error) {
       console.error("Erro ao fazer logout:", error);

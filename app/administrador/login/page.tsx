@@ -5,8 +5,7 @@ import { Box, Typography, TextField, Button, Alert } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { FaRobot } from "react-icons/fa";
 import { useLoading } from "@/components/LoadingProvider";
-import { createServerClient } from "@supabase/ssr";
-import { NextRequest, NextResponse } from "next/server";
+import axios from "axios";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -17,49 +16,32 @@ export default function AdminLoginPage() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    console.log("🚀 Login attempt started");
     setError("");
     loading.show();
 
-    console.log("📤 Sending login request");
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      await axios.post("/api/auth/login", { email, password });
 
-    console.log("📥 Login response received:", res.status);
-    loading.hide();
-
-    if (res.ok) {
-      console.log("✅ Login successful, refreshing router");
-      await router.refresh();
-      console.log("🔄 Router refreshed, redirecting to dashboard");
       router.push("/administrador/dashboard");
-    } else {
-      console.log("❌ Login failed");
-      let data: any = {};
-      try {
-        data = await res.json();
-      } catch (e) {
-        data = { error: "Login failed" };
-      }
-      setError(data?.error || "Login failed");
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Login failed");
+    } finally {
+      loading.hide();
     }
   }
 
-  //   async function handleCreateAdmin() {
-  //     setError("");
-  //     try {
-  //       const res = await axios.post("/api/auth/create-admin", {
-  //         email: "admin@howtoguides.com",
-  //         password: "A1!gpt-HowTo2024#",
-  //       });
-  //       alert("Usuário admin criado com sucesso!");
-  //     } catch (err: any) {
-  //       setError(err.response?.data?.error || "Erro ao criar admin");
-  //     }
+  // async function handleCreateAdmin() {
+  //   setError("");
+  //   try {
+  //     const res = await axios.post("/api/auth/create-admin", {
+  //       email: "admin@howtoguides.com",
+  //       password: "A1!gpt-HowTo2024#",
+  //     });
+  //     alert("Usuário admin criado com sucesso!");
+  //   } catch (err: any) {
+  //     setError(err.response?.data?.error || "Erro ao criar admin");
   //   }
+  // }
 
   return (
     <Box
@@ -161,9 +143,10 @@ export default function AdminLoginPage() {
               boxShadow: "0 2px 8px #6366f122",
               mt: 1,
               letterSpacing: 0.5,
-              transition: "all 0.2s cubic-bezier(.4,2,.3,1)",
+              transition: "all 0.2s ease-in-out",
+              background: "linear-gradient(90deg, #6366f1 60%, #2563eb 100%)",
+
               "&:hover": {
-                background: "linear-gradient(90deg, #6366f1 60%, #2563eb 100%)",
                 color: "white",
                 boxShadow: "0 4px 16px #6366f144",
               },

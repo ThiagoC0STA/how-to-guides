@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json();
-  const { data, error } = await supabaseAdmin.auth.admin.createUser({
+  const { error } = await supabaseAdmin.auth.admin.createUser({
     email,
     password,
     email_confirm: true,

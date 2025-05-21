@@ -24,27 +24,26 @@ export const metadata: Metadata = {
   description:
     "Comprehensive tutorials for AI tools including ChatGPT, Midjourney, DALL-E, and more. Learn how to use AI effectively with our step-by-step guides.",
   icons: {
-    apple: "/images/logo/favicon/apple-touch-icon.png",
+    apple: "/images/logo/guides-logo.svg",
     icon: [
-      { url: "/images/logo/favicon/favicon-32x32.png", sizes: "32x32" },
-      { url: "/images/logo/favicon/favicon-16x16.png", sizes: "16x16" },
+      { url: "/images/logo/guides-logo.svg", sizes: "32x32" },
+      { url: "/images/logo/guides-logo.svg", sizes: "16x16" },
     ],
-    shortcut: "/images/logo/favicon/favicon.ico",
+    shortcut: "/images/logo/guides-logo.svg",
     other: [
       {
         rel: "manifest",
-        url: "/images/logo/favicon/site.webmanifest",
+        url: "/images/logo/guides-logo.svg",
       },
       {
         rel: "mask-icon",
-        url: "/images/logo/favicon/safari-pinned-tab.svg",
+        url: "/images/logo/guides-logo.svg",
         color: "#5bbad5",
       },
     ],
   },
   other: {
     "msapplication-TileColor": "#da532c",
-    "msapplication-config": "/images/logo/favicon/browserconfig.xml",
   },
 };
 

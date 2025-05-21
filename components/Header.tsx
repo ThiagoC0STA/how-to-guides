@@ -63,7 +63,7 @@ export default function Header() {
           <Link href="/" passHref>
             <Box
               component="img"
-              src="/images/logo/logo-footer.svg"
+              src="/images/logo/guides-logo.svg"
               alt="How-ToGuides.com"
               sx={{
                 width: 190,
