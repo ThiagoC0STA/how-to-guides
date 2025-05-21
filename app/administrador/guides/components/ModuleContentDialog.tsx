@@ -23,6 +23,9 @@ import {
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
+  Lock as LockIcon,
+  LockOpen as LockOpenIcon,
+  Edit as EditIcon,
 } from "@mui/icons-material";
 import { Module, Section } from "@/types/guide";
 
@@ -47,6 +50,7 @@ export default function ModuleContentDialog({
 }: ModuleContentDialogProps) {
   const theme = useTheme();
   const [activeStep, setActiveStep] = useState(0);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
   const steps = ["Module Content", "Questions"];
   const [editedModule, setEditedModule] = useState<Module>(() => ({
     title: module?.title || "",
@@ -210,64 +214,42 @@ export default function ModuleContentDialog({
   };
 
   const renderModuleContent = () => (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 2 }}>
-      <Paper
-        elevation={1}
-        sx={{
-          p: 3,
-          border: "1px solid",
-          borderColor: "divider",
-          borderRadius: 1,
-        }}
-      >
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <TextField
-            fullWidth
-            label="Module Title"
-            value={editedModule.title}
-            onChange={(e) =>
-              setEditedModule((prev) => ({
-                ...prev,
-                title: e.target.value,
-              }))
-            }
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={editedModule.locked}
-                onChange={(e) =>
-                  setEditedModule((prev) => ({
-                    ...prev,
-                    locked: e.target.checked,
-                  }))
-                }
-              />
-            }
-            label="Lock Module"
-          />
-        </Box>
-      </Paper>
-
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {editedModule.content?.sections?.map((section, sectionIndex) => (
         <Paper
           key={sectionIndex}
-          elevation={1}
+          elevation={0}
           sx={{
             p: 3,
             border: "1px solid",
             borderColor: "divider",
-            borderRadius: 1,
+            borderRadius: 2,
+            background: theme.palette.background.default,
+            transition: 'all 0.2s ease-in-out',
+            '&:hover': {
+              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            }
           }}
         >
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+              <Typography variant="subtitle1" sx={{ 
+                fontWeight: 600,
+                color: theme.palette.text.primary,
+                letterSpacing: '-0.3px'
+              }}>
                 Section {sectionIndex + 1}
               </Typography>
               <IconButton
                 size="small"
                 onClick={() => handleRemoveSection(sectionIndex)}
+                sx={{
+                  color: theme.palette.error.main,
+                  '&:hover': {
+                    background: theme.palette.error.light,
+                    color: theme.palette.error.contrastText,
+                  }
+                }}
               >
                 <DeleteIcon />
               </IconButton>
@@ -280,6 +262,11 @@ export default function ModuleContentDialog({
               onChange={(e) =>
                 handleSectionChange(sectionIndex, "heading", e.target.value)
               }
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                }
+              }}
             />
 
             <TextField
@@ -291,6 +278,11 @@ export default function ModuleContentDialog({
               }
               multiline
               rows={4}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                }
+              }}
             />
 
             <FormControlLabel
@@ -307,12 +299,25 @@ export default function ModuleContentDialog({
 
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography variant="subtitle2">List Items</Typography>
+                <Typography variant="subtitle2" sx={{ 
+                  fontWeight: 600,
+                  color: theme.palette.text.secondary
+                }}>
+                  List Items
+                </Typography>
                 <Button
                   variant="outlined"
                   size="small"
                   onClick={() => handleAddListItem(sectionIndex)}
                   startIcon={<AddIcon />}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    borderWidth: 2,
+                    '&:hover': {
+                      borderWidth: 2
+                    }
+                  }}
                 >
                   Add Item
                 </Button>
@@ -338,12 +343,24 @@ export default function ModuleContentDialog({
                         e.target.value
                       )
                     }
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2,
+                      }
+                    }}
                   />
                   <IconButton
                     size="small"
                     onClick={() =>
                       handleRemoveListItem(sectionIndex, itemIndex)
                     }
+                    sx={{
+                      color: theme.palette.error.main,
+                      '&:hover': {
+                        background: theme.palette.error.light,
+                        color: theme.palette.error.contrastText,
+                      }
+                    }}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -353,25 +370,51 @@ export default function ModuleContentDialog({
           </Box>
         </Paper>
       ))}
+
+      <Button
+        variant="contained"
+        onClick={handleAddSection}
+        startIcon={<AddIcon />}
+        sx={{
+          borderRadius: 2,
+          textTransform: 'none',
+          px: 3,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+          '&:hover': {
+            boxShadow: '0 6px 16px rgba(0,0,0,0.1)',
+          }
+        }}
+      >
+        Add Section
+      </Button>
     </Box>
   );
 
   const renderQuestions = () => (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 2 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {editedModule.questions?.map((question, questionIndex) => (
         <Paper
           key={questionIndex}
-          elevation={1}
+          elevation={0}
           sx={{
             p: 3,
             border: "1px solid",
             borderColor: "divider",
-            borderRadius: 1,
+            borderRadius: 2,
+            background: theme.palette.background.default,
+            transition: 'all 0.2s ease-in-out',
+            '&:hover': {
+              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            }
           }}
         >
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+              <Typography variant="subtitle1" sx={{ 
+                fontWeight: 600,
+                color: theme.palette.text.primary,
+                letterSpacing: '-0.3px'
+              }}>
                 Question {questionIndex + 1}
               </Typography>
               <IconButton
@@ -381,6 +424,13 @@ export default function ModuleContentDialog({
                     ...prev,
                     questions: prev.questions.filter((_, i) => i !== questionIndex),
                   }));
+                }}
+                sx={{
+                  color: theme.palette.error.main,
+                  '&:hover': {
+                    background: theme.palette.error.light,
+                    color: theme.palette.error.contrastText,
+                  }
                 }}
               >
                 <DeleteIcon />
@@ -401,9 +451,20 @@ export default function ModuleContentDialog({
                   return { ...prev, questions: updatedQuestions };
                 });
               }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                }
+              }}
             />
 
-            <Typography variant="subtitle2">Options</Typography>
+            <Typography variant="subtitle2" sx={{ 
+              fontWeight: 600,
+              color: theme.palette.text.secondary,
+              mt: 1
+            }}>
+              Options
+            </Typography>
             {question.options.map((option, optionIndex) => (
               <Box
                 key={optionIndex}
@@ -424,6 +485,11 @@ export default function ModuleContentDialog({
                       updatedQuestions[questionIndex].options[optionIndex] = e.target.value;
                       return { ...prev, questions: updatedQuestions };
                     });
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 2,
+                    }
                   }}
                 />
                 <FormControlLabel
@@ -455,6 +521,13 @@ export default function ModuleContentDialog({
                       return { ...prev, questions: updatedQuestions };
                     });
                   }}
+                  sx={{
+                    color: theme.palette.error.main,
+                    '&:hover': {
+                      background: theme.palette.error.light,
+                      color: theme.palette.error.contrastText,
+                    }
+                  }}
                 >
                   <DeleteIcon />
                 </IconButton>
@@ -475,6 +548,14 @@ export default function ModuleContentDialog({
                 });
               }}
               startIcon={<AddIcon />}
+              sx={{
+                borderRadius: 2,
+                textTransform: 'none',
+                borderWidth: 2,
+                '&:hover': {
+                  borderWidth: 2
+                }
+              }}
             >
               Add Option
             </Button>
@@ -498,6 +579,15 @@ export default function ModuleContentDialog({
           }));
         }}
         startIcon={<AddIcon />}
+        sx={{
+          borderRadius: 2,
+          textTransform: 'none',
+          px: 3,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+          '&:hover': {
+            boxShadow: '0 6px 16px rgba(0,0,0,0.1)',
+          }
+        }}
       >
         Add Question
       </Button>
@@ -505,25 +595,109 @@ export default function ModuleContentDialog({
   );
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Edit Module
-          </Typography>
-          {activeStep === 0 && (
-            <Button
-              variant="contained"
-              onClick={handleAddSection}
-              startIcon={<AddIcon />}
-            >
-              Add Section
-            </Button>
-          )}
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth="md" 
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: 2,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+        }
+      }}
+    >
+      <DialogTitle sx={{ 
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+        pb: 2,
+        background: theme.palette.background.default
+      }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, flex: 1 }}>
+            {isEditingTitle ? (
+              <TextField
+                size="small"
+                value={editedModule.title}
+                onChange={(e) =>
+                  setEditedModule((prev) => ({
+                    ...prev,
+                    title: e.target.value,
+                  }))
+                }
+                onBlur={() => setIsEditingTitle(false)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setIsEditingTitle(false);
+                  }
+                }}
+                autoFocus
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                  }
+                }}
+              />
+            ) : (
+              <>
+                <Typography variant="h5" sx={{ 
+                  fontWeight: 600,
+                  color: theme.palette.text.primary,
+                  letterSpacing: '-0.5px'
+                }}>
+                  {editedModule.title || "Untitled Module"}
+                </Typography>
+                <IconButton
+                  size="small"
+                  onClick={() => setIsEditingTitle(true)}
+                  sx={{
+                    color: theme.palette.text.secondary,
+                    '&:hover': {
+                      color: theme.palette.primary.main,
+                    }
+                  }}
+                >
+                  <EditIcon fontSize="small" />
+                </IconButton>
+              </>
+            )}
+          </Box>
+          <IconButton
+            onClick={() =>
+              setEditedModule((prev) => ({
+                ...prev,
+                locked: !prev.locked,
+              }))
+            }
+            sx={{
+              color: editedModule.locked ? theme.palette.primary.main : theme.palette.text.secondary,
+              '&:hover': {
+                color: theme.palette.primary.main,
+              }
+            }}
+          >
+            {editedModule.locked ? <LockIcon /> : <LockOpenIcon />}
+          </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent>
-        <Stepper activeStep={activeStep} sx={{ mb: 4, mt: 2 }}>
+      <DialogContent sx={{ p: 4 }}>
+        <Stepper 
+          activeStep={activeStep} 
+          sx={{ 
+            mb: 4,
+            mt: 4,
+            '& .MuiStepLabel-label': {
+              fontWeight: 500,
+              fontSize: '0.9rem'
+            },
+            '& .MuiStepIcon-root': {
+              color: theme.palette.primary.main,
+              '&.Mui-active': {
+                color: theme.palette.primary.main,
+              }
+            }
+          }}
+        >
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
@@ -533,22 +707,69 @@ export default function ModuleContentDialog({
 
         {activeStep === 0 ? renderModuleContent() : renderQuestions()}
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Box sx={{ display: "flex", gap: 1 }}>
+      <DialogActions sx={{ 
+        p: 3,
+        borderTop: '1px solid',
+        borderColor: 'divider',
+        background: theme.palette.background.default
+      }}>
+        <Button 
+          onClick={onClose}
+          sx={{
+            borderRadius: 2,
+            textTransform: 'none',
+            px: 3
+          }}
+        >
+          Cancel
+        </Button>
+        <Box sx={{ display: "flex", gap: 2 }}>
           <Button
             disabled={activeStep === 0}
             onClick={handleBack}
             variant="outlined"
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              px: 3,
+              borderWidth: 2,
+              '&:hover': {
+                borderWidth: 2
+              }
+            }}
           >
             Back
           </Button>
           {activeStep === steps.length - 1 ? (
-            <Button onClick={handleSave} variant="contained">
+            <Button 
+              onClick={handleSave} 
+              variant="contained"
+              sx={{
+                borderRadius: 2,
+                textTransform: 'none',
+                px: 4,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                '&:hover': {
+                  boxShadow: '0 6px 16px rgba(0,0,0,0.1)',
+                }
+              }}
+            >
               Save Changes
             </Button>
           ) : (
-            <Button onClick={handleNext} variant="contained">
+            <Button 
+              onClick={handleNext} 
+              variant="contained"
+              sx={{
+                borderRadius: 2,
+                textTransform: 'none',
+                px: 4,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                '&:hover': {
+                  boxShadow: '0 6px 16px rgba(0,0,0,0.1)',
+                }
+              }}
+            >
               Next
             </Button>
           )}
