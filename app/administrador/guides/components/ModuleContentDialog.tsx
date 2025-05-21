@@ -16,6 +16,9 @@ import {
   Paper,
   useTheme,
   Divider,
+  Stepper,
+  Step,
+  StepLabel,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -43,6 +46,8 @@ export default function ModuleContentDialog({
   onSave,
 }: ModuleContentDialogProps) {
   const theme = useTheme();
+  const [activeStep, setActiveStep] = useState(0);
+  const steps = ["Module Content", "Questions"];
   const [editedModule, setEditedModule] = useState<Module>(() => ({
     title: module?.title || "",
     locked: module?.locked || false,
@@ -86,7 +91,6 @@ export default function ModuleContentDialog({
     options: ["", "", "", ""],
     correctAnswer: 0,
   });
-  const [newListItem, setNewListItem] = useState("");
 
   const handleSave = () => {
     onSave(editedModule);
@@ -197,135 +201,358 @@ export default function ModuleContentDialog({
     });
   };
 
+  const handleNext = () => {
+    setActiveStep((prevStep) => prevStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevStep) => prevStep - 1);
+  };
+
+  const renderModuleContent = () => (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 2 }}>
+      <Paper
+        elevation={1}
+        sx={{
+          p: 3,
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 1,
+        }}
+      >
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <TextField
+            fullWidth
+            label="Module Title"
+            value={editedModule.title}
+            onChange={(e) =>
+              setEditedModule((prev) => ({
+                ...prev,
+                title: e.target.value,
+              }))
+            }
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={editedModule.locked}
+                onChange={(e) =>
+                  setEditedModule((prev) => ({
+                    ...prev,
+                    locked: e.target.checked,
+                  }))
+                }
+              />
+            }
+            label="Lock Module"
+          />
+        </Box>
+      </Paper>
+
+      {editedModule.content?.sections?.map((section, sectionIndex) => (
+        <Paper
+          key={sectionIndex}
+          elevation={1}
+          sx={{
+            p: 3,
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: 1,
+          }}
+        >
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                Section {sectionIndex + 1}
+              </Typography>
+              <IconButton
+                size="small"
+                onClick={() => handleRemoveSection(sectionIndex)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+
+            <TextField
+              fullWidth
+              label="Heading"
+              value={section.heading}
+              onChange={(e) =>
+                handleSectionChange(sectionIndex, "heading", e.target.value)
+              }
+            />
+
+            <TextField
+              fullWidth
+              label="Content"
+              value={typeof section.text === "string" ? section.text : section.text.join("\n")}
+              onChange={(e) =>
+                handleSectionChange(sectionIndex, "text", e.target.value)
+              }
+              multiline
+              rows={4}
+            />
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={section.expandable || false}
+                  onChange={(e) =>
+                    handleSectionChange(sectionIndex, "expandable", e.target.checked)
+                  }
+                />
+              }
+              label="Expandable Section"
+            />
+
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <Typography variant="subtitle2">List Items</Typography>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handleAddListItem(sectionIndex)}
+                  startIcon={<AddIcon />}
+                >
+                  Add Item
+                </Button>
+              </Box>
+
+              {section.list?.map((item, itemIndex) => (
+                <Box
+                  key={itemIndex}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  <TextField
+                    fullWidth
+                    size="small"
+                    value={item}
+                    onChange={(e) =>
+                      handleListItemChange(
+                        sectionIndex,
+                        itemIndex,
+                        e.target.value
+                      )
+                    }
+                  />
+                  <IconButton
+                    size="small"
+                    onClick={() =>
+                      handleRemoveListItem(sectionIndex, itemIndex)
+                    }
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              ))}
+            </Box>
+          </Box>
+        </Paper>
+      ))}
+    </Box>
+  );
+
+  const renderQuestions = () => (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 2 }}>
+      {editedModule.questions?.map((question, questionIndex) => (
+        <Paper
+          key={questionIndex}
+          elevation={1}
+          sx={{
+            p: 3,
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: 1,
+          }}
+        >
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                Question {questionIndex + 1}
+              </Typography>
+              <IconButton
+                size="small"
+                onClick={() => {
+                  setEditedModule((prev) => ({
+                    ...prev,
+                    questions: prev.questions.filter((_, i) => i !== questionIndex),
+                  }));
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+
+            <TextField
+              fullWidth
+              label="Question"
+              value={question.question}
+              onChange={(e) => {
+                setEditedModule((prev) => {
+                  const updatedQuestions = [...prev.questions];
+                  updatedQuestions[questionIndex] = {
+                    ...updatedQuestions[questionIndex],
+                    question: e.target.value,
+                  };
+                  return { ...prev, questions: updatedQuestions };
+                });
+              }}
+            />
+
+            <Typography variant="subtitle2">Options</Typography>
+            {question.options.map((option, optionIndex) => (
+              <Box
+                key={optionIndex}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                <TextField
+                  fullWidth
+                  size="small"
+                  label={`Option ${optionIndex + 1}`}
+                  value={option}
+                  onChange={(e) => {
+                    setEditedModule((prev) => {
+                      const updatedQuestions = [...prev.questions];
+                      updatedQuestions[questionIndex].options[optionIndex] = e.target.value;
+                      return { ...prev, questions: updatedQuestions };
+                    });
+                  }}
+                />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={question.correctAnswer === optionIndex}
+                      onChange={() => {
+                        setEditedModule((prev) => {
+                          const updatedQuestions = [...prev.questions];
+                          updatedQuestions[questionIndex].correctAnswer = optionIndex;
+                          return { ...prev, questions: updatedQuestions };
+                        });
+                      }}
+                    />
+                  }
+                  label="Correct"
+                />
+                <IconButton
+                  size="small"
+                  onClick={() => {
+                    setEditedModule((prev) => {
+                      const updatedQuestions = [...prev.questions];
+                      updatedQuestions[questionIndex].options = updatedQuestions[questionIndex].options.filter(
+                        (_, i) => i !== optionIndex
+                      );
+                      if (updatedQuestions[questionIndex].correctAnswer === optionIndex) {
+                        updatedQuestions[questionIndex].correctAnswer = 0;
+                      }
+                      return { ...prev, questions: updatedQuestions };
+                    });
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            ))}
+
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => {
+                setEditedModule((prev) => {
+                  const updatedQuestions = [...prev.questions];
+                  updatedQuestions[questionIndex] = {
+                    ...updatedQuestions[questionIndex],
+                    options: [...updatedQuestions[questionIndex].options, ""]
+                  };
+                  return { ...prev, questions: updatedQuestions };
+                });
+              }}
+              startIcon={<AddIcon />}
+            >
+              Add Option
+            </Button>
+          </Box>
+        </Paper>
+      ))}
+
+      <Button
+        variant="contained"
+        onClick={() => {
+          setEditedModule((prev) => ({
+            ...prev,
+            questions: [
+              ...prev.questions,
+              {
+                question: "",
+                options: [""],
+                correctAnswer: 0,
+              },
+            ],
+          }));
+        }}
+        startIcon={<AddIcon />}
+      >
+        Add Question
+      </Button>
+    </Box>
+  );
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Edit Module Content
+            Edit Module
           </Typography>
-          <Button
-            variant="contained"
-            onClick={handleAddSection}
-            startIcon={<AddIcon />}
-          >
-            Add Section
-          </Button>
+          {activeStep === 0 && (
+            <Button
+              variant="contained"
+              onClick={handleAddSection}
+              startIcon={<AddIcon />}
+            >
+              Add Section
+            </Button>
+          )}
         </Box>
       </DialogTitle>
       <DialogContent>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 2 }}>
-          {editedModule.content?.sections?.map((section, sectionIndex) => (
-            <Paper
-              key={sectionIndex}
-              elevation={1}
-              sx={{
-                p: 3,
-                border: "1px solid",
-                borderColor: "divider",
-                borderRadius: 1,
-              }}
-            >
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                    Section {sectionIndex + 1}
-                  </Typography>
-                  <IconButton
-                    size="small"
-                    onClick={() => handleRemoveSection(sectionIndex)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
-
-                <TextField
-                  fullWidth
-                  label="Heading"
-                  value={section.heading}
-                  onChange={(e) =>
-                    handleSectionChange(sectionIndex, "heading", e.target.value)
-                  }
-                />
-
-                <TextField
-                  fullWidth
-                  label="Content"
-                  value={typeof section.text === "string" ? section.text : section.text.join("\n")}
-                  onChange={(e) =>
-                    handleSectionChange(sectionIndex, "text", e.target.value)
-                  }
-                  multiline
-                  rows={4}
-                />
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={section.expandable || false}
-                      onChange={(e) =>
-                        handleSectionChange(sectionIndex, "expandable", e.target.checked)
-                      }
-                    />
-                  }
-                  label="Expandable Section"
-                />
-
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Typography variant="subtitle2">List Items</Typography>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => handleAddListItem(sectionIndex)}
-                      startIcon={<AddIcon />}
-                    >
-                      Add Item
-                    </Button>
-                  </Box>
-
-                  {section.list?.map((item, itemIndex) => (
-                    <Box
-                      key={itemIndex}
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                      }}
-                    >
-                      <TextField
-                        fullWidth
-                        size="small"
-                        value={item}
-                        onChange={(e) =>
-                          handleListItemChange(
-                            sectionIndex,
-                            itemIndex,
-                            e.target.value
-                          )
-                        }
-                      />
-                      <IconButton
-                        size="small"
-                        onClick={() =>
-                          handleRemoveListItem(sectionIndex, itemIndex)
-                        }
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Box>
-                  ))}
-                </Box>
-              </Box>
-            </Paper>
+        <Stepper activeStep={activeStep} sx={{ mb: 4, mt: 2 }}>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
           ))}
-        </Box>
+        </Stepper>
+
+        {activeStep === 0 ? renderModuleContent() : renderQuestions()}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSave} variant="contained">
-          Save Changes
-        </Button>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button
+            disabled={activeStep === 0}
+            onClick={handleBack}
+            variant="outlined"
+          >
+            Back
+          </Button>
+          {activeStep === steps.length - 1 ? (
+            <Button onClick={handleSave} variant="contained">
+              Save Changes
+            </Button>
+          ) : (
+            <Button onClick={handleNext} variant="contained">
+              Next
+            </Button>
+          )}
+        </Box>
       </DialogActions>
     </Dialog>
   );
