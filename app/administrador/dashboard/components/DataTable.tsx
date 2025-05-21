@@ -1,169 +1,119 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  IconButton,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Chip,
   Box,
-  Typography,
-  TextField,
-  InputAdornment,
+  Button,
   Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  Chip,
+  IconButton,
 } from "@mui/material";
 import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Search as SearchIcon,
 } from "@mui/icons-material";
-import { ReactNode, useState, ReactElement } from "react";
 
-interface DataTableProps {
-  title: string;
-  items: any[];
-  onAdd?: () => void;
-  onEdit?: (item: any) => void;
-  onDelete?: (item: any) => void;
-  renderItem: (item: any) => {
-    icon: ReactNode;
-    primary: string;
-    secondary: string;
-    chips?: { icon: ReactElement; label: string; color: string }[];
-  };
-  searchPlaceholder?: string;
+interface Column<T> {
+  field: keyof T | string;
+  headerName: string;
+  width?: number;
+  renderCell?: (row: T) => React.ReactNode;
 }
 
-export default function DataTable({
+interface DataTableProps<T> {
+  title: string;
+  data: T[];
+  columns: Column<T>[];
+  onAdd?: () => void;
+  onEdit?: (row: T) => void;
+  onDelete?: (row: T) => void;
+}
+
+export default function DataTable<T>({
   title,
-  items,
+  data,
+  columns,
   onAdd,
   onEdit,
   onDelete,
-  renderItem,
-  searchPlaceholder = "Search...",
-}: DataTableProps) {
-  const [searchQuery, setSearchQuery] = useState("");
+}: DataTableProps<T>) {
+  const router = useRouter();
+  const [selectedRow, setSelectedRow] = useState<T | null>(null);
 
-  const filteredItems = items.filter((item) => {
-    const { primary, secondary } = renderItem(item);
-    const searchLower = searchQuery.toLowerCase();
-    return (
-      primary.toLowerCase().includes(searchLower) ||
-      secondary.toLowerCase().includes(searchLower)
-    );
-  });
+  const handleAddClick = () => {
+    if (title === "Guides") {
+      router.push("/administrador/guides");
+    } else if (onAdd) {
+      onAdd();
+    }
+  };
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        border: "1px solid rgba(0, 0, 0, 0.08)",
-        borderRadius: 2,
-        overflow: "hidden",
-      }}
-    >
-      <CardHeader
-        title={
-          <Typography
-            variant="h6"
-            sx={{ fontWeight: 600, color: "text.primary" }}
-          >
-            {title}
-          </Typography>
-        }
-        action={
-          onAdd && (
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={onAdd}
-              sx={{
-                backgroundColor: "#1976d2",
-                borderRadius: 2,
-                textTransform: "none",
-                fontWeight: 600,
-                px: 3,
-                "&:hover": {
-                  backgroundColor: "#1565c0",
-                },
-              }}
-            >
-              Add {title.slice(0, -1)}
-            </Button>
-          )
-        }
-        sx={{
-          borderBottom: "1px solid rgba(0, 0, 0, 0.08)",
-          backgroundColor: "rgba(0, 0, 0, 0.02)",
-        }}
-      />
-      <CardContent sx={{ flexGrow: 1, p: 0 }}>
-        <Box sx={{ p: 2, pb: 0 }}>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder={searchPlaceholder}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: "text.secondary" }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              mb: 2,
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-                backgroundColor: "white",
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "rgba(0, 0, 0, 0.2)",
-                },
-              },
-            }}
-          />
-        </Box>
-        <List sx={{ p: 0 }}>
-          {filteredItems.map((item, index) => {
-            const { icon, primary, secondary, chips } = renderItem(item);
-            return (
-              <ListItem
+    <Paper sx={{ p: 3 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          {title}
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={handleAddClick}
+        >
+          Add {title.slice(0, -1)}
+        </Button>
+      </Box>
+
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell
+                  key={column.field.toString()}
+                  sx={{ width: column.width, fontWeight: 600 }}
+                >
+                  {column.headerName}
+                </TableCell>
+              ))}
+              <TableCell align="right" sx={{ width: 100 }}>
+                Actions
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((row: any, index: number) => (
+              <TableRow
                 key={index}
-                sx={{
-                  borderBottom: "1px solid rgba(0, 0, 0, 0.08)",
-                  "&:last-child": {
-                    borderBottom: "none",
-                  },
-                  "&:hover": {
-                    backgroundColor: "rgba(0, 0, 0, 0.02)",
-                  },
-                  transition: "background-color 0.2s",
-                  px: 3,
-                  py: 1.5,
-                }}
-                secondaryAction={
-                  <Box sx={{ display: "flex", gap: 1 }}>
+                hover
+                selected={selectedRow === row}
+                onClick={() => setSelectedRow(row)}
+              >
+                {columns.map((column) => (
+                  <TableCell key={column.field.toString()}>
+                    {column.renderCell
+                      ? column.renderCell(row)
+                      : column.field in row
+                      ? (row[column.field as keyof T] as string)
+                      : ""}
+                  </TableCell>
+                ))}
+                <TableCell align="right">
+                  <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
                     {onEdit && (
                       <IconButton
-                        edge="end"
-                        aria-label="edit"
-                        onClick={() => onEdit(item)}
-                        sx={{
-                          color: "#1976d2",
-                          "&:hover": {
-                            backgroundColor: "rgba(25, 118, 210, 0.08)",
-                          },
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEdit(row);
                         }}
                       >
                         <EditIcon />
@@ -171,71 +121,22 @@ export default function DataTable({
                     )}
                     {onDelete && (
                       <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={() => onDelete(item)}
-                        sx={{
-                          color: "#d32f2f",
-                          "&:hover": {
-                            backgroundColor: "rgba(211, 47, 47, 0.08)",
-                          },
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDelete(row);
                         }}
                       >
                         <DeleteIcon />
                       </IconButton>
                     )}
                   </Box>
-                }
-              >
-                <ListItemIcon sx={{ minWidth: 40, color: "text.secondary" }}>
-                  {icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <Typography
-                        sx={{
-                          fontWeight: 500,
-                          fontSize: "0.95rem",
-                          color: "text.primary",
-                        }}
-                      >
-                        {primary}
-                      </Typography>
-                      {chips?.map((chip, chipIndex) => (
-                        <Chip
-                          key={chipIndex}
-                          icon={chip.icon}
-                          label={chip.label}
-                          color={chip.color as any}
-                          size="small"
-                          sx={{
-                            borderRadius: 1,
-                            "& .MuiChip-icon": {
-                              color: "inherit",
-                            },
-                          }}
-                        />
-                      ))}
-                    </Box>
-                  }
-                  secondary={
-                    <Typography
-                      sx={{
-                        fontSize: "0.875rem",
-                        color: "text.secondary",
-                        mt: 0.5,
-                      }}
-                    >
-                      {secondary}
-                    </Typography>
-                  }
-                />
-              </ListItem>
-            );
-          })}
-        </List>
-      </CardContent>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Paper>
   );
 }

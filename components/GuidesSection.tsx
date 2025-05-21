@@ -291,27 +291,27 @@ export default function GuidesSection({
                 mb: 1,
               }}
             >
-              {failedImages.has(guide.image || '') ? (
+              {failedImages.has(typeof guide.image === 'string' ? guide.image : '') ? (
                 <FallbackIcon color={guide.color} />
               ) : (
                 <CardMedia
                   component="img"
-                  image={guide.image || ''}
+                  image={typeof guide.image === 'string' ? guide.image : URL.createObjectURL(guide.image)}
                   alt={guide.title}
                   onError={() => {
-                    if (guide.image) {
-                      setFailedImages((prev) => new Set([...prev, guide.image]));
+                    if (typeof guide.image === 'string' && guide.image) {
+                      setFailedImages((prev) => new Set([...prev, guide.image as string]));
                     }
                   }}
                   sx={{
                     width: 64,
                     height: 64,
                     objectFit: "contain",
-                borderRadius: 2,
-                boxShadow: `0 2px 8px 0 ${guide.color}22`,
-                background: "#fff",
-              }}
-            />
+                    borderRadius: 2,
+                    boxShadow: `0 2px 8px 0 ${guide.color}22`,
+                    background: "#fff",
+                  }}
+                />
               )}
             </Box>
             <CardContent

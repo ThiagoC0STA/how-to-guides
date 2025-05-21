@@ -82,7 +82,7 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
       />
       {overview && (
         <GuideOverview
-          title={overview.title}
+          title={"Guide Overview"}
           description={overview.description}
           bullets={overview.bullets}
           guideColor={guideColor}

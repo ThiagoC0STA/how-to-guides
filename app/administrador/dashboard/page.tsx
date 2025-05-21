@@ -1,200 +1,274 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Container, Typography, useTheme } from "@mui/material";
 import {
-  Book as BookIcon,
-  Category as CategoryIcon,
-  SmartToy as SmartToyIcon,
-  TrendingUp as TrendingUpIcon,
-} from "@mui/icons-material";
-import { categories } from "@/data/categories";
-import { GUIDES } from "@/data/guides";
-import { modelData } from "@/data/models";
-import StatCard from "./components/StatCard";
+  Box,
+  Stack,
+  Paper,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControlLabel,
+  Switch,
+  Chip,
+} from "@mui/material";
 import DataTable from "./components/DataTable";
-import NavigationTabs from "./components/NavigationTabs";
+import { GUIDES } from "@/data/guides";
+import { categories } from "@/data/categories";
+import { modelData } from "@/data/models";
+
+interface Category {
+  id: string;
+  title: string;
+  description: string;
+}
+
+interface Model {
+  name: string;
+  company: string;
+  releaseDate: string;
+  description: string;
+  strengths: string[];
+  limitations: string[];
+  useCases: string[];
+  pricing: {
+    free: string;
+    paid: string;
+    api: string;
+  };
+  link: string | null;
+  status?: "active" | "inactive";
+}
 
 export default function Dashboard() {
-  const [selectedSection, setSelectedSection] = useState("overview");
-  const theme = useTheme();
+  const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
+  const [openModelDialog, setOpenModelDialog] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
 
-  const sections = [
-    { id: "overview", label: "Overview" },
-    { id: "guides", label: "Guides" },
-    { id: "categories", label: "Categories" },
-    { id: "models", label: "Models" },
-  ];
-
-  const stats = {
-    totalGuides: GUIDES.length,
-    totalCategories: categories.length,
-    totalModels: Object.values(modelData).flat().length,
-    featuredGuides: GUIDES.filter((guide) => guide.featured).length,
+  const handleAddCategory = () => {
+    setSelectedCategory(null);
+    setOpenCategoryDialog(true);
   };
 
-  const renderOverview = () => (
-    <Box
-      sx={{
-        display: "grid",
-        gridTemplateColumns: {
-          xs: "1fr",
-          md: "repeat(2, 1fr)",
-          lg: "repeat(4, 1fr)",
-        },
-        gap: 3,
-        mb: 4,
-      }}
-    >
-      <StatCard
-        title="Total Guides"
-        value={stats.totalGuides}
-        icon={<BookIcon />}
-        color={theme.palette.primary.main}
+  const handleEditCategory = (category: Category) => {
+    setSelectedCategory(category);
+    setOpenCategoryDialog(true);
+  };
+
+  const handleDeleteCategory = (category: Category) => {
+    // TODO: Implement delete category
+    console.log("Delete category:", category);
+  };
+
+  const handleAddModel = () => {
+    setSelectedModel(null);
+    setOpenModelDialog(true);
+  };
+
+  const handleEditModel = (model: Model) => {
+    setSelectedModel(model);
+    setOpenModelDialog(true);
+  };
+
+  const handleDeleteModel = (model: Model) => {
+    // TODO: Implement delete model
+    console.log("Delete model:", model);
+  };
+
+  const renderGuides = () => {
+    const columns = [
+      { field: "title", headerName: "Title", width: 200 },
+      { field: "description", headerName: "Description", width: 300 },
+      {
+        field: "categories",
+        headerName: "Categories",
+        width: 200,
+        renderCell: (row: any) => (
+          <Box sx={{ display: "flex", gap: 1 }}>
+            {row.metadata.categories.map((category: string) => (
+              <Chip key={category} label={category} size="small" />
+            ))}
+          </Box>
+        ),
+      },
+      {
+        field: "featured",
+        headerName: "Featured",
+        width: 100,
+        renderCell: (row: any) => (
+          <Chip
+            label={row.featured ? "Yes" : "No"}
+            color={row.featured ? "primary" : "default"}
+            size="small"
+          />
+        ),
+      },
+      {
+        field: "lastUpdated",
+        headerName: "Last Updated",
+        width: 150,
+      },
+    ];
+
+    return (
+      <DataTable
+        title="Guides"
+        data={GUIDES}
+        columns={columns}
       />
-      <StatCard
+    );
+  };
+
+  const renderCategories = () => {
+    const columns = [
+      { field: "title", headerName: "Title", width: 200 },
+      { field: "description", headerName: "Description", width: 300 },
+    ];
+
+    return (
+      <DataTable
         title="Categories"
-        value={stats.totalCategories}
-        icon={<CategoryIcon />}
-        color={theme.palette.success.main}
+        data={categories}
+        columns={columns}
+        onAdd={handleAddCategory}
+        onEdit={handleEditCategory}
+        onDelete={handleDeleteCategory}
       />
-      <StatCard
-        title="AI Models"
-        value={stats.totalModels}
-        icon={<SmartToyIcon />}
-        color={theme.palette.warning.main}
+    );
+  };
+
+  const renderModels = () => {
+    const columns = [
+      { field: "name", headerName: "Title", width: 200 },
+      { field: "description", headerName: "Description", width: 300 },
+      { field: "company", headerName: "Company", width: 150 },
+      {
+        field: "status",
+        headerName: "Status",
+        width: 100,
+        renderCell: (row: Model) => (
+          <Chip
+            label={row.status || "active"}
+            color={row.status === "active" ? "success" : "default"}
+            size="small"
+          />
+        ),
+      },
+    ];
+
+    const models = modelData.text.map(model => ({
+      ...model,
+      status: "active" as const,
+    }));
+
+    return (
+      <DataTable
+        title="Models"
+        data={models}
+        columns={columns}
+        onAdd={handleAddModel}
+        onEdit={handleEditModel}
+        onDelete={handleDeleteModel}
       />
-      <StatCard
-        title="Featured Guides"
-        value={stats.featuredGuides}
-        icon={<TrendingUpIcon />}
-        color={theme.palette.secondary.main}
-      />
-    </Box>
-  );
-
-  const renderGuides = () => (
-    <DataTable
-      title="Guides"
-      items={GUIDES}
-      onAdd={() => {
-        /* TODO: Implement add guide */
-      }}
-      onEdit={(guide) => {
-        /* TODO: Implement edit guide */
-      }}
-      onDelete={(guide) => {
-        /* TODO: Implement delete guide */
-      }}
-      renderItem={(guide) => ({
-        icon: <BookIcon />,
-        primary: guide.title,
-        secondary: `Last updated: ${guide.lastUpdated}`,
-        chips: guide.featured
-          ? [
-              {
-                icon: <TrendingUpIcon />,
-                label: "Featured",
-                color: "primary",
-              },
-            ]
-          : undefined,
-      })}
-      searchPlaceholder="Search guides..."
-    />
-  );
-
-  const renderCategories = () => (
-    <DataTable
-      title="Categories"
-      items={categories}
-      onAdd={() => {
-        /* TODO: Implement add category */
-      }}
-      onEdit={(category) => {
-        /* TODO: Implement edit category */
-      }}
-      onDelete={(category) => {
-        /* TODO: Implement delete category */
-      }}
-      renderItem={(category) => ({
-        icon: <CategoryIcon />,
-        primary: category.title,
-        secondary: `${category.guides.length} guides`,
-        chips: category.featured
-          ? [
-              {
-                icon: <TrendingUpIcon />,
-                label: "Featured",
-                color: "primary",
-              },
-            ]
-          : undefined,
-      })}
-      searchPlaceholder="Search categories..."
-    />
-  );
-
-  const renderModels = () => (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      {Object.entries(modelData).map(([type, models]) => (
-        <DataTable
-          key={type}
-          title={`${type.charAt(0).toUpperCase() + type.slice(1)} Models`}
-          items={models}
-          onAdd={() => {
-            /* TODO: Implement add model */
-          }}
-          onEdit={(model) => {
-            /* TODO: Implement edit model */
-          }}
-          onDelete={(model) => {
-            /* TODO: Implement delete model */
-          }}
-          renderItem={(model) => ({
-            icon: <SmartToyIcon />,
-            primary: model.name,
-            secondary: `${model.company} • Released: ${model.releaseDate}`,
-          })}
-          searchPlaceholder={`Search ${type} models...`}
-        />
-      ))}
-    </Box>
-  );
+    );
+  };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Box
-        sx={{
-          mb: 4,
-          display: "flex",
-          gap: 2,
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Typography
-          variant="h4"
-          component="h1"
-          sx={{
-            fontWeight: 700,
-            color: "text.primary",
-            letterSpacing: "-0.5px",
-          }}
-        >
-          Dashboard
-        </Typography>
-        <NavigationTabs
-          sections={sections}
-          selectedSection={selectedSection}
-          onSectionChange={setSelectedSection}
-        />
-      </Box>
+    <Box sx={{ p: 3 }}>
+      <Stack spacing={3}>
+        <Box>
+          {renderGuides()}
+        </Box>
+        <Stack direction="row" spacing={3}>
+          <Box sx={{ flex: 1 }}>
+            {renderCategories()}
+          </Box>
+          <Box sx={{ flex: 1 }}>
+            {renderModels()}
+          </Box>
+        </Stack>
+      </Stack>
 
-      {selectedSection === "overview" && renderOverview()}
-      {selectedSection === "guides" && renderGuides()}
-      {selectedSection === "categories" && renderCategories()}
-      {selectedSection === "models" && renderModels()}
-    </Container>
+      {/* Category Dialog */}
+      <Dialog
+        open={openCategoryDialog}
+        onClose={() => setOpenCategoryDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          {selectedCategory ? "Edit Category" : "Add New Category"}
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2 }}>
+            <TextField
+              label="Title"
+              fullWidth
+              defaultValue={selectedCategory?.title}
+            />
+            <TextField
+              label="Description"
+              fullWidth
+              multiline
+              rows={3}
+              defaultValue={selectedCategory?.description}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenCategoryDialog(false)}>Cancel</Button>
+          <Button variant="contained">Save</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Model Dialog */}
+      <Dialog
+        open={openModelDialog}
+        onClose={() => setOpenModelDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          {selectedModel ? "Edit Model" : "Add New Model"}
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2 }}>
+            <TextField
+              label="Title"
+              fullWidth
+              defaultValue={selectedModel?.name}
+            />
+            <TextField
+              label="Description"
+              fullWidth
+              multiline
+              rows={3}
+              defaultValue={selectedModel?.description}
+            />
+            <TextField
+              label="Company"
+              fullWidth
+              defaultValue={selectedModel?.company}
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  defaultChecked={selectedModel?.status === "active"}
+                />
+              }
+              label="Active"
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenModelDialog(false)}>Cancel</Button>
+          <Button variant="contained">Save</Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 }
