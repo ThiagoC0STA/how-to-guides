@@ -39,39 +39,16 @@ interface DataTableProps<T> {
 }
 
 export default function DataTable<T>({
-  title,
   data,
   columns,
-  onAdd,
   onEdit,
   onDelete,
 }: DataTableProps<T>) {
   const router = useRouter();
   const [selectedRow, setSelectedRow] = useState<T | null>(null);
 
-  const handleAddClick = () => {
-    if (title === "Guides") {
-      router.push("/administrador/guides");
-    } else if (onAdd) {
-      onAdd();
-    }
-  };
-
   return (
-    <Paper sx={{ p: 3 }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
-          {title}
-        </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleAddClick}
-        >
-          Add {title.slice(0, -1)}
-        </Button>
-      </Box>
-
+    <Paper elevation={0} sx={{ p: 0 }}>
       <TableContainer>
         <Table>
           <TableHead>
@@ -84,9 +61,6 @@ export default function DataTable<T>({
                   {column.headerName}
                 </TableCell>
               ))}
-              <TableCell align="right" sx={{ width: 100 }}>
-                Actions
-              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -106,32 +80,6 @@ export default function DataTable<T>({
                       : ""}
                   </TableCell>
                 ))}
-                <TableCell align="right">
-                  <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
-                    {onEdit && (
-                      <IconButton
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onEdit(row);
-                        }}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    )}
-                    {onDelete && (
-                      <IconButton
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDelete(row);
-                        }}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    )}
-                  </Box>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>
