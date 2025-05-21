@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Box,
   Container,
@@ -12,31 +13,93 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
+  ListItemIcon,
+  Divider,
+  Badge,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import {
+  FaHome,
+  FaBook,
+  FaRobot,
+  FaDatabase,
+  FaInfoCircle,
+  FaChartBar,
+  FaUsers,
+  FaCog,
+  FaBell,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from "next/navigation";
 
-const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "AI Guides", href: "/guides" },
-  { label: "Prompt Engineering", href: "/prompt-engineering" },
-  { label: "Resources", href: "/resources" },
-  { label: "About", href: "/about" },
+const publicNavLinks = [
+  { label: "Home", href: "/", icon: <FaHome /> },
+  { label: "AI Guides", href: "/guides", icon: <FaBook /> },
+  {
+    label: "Prompt Engineering",
+    href: "/prompt-engineering",
+    icon: <FaRobot />,
+  },
+  { label: "Resources", href: "/resources", icon: <FaDatabase /> },
+  { label: "About", href: "/about", icon: <FaInfoCircle /> },
+];
+
+const adminNavLinks = [
+  {
+    label: "Dashboard",
+    href: "/administrador/dashboard",
+    icon: <FaChartBar />,
+  },
+  { label: "Usuários", href: "/administrador/usuarios", icon: <FaUsers /> },
+  { label: "Conteúdo", href: "/administrador/conteudo", icon: <FaBook /> },
+  {
+    label: "Configurações",
+    href: "/administrador/configuracoes",
+    icon: <FaCog />,
+  },
 ];
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+  const isAdminRoute =
+    pathname?.startsWith("/administrador") &&
+    pathname !== "/administrador/login";
 
   const handleDrawerToggle = () => {
     setMobileOpen((prev) => !prev);
   };
 
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      await supabase.auth.signOut();
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      });
+      router.push("/administrador/login");
+      router.refresh();
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    }
+  };
+
+  const navLinks = isAdminRoute ? adminNavLinks : publicNavLinks;
+
   return (
     <Box
       component="header"
       sx={{
-        bgcolor: "var(--background)",
-        // borderBottom: "1px solid var(--footer-border)",
+        bgcolor: isAdminRoute ? "white" : "var(--background)",
+        borderBottom: "1px solid #e2e8f0",
         py: { xs: 2, md: 2 },
         width: "100vw",
         position: "relative",
@@ -60,14 +123,14 @@ export default function Header() {
           }}
         >
           {/* Logo */}
-          <Link href="/" passHref>
+          <Link href={isAdminRoute ? "/administrador/dashboard" : "/"} passHref>
             <Box
               component="img"
               src="/images/logo/guides-logo.svg"
               alt="How-ToGuides.com"
               sx={{
-                width: 190,
-                height: 110,
+                width: isAdminRoute ? 150 : 190,
+                height: isAdminRoute ? 80 : 110,
                 cursor: "pointer",
                 display: "block",
                 ml: -2,
@@ -91,15 +154,30 @@ export default function Header() {
                     fontWeight: 600,
                     fontSize: "0.95rem",
                     transition: "color 0.2s ease",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
                     "&:hover": {
                       color: "var(--primary-blue)",
                     },
                   }}
                 >
+                  {item.icon}
                   {item.label}
                 </Typography>
               </Link>
             ))}
+            {isAdminRoute && (
+              <>
+                <IconButton
+                  color="primary"
+                  onClick={handleLogout}
+                  sx={{ ml: 1, color: "var(--foreground)" }}
+                >
+                  <FaSignOutAlt />
+                </IconButton>
+              </>
+            )}
           </Stack>
 
           {/* Mobile Menu Icon */}
@@ -140,10 +218,38 @@ export default function Header() {
                     },
                   }}
                 >
+                  <ListItemIcon sx={{ minWidth: 40, color: "inherit" }}>
+                    {item.icon}
+                  </ListItemIcon>
                   <ListItemText primary={item.label} />
                 </ListItemButton>
               </ListItem>
             ))}
+            {isAdminRoute && (
+              <>
+                <Divider sx={{ my: 2 }} />
+                <ListItem disablePadding>
+                  <ListItemButton
+                    onClick={() => {
+                      handleLogout();
+                      handleDrawerToggle();
+                    }}
+                    sx={{
+                      color: "error.main",
+                      fontWeight: 500,
+                      fontSize: 17,
+                      px: 3,
+                      py: 1.5,
+                    }}
+                  >
+                    <ListItemIcon sx={{ minWidth: 40, color: "inherit" }}>
+                      <FaSignOutAlt />
+                    </ListItemIcon>
+                    <ListItemText primary="Sair" />
+                  </ListItemButton>
+                </ListItem>
+              </>
+            )}
           </List>
         </Drawer>
       </Container>

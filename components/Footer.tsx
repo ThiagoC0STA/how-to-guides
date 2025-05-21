@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Box,
   Container,
@@ -29,6 +32,14 @@ const resources = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+  const isAdminRoute = pathname?.startsWith("/administrador") && pathname !== "/administrador/login";
+
+  // Não exibe o footer nas rotas administrativas
+  if (isAdminRoute) {
+    return null;
+  }
+
   return (
     <Box
       component="footer"
