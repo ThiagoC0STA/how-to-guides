@@ -222,10 +222,10 @@ export default function GuideForm({ guideId }: GuideFormProps) {
         imageUrl = publicUrlData.publicUrl;
       }
 
-      // Montar array de objetos {id, title} das categorias selecionadas
+      // Montar array de objetos {id, title, color} das categorias selecionadas
       const selectedCategoryObjs = categoriesList
         .filter((cat) => selectedCategories.includes(cat.id))
-        .map((cat) => ({ id: cat.id, title: cat.title }));
+        .map((cat) => ({ id: cat.id, title: cat.title, color: cat.color }));
 
       const guideData = {
         title: formData.title,

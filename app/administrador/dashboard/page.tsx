@@ -481,21 +481,21 @@ export default function Dashboard() {
             >
               {categories.length > 0 ? (
                 categories.map((cat: any) => (
-                <Chip
+                  <Chip
                     key={cat.id}
                     label={cat.title}
-                  size="small"
-                  sx={{
-                      bgcolor: "white",
-                      color: "var(--primary-purple)",
-                    fontWeight: 500,
-                      border: "1px solid",
-                      borderColor: "var(--primary-purple)25",
-                    "&:hover": {
-                        bgcolor: "var(--primary-purple)10",
-                    },
-                  }}
-                />
+                    size="small"
+                    sx={{
+                      bgcolor: cat.color || "white",
+                      color: cat.color ? "#fff" : "var(--primary-purple)",
+                      fontWeight: 500,
+                      border: cat.color ? "none" : "1px solid",
+                      borderColor: cat.color ? "transparent" : "var(--primary-purple)25",
+                      '&:hover': {
+                        bgcolor: cat.color ? cat.color + 'cc' : "var(--primary-purple)10",
+                      },
+                    }}
+                  />
                 ))
               ) : (
                 <Typography 
