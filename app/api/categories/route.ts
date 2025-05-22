@@ -57,14 +57,60 @@ export async function GET(req: NextRequest) {
 // POST /api/categories
 export async function POST(req: NextRequest) {
   console.log("📝 Creating new category");
+  const res = NextResponse.json({ success: true });
 
-  const { createClient } = await import("@supabase/supabase-js");
-  const supabase = createClient(
+  // Pegar o token do header
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return NextResponse.json(
+      { error: "Missing or invalid authorization token" },
+      { status: 401 }
+    );
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      global: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+      cookies: {
+        get(name: string) {
+          return req.cookies.get(name)?.value;
+        },
+        set(name: string, value: string, options: any) {
+          res.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+        },
+        remove(name: string, options: any) {
+          res.cookies.set({
+            name,
+            value: "",
+            ...options,
+          });
+        },
+      },
+    }
   );
 
   try {
+    // Verificar autenticação
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const category = await req.json();
 
     // Validate required fields

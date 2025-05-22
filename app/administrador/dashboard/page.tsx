@@ -105,7 +105,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const { data } = await publicRequest.get("/api/categories");
+        const { data } = await publicRequest.get("/categories");
         setCategories(data.categories);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -139,7 +139,7 @@ export default function Dashboard() {
         throw new Error("User not authenticated");
       }
 
-      await privateRequest.delete(`/api/categories/${category.id}`);
+      await privateRequest.delete(`/categories/${category.id}`);
       
       // Update local state
       setCategories((prev) => prev.filter((c) => c.id !== category.id));

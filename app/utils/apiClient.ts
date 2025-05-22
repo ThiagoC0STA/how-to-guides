@@ -1,3 +1,4 @@
+import { supabase } from "@/lib/supabaseClient";
 import axios, { AxiosError, AxiosResponse } from "axios";
 
 // Types
@@ -12,21 +13,12 @@ interface ApiError {
   status?: number;
 }
 
-// Função para pegar o user do localStorage
-function getUserFromLocalStorage(): User | null {
-  if (typeof window !== "undefined") {
-    const user = localStorage.getItem("supabase.auth.user");
-    return user ? JSON.parse(user) : null;
-  }
-  return null;
-}
-
-// Função para pegar o token do localStorage
-function getTokenFromLocalStorage(): string | null {
-  if (typeof window !== "undefined") {
-    return localStorage.getItem("supabase.auth.token");
-  }
-  return null;
+// Função para pegar o token do Supabase
+async function getSupabaseToken(): Promise<string | null> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  return session?.access_token || null;
 }
 
 // Configuração base do axios
@@ -45,13 +37,8 @@ export const privateRequest = axios.create(baseConfig);
 
 // Interceptor de requisição para privateRequest
 privateRequest.interceptors.request.use(
-  (config) => {
-    const user = getUserFromLocalStorage();
-    const token = getTokenFromLocalStorage();
-
-    if (user) {
-      config.headers["x-user"] = JSON.stringify(user);
-    }
+  async (config) => {
+    const token = await getSupabaseToken();
 
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
@@ -80,7 +67,7 @@ const errorInterceptor = (error: AxiosError<ApiError>) => {
       case 401:
         // Não autorizado - redirecionar para login
         if (typeof window !== "undefined") {
-          window.location.href = "/login";
+          window.location.href = "/administrador/login";
         }
         break;
       case 403:
