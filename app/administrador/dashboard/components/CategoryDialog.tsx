@@ -115,14 +115,14 @@ export default function CategoryDialog({
         data
           .filter((file) => file.name !== ".emptyFolderPlaceholder")
           .map(async (file) => {
-            const { data: publicUrlData } = supabase.storage
-              .from("icons")
-              .getPublicUrl(`category-icons/${file.name}`);
-            return {
-              name: file.name,
-              url: publicUrlData.publicUrl,
-            };
-          })
+          const { data: publicUrlData } = supabase.storage
+            .from("icons")
+            .getPublicUrl(`category-icons/${file.name}`);
+          return {
+            name: file.name,
+            url: publicUrlData.publicUrl,
+          };
+        })
       );
 
       setRecentIcons(icons);
@@ -168,11 +168,21 @@ export default function CategoryDialog({
         comingSoon: formData.comingSoon || false,
       };
 
-      onSave(categoryData);
-      onClose();
+      const isEdit = category && category.id && category.id !== "new";
+      const response = isEdit
+        ? await supabase.from("categories").update(categoryData).eq("id", category.id)
+        : await supabase.from("categories").insert(categoryData);
+
+      if (response.error) {
+        console.error("Erro ao salvar categoria:", response.error);
+        alert("Erro ao salvar categoria. Por favor, tente novamente mais tarde.");
+      } else {
+        onSave(categoryData);
+        onClose();
+      }
     } catch (error) {
       console.error("Erro ao salvar categoria:", error);
-      alert("Erro ao salvar categoria. Por favor, tente novamente.");
+      alert("Erro ao salvar categoria. Por favor, tente novamente mais tarde.");
     } finally {
       hideLoading();
     }

@@ -58,15 +58,15 @@ export default function CategoriesAndKeywordsStep({
               {selected.map((value) => {
                 const cat = categories.find((c) => c.id === value);
                 return (
-                  <Chip
-                    key={value}
+                <Chip 
+                  key={value} 
                     label={cat ? cat.title : value}
-                    sx={{
-                      borderRadius: 1,
+                  sx={{
+                    borderRadius: 1,
                       bgcolor: "primary.50",
                       color: "primary.main",
-                    }}
-                  />
+                  }}
+                />
                 );
               })}
             </Box>
@@ -104,9 +104,9 @@ export default function CategoriesAndKeywordsStep({
       </FormControl>
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <Typography
-          variant="subtitle1"
-          sx={{
+        <Typography 
+          variant="subtitle1" 
+          sx={{ 
             fontWeight: 600,
             color: 'text.primary'
           }}

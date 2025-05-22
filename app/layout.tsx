@@ -60,9 +60,9 @@ export default function RootLayout({
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
         <LoadingProvider>
-          <Header />
-          {children}
-          <Footer />
+        <Header />
+        {children}
+        <Footer />
         </LoadingProvider>
       </body>
     </html>

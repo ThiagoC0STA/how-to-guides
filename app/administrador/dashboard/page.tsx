@@ -212,9 +212,9 @@ export default function Dashboard() {
       } else {
         // Create new category
         const response = await privateRequest.post("/categories", category);
-        if (!response.data?.category) {
-          throw new Error("Invalid response from server");
-        }
+      if (!response.data?.category) {
+        throw new Error("Invalid response from server");
+      }
       }
 
       // Fetch updated categories
@@ -403,31 +403,111 @@ export default function Dashboard() {
 
   const renderGuides = () => {
     const columns = [
-      { field: "title", headerName: "Title", width: 200 },
-      { field: "description", headerName: "Description", width: 300 },
+      {
+        field: "image",
+        headerName: "Image",
+        width: 100,
+        renderCell: (row: any) => (
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: 2,
+              overflow: "hidden",
+              bgcolor: "var(--primary-blue)15",
+            }}
+          >
+            {row.image ? (
+              <img
+                src={row.image}
+                alt={row.title}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              <Box
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "var(--primary-blue)",
+                }}
+              >
+                <BookIcon />
+              </Box>
+            )}
+          </Box>
+        ),
+      },
+      { 
+        field: "title", 
+        headerName: "Title", 
+        width: 200,
+        renderCell: (row: any) => (
+          <Box>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+              {row.title}
+            </Typography>
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
+              {row.description?.slice(0, 50)}...
+            </Typography>
+          </Box>
+        ),
+      },
       {
         field: "categories",
         headerName: "Categories",
-        width: 200,
+        width: 250,
         renderCell: (row: any) => {
           const categories = row.metadata?.categories || [];
           return (
-            <Box sx={{ display: "flex", gap: 1 }}>
-              {categories.map((cat: any) => (
+            <Box 
+              sx={{ 
+                display: "flex", 
+                gap: 1, 
+                flexWrap: "wrap",
+                p: 1,
+                bgcolor: "var(--primary-purple)05",
+                borderRadius: 1,
+                minHeight: 48,
+                alignItems: "center",
+                width: "100%"
+              }}
+            >
+              {categories.length > 0 ? (
+                categories.map((cat: any) => (
                 <Chip
-                  key={cat.id}
-                  label={cat.title}
+                    key={cat.id}
+                    label={cat.title}
                   size="small"
                   sx={{
-                    bgcolor: "var(--primary-blue)15",
-                    color: "var(--primary-blue)",
+                      bgcolor: "white",
+                      color: "var(--primary-purple)",
                     fontWeight: 500,
+                      border: "1px solid",
+                      borderColor: "var(--primary-purple)25",
                     "&:hover": {
-                      bgcolor: "var(--primary-blue)25",
+                        bgcolor: "var(--primary-purple)10",
                     },
                   }}
                 />
-              ))}
+                ))
+              ) : (
+                <Typography 
+                  variant="caption" 
+                  sx={{ 
+                    color: "text.secondary",
+                    fontStyle: "italic"
+                  }}
+                >
+                  No categories
+                </Typography>
+              )}
             </Box>
           );
         },
@@ -436,7 +516,17 @@ export default function Dashboard() {
         field: "modules",
         headerName: "Modules",
         width: 100,
-        renderCell: (row: any) => row.modules?.length || 0,
+        renderCell: (row: any) => (
+          <Chip
+            label={`${row.modules?.length || 0} modules`}
+            size="small"
+            sx={{
+              bgcolor: "var(--primary-blue)15",
+              color: "var(--primary-blue)",
+              fontWeight: 500,
+            }}
+          />
+        ),
       },
       {
         field: "featured",
@@ -447,6 +537,9 @@ export default function Dashboard() {
             label={row.featured ? "Yes" : "No"}
             color={row.featured ? "primary" : "default"}
             size="small"
+            sx={{
+              fontWeight: 500,
+            }}
           />
         ),
       },
@@ -454,7 +547,11 @@ export default function Dashboard() {
         field: "created_at",
         headerName: "Created At",
         width: 150,
-        renderCell: (row: any) => new Date(row.created_at).toLocaleDateString(),
+        renderCell: (row: any) => (
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            {new Date(row.created_at).toLocaleDateString()}
+          </Typography>
+        ),
       },
       {
         field: "actions",
@@ -462,7 +559,11 @@ export default function Dashboard() {
         width: 100,
         renderCell: (row: any) => (
           <Box sx={{ display: "flex", gap: 1 }}>
-            <IconButton size="small" color="primary">
+            <IconButton 
+              size="small" 
+              color="primary"
+              onClick={() => router.push(`/administrador/guides/${row.id}`)}
+            >
               <EditIcon fontSize="small" />
             </IconButton>
             <IconButton

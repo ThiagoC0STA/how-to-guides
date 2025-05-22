@@ -65,6 +65,43 @@ export default function GuideForm({ guideId }: GuideFormProps) {
   const [categoriesRefreshKey, setCategoriesRefreshKey] = useState(0);
   const [categoriesList, setCategoriesList] = useState<any[]>([]);
 
+  // Fetch guide data if guideId is present
+  useEffect(() => {
+    const fetchGuide = async () => {
+      if (!guideId || guideId === "new") return;
+
+      showLoading();
+      try {
+        const { data } = await publicRequest.get(`/guides/${guideId}`);
+        if (!data?.guide) throw new Error("Guide not found");
+
+        const guide = data.guide;
+
+        // Fill form data
+        setFormData({
+          title: guide.title,
+          description: guide.description,
+          image: guide.image,
+          color: guide.color,
+          modules: guide.modules,
+          metadata: guide.metadata,
+        });
+
+        // Set selected categories
+        const categoryIds =
+          guide.metadata?.categories?.map((cat: any) => cat.id) || [];
+        setSelectedCategories(categoryIds);
+      } catch (error) {
+        console.error("Error fetching guide:", error);
+        alert("Error loading guide data");
+      } finally {
+        hideLoading();
+      }
+    };
+
+    fetchGuide();
+  }, [guideId]);
+
   const handleNext = () => {
     setActiveStep((prevStep) => prevStep + 1);
   };
@@ -188,7 +225,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
         .filter((cat) => selectedCategories.includes(cat.id))
         .map((cat) => ({ id: cat.id, title: cat.title }));
 
-      const response = await privateRequest.post("/guides", {
+      const guideData = {
         title: formData.title,
         description: formData.description,
         image: imageUrl,
@@ -198,10 +235,17 @@ export default function GuideForm({ guideId }: GuideFormProps) {
           ...formData.metadata,
           categories: selectedCategoryObjs,
         },
-      });
+      };
+
+      const isEdit = guideId && guideId !== "new";
+      const response = isEdit
+        ? await privateRequest.put(`/guides/${guideId}`, guideData)
+        : await privateRequest.post("/guides", guideData);
 
       if (!response.data?.guide) {
-        throw new Error("Erro ao criar guide");
+        throw new Error(
+          guideId ? "Erro ao atualizar guide" : "Erro ao criar guide"
+        );
       }
 
       router.push("/administrador/dashboard");
@@ -317,7 +361,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
             letterSpacing: "-0.5px",
           }}
         >
-          Create New Guide
+          {guideId ? "Edit Guide" : "Create New Guide"}
         </Typography>
 
         <Paper

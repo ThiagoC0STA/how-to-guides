@@ -115,29 +115,25 @@ export async function DELETE(
     let filePath = "";
     console.log("[DELETE] image from DB:", imageUrl);
     if (imageUrl && imageUrl.startsWith("http")) {
-      // Public URL: extract after /object/public/guides/
-      filePath = imageUrl.split("/object/public/guides/").pop() || "";
+      // Public URL: extract after /object/public/images/
+      filePath = imageUrl.split("/object/public/images/").pop() || "";
       console.log("[DELETE] Extracted filePath from public URL:", filePath);
     } else if (imageUrl && imageUrl.startsWith("guides/")) {
-      // Path with guides/ prefix: remove it
-      filePath = imageUrl.replace(/^guides\//, "");
-      console.log("[DELETE] filePath after removing 'guides/':", filePath);
-    } else if (imageUrl) {
-      // Already relative to bucket
       filePath = imageUrl;
-      console.log("[DELETE] filePath used as is:", filePath);
+    } else if (imageUrl) {
+      filePath = imageUrl;
     }
 
     console.log("filePath:", filePath);
 
     if (filePath) {
       console.log(
-        "[DELETE] Attempting to delete from bucket 'guides':",
+        "[DELETE] Attempting to delete from bucket 'images':",
         filePath
       );
       // Delete the image from the bucket
       const { data: removeData, error: deleteImageError } =
-        await supabase.storage.from("guides").remove([filePath]);
+        await supabase.storage.from("images").remove([filePath]);
       console.log("[DELETE] remove() result:", removeData);
       if (deleteImageError) {
         console.error("❌ Error deleting image:", deleteImageError);
@@ -164,6 +160,107 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("❌ Error in delete operation:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT /api/guides/[id]
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  console.log("✏️ Updating guide:", params.id);
+
+  // Get the authorization token
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return NextResponse.json(
+      { error: "Missing or invalid authorization token" },
+      { status: 401 }
+    );
+  }
+  const token = authHeader.split(" ")[1];
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      global: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    }
+  );
+
+  try {
+    const body = await req.json();
+    // Buscar o guide atual para comparar a imagem
+    const { data: currentGuide, error: fetchError } = await supabase
+      .from("guides")
+      .select("image")
+      .eq("id", params.id)
+      .single();
+    if (fetchError) {
+      console.error("❌ Error fetching guide:", fetchError);
+      return NextResponse.json({ error: fetchError.message }, { status: 400 });
+    }
+    if (!currentGuide) {
+      return NextResponse.json({ error: "Guide not found" }, { status: 404 });
+    }
+
+    let imageUrl = body.image;
+    // Se a imagem mudou e não for string vazia
+    if (
+      body.image &&
+      typeof body.image === "string" &&
+      body.image !== currentGuide.image &&
+      currentGuide.image
+    ) {
+      // Apagar imagem antiga
+      let oldFilePath = "";
+      if (currentGuide.image.startsWith("http")) {
+        oldFilePath =
+          currentGuide.image.split("/object/public/guides/").pop() || "";
+      } else if (currentGuide.image.startsWith("guides/")) {
+        oldFilePath = currentGuide.image.replace(/^guides\//, "");
+      } else {
+        oldFilePath = currentGuide.image;
+      }
+      if (oldFilePath) {
+        const { error: deleteImageError } = await supabase.storage
+          .from("guides")
+          .remove([oldFilePath]);
+        if (deleteImageError) {
+          console.error("❌ Error deleting old image:", deleteImageError);
+        }
+      }
+    }
+    // Se for uma nova imagem (upload), o frontend já faz upload e manda a URL
+    // Só atualiza os dados
+    const { data: updatedGuide, error: updateError } = await supabase
+      .from("guides")
+      .update({
+        title: body.title,
+        description: body.description,
+        image: body.image,
+        color: body.color,
+        modules: body.modules,
+        metadata: body.metadata,
+      })
+      .eq("id", params.id)
+      .select()
+      .single();
+    if (updateError) {
+      console.error("❌ Error updating guide:", updateError);
+      return NextResponse.json({ error: updateError.message }, { status: 400 });
+    }
+    return NextResponse.json({ guide: updatedGuide });
+  } catch (error) {
+    console.error("❌ Error in update operation:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
