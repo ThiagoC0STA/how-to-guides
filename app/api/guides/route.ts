@@ -98,6 +98,7 @@ export async function POST(req: NextRequest) {
         color: body.color || null,
         modules: body.modules,
         is_popular: body.is_popular || false,
+        categories: body.categories,
         metadata: body.metadata,
       })
       .select()
@@ -107,6 +108,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
+    // Atualizar o campo guides das categorias envolvidas
+    if (body.categories && Array.isArray(body.categories)) {
+      for (const cat of body.categories) {
+        await supabase
+          .from("categories")
+          .update({ guides: [...(cat.guides || []), data.id] })
+          .eq("id", cat.id);
+      }
+    }
     return NextResponse.json({ guide: data });
   } catch (error) {
     console.error("❌ Error creating guide:", error);

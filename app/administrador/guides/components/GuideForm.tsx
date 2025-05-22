@@ -47,8 +47,8 @@ export default function GuideForm({ guideId }: GuideFormProps) {
     color: "#3f51b5",
     modules: [],
     is_popular: false,
+    categories: [],
     metadata: {
-      categories: [],
       keywords: [],
       overview: {
         text: "",
@@ -85,12 +85,12 @@ export default function GuideForm({ guideId }: GuideFormProps) {
           color: guide.color,
           modules: guide.modules,
           is_popular: guide.is_popular,
+          categories: guide.categories || [],
           metadata: guide.metadata,
         });
 
         // Set selected categories
-        const categoryIds =
-          guide.metadata?.categories?.map((cat: any) => cat.id) || [];
+        const categoryIds = (guide.categories || []).map((cat: any) => cat.id);
         setSelectedCategories(categoryIds);
       } catch (error) {
         console.error("Error fetching guide:", error);
@@ -120,10 +120,8 @@ export default function GuideForm({ guideId }: GuideFormProps) {
 
   const handleCategoryChange = (event: any) => {
     setSelectedCategories(event.target.value);
-    handleFormDataChange("metadata", {
-      ...formData.metadata,
-      categories: event.target.value,
-    });
+    const selectedObjs = categoriesList.filter((cat) => event.target.value.includes(cat.id)).map((cat) => ({ id: cat.id, title: cat.title, color: cat.color }));
+    handleFormDataChange("categories", selectedObjs);
   };
 
   const handleAddKeyword = () => {
@@ -188,7 +186,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
       !formData.title ||
       !formData.description ||
       !formData.image ||
-      !formData.metadata?.categories.length ||
+      !formData.categories?.length ||
       !formData.metadata?.overview ||
       !formData.modules?.length
     ) {
@@ -221,11 +219,6 @@ export default function GuideForm({ guideId }: GuideFormProps) {
         imageUrl = publicUrlData.publicUrl;
       }
 
-      // Montar array de objetos {id, title, color} das categorias selecionadas
-      const selectedCategoryObjs = categoriesList
-        .filter((cat) => selectedCategories.includes(cat.id))
-        .map((cat) => ({ id: cat.id, title: cat.title, color: cat.color }));
-
       const guideData = {
         title: formData.title,
         description: formData.description,
@@ -233,9 +226,9 @@ export default function GuideForm({ guideId }: GuideFormProps) {
         color: formData.color,
         modules: formData.modules,
         is_popular: formData.is_popular,
+        categories: formData.categories,
         metadata: {
           ...formData.metadata,
-          categories: selectedCategoryObjs,
         },
       };
 

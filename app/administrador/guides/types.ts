@@ -29,8 +29,8 @@ export interface Guide {
   is_popular?: boolean;
   showColorPicker?: boolean;
   modules: Module[];
+  categories: string[];
   metadata: {
-    categories: string[];
     keywords: string[];
     overview: {
       text: string;

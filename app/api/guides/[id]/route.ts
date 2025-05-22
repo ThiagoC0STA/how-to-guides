@@ -239,6 +239,7 @@ export async function PUT(req: NextRequest, { params }: any) {
         color: body.color,
         modules: body.modules,
         is_popular: body.is_popular,
+        categories: body.categories,
         metadata: body.metadata,
       })
       .eq("id", params.id)
@@ -247,6 +248,40 @@ export async function PUT(req: NextRequest, { params }: any) {
     if (updateError) {
       console.error("❌ Error updating guide:", updateError);
       return NextResponse.json({ error: updateError.message }, { status: 400 });
+    }
+    // Atualizar o campo guides das categorias envolvidas
+    if (body.categories && Array.isArray(body.categories)) {
+      // Buscar todas as categorias
+      const { data: allCategories } = await supabase
+        .from("categories")
+        .select("id,guides");
+      // Remover o id do guide de todas as categorias que não estão mais relacionadas
+      for (const cat of allCategories || []) {
+        if (!body.categories.find((c: any) => c.id === cat.id)) {
+          const newGuides = (cat.guides || []).filter(
+            (gid: string) => gid !== params.id
+          );
+          await supabase
+            .from("categories")
+            .update({ guides: newGuides })
+            .eq("id", cat.id);
+        }
+      }
+      // Adicionar o id do guide nas categorias selecionadas
+      for (const cat of body.categories) {
+        const { data: catData } = await supabase
+          .from("categories")
+          .select("guides")
+          .eq("id", cat.id)
+          .single();
+        const guidesArr = catData?.guides || [];
+        if (!guidesArr.includes(params.id)) {
+          await supabase
+            .from("categories")
+            .update({ guides: [...guidesArr, params.id] })
+            .eq("id", cat.id);
+        }
+      }
     }
     return NextResponse.json({ guide: updatedGuide });
   } catch (error) {

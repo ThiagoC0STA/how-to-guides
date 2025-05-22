@@ -467,7 +467,7 @@ export default function Dashboard() {
         headerName: "Categories",
         width: 250,
         renderCell: (row: any) => {
-          const categories = row.metadata?.categories || [];
+          const categories = row.categories || [];
           return (
             <Box 
               sx={{ 
@@ -659,6 +659,31 @@ export default function Dashboard() {
       },
       { field: "title", headerName: "Title", width: 200 },
       { field: "description", headerName: "Description", width: 300 },
+      {
+        field: "guides",
+        headerName: "Guides",
+        width: 200,
+        renderCell: (row: Category) => {
+          const guideTitles = row.guides
+            .map((guideId) => {
+              const guide = guides.find((g) => g.id === guideId);
+              return guide ? guide.title : null;
+            })
+            .filter(Boolean);
+
+          return guideTitles.length > 0 ? (
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+              {guideTitles.map((title, idx) => (
+                <Chip key={idx} label={title} size="small" />
+              ))}
+            </Box>
+          ) : (
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
+              No guides
+            </Typography>
+          );
+        },
+      },
       {
         field: "featured",
         headerName: "Featured",
