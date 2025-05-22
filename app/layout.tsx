@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "../components/Header";
 import Footer from "@/components/Footer";
+import { LoadingProvider } from "../components/LoadingProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export const metadata: Metadata = {
       },
     ],
   },
+  
   other: {
     "msapplication-TileColor": "#da532c",
   },
@@ -57,9 +59,11 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        <Header />
-        {children}
-        <Footer />
+        <LoadingProvider>
+          <Header />
+          {children}
+          <Footer />
+        </LoadingProvider>
       </body>
     </html>
   );

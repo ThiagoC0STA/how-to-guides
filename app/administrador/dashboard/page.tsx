@@ -36,6 +36,7 @@ import ActionButton from "./components/ActionButton";
 import { supabase } from "@/lib/supabaseClient";
 import { publicRequest, privateRequest } from "@/app/utils/apiClient";
 import DeleteConfirmationDialog from "@/app/components/DeleteConfirmationDialog";
+import { useLoading } from "@/components/LoadingProvider";
 
 interface Category {
   id: string;
@@ -88,6 +89,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export default function Dashboard() {
+  const { show: showLoading, hide: hideLoading } = useLoading();
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
   const [openModelDialog, setOpenModelDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -102,11 +104,14 @@ export default function Dashboard() {
   // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
+      showLoading();
       try {
         const { data } = await publicRequest.get("/categories");
         setCategories(data.categories);
       } catch (error) {
         console.error("Error fetching categories:", error);
+      } finally {
+        hideLoading();
       }
     };
 
@@ -145,6 +150,7 @@ export default function Dashboard() {
   const handleConfirmDelete = async () => {
     if (!selectedCategory) return;
 
+    showLoading();
     try {
       const {
         data: { session },
@@ -162,10 +168,13 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Error deleting category:", error);
       alert("Erro ao excluir categoria. Por favor, tente novamente.");
+    } finally {
+      hideLoading();
     }
   };
 
   const handleSaveCategory = async (category: Partial<Category>) => {
+    showLoading();
     try {
       const {
         data: { session },
@@ -200,6 +209,8 @@ export default function Dashboard() {
       alert(
         error.message || "Erro ao salvar categoria. Por favor, tente novamente."
       );
+    } finally {
+      hideLoading();
     }
   };
 

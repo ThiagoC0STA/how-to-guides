@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 const AuthContext = createContext({ loading: true, session: null });
 
@@ -32,9 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [router, pathname]);
 
   if (loading) {
-    return (
-      <div style={{ padding: 40, textAlign: "center" }}>Carregando...</div>
-    );
+    return <LoadingOverlay />;
   }
 
   return (

@@ -23,6 +23,7 @@ import {
 } from "@mui/icons-material";
 import ActionButton from "./ActionButton";
 import { supabase } from "@/lib/supabaseClient";
+import { useLoading } from "@/components/LoadingProvider";
 
 interface CategoryDialogProps {
   open: boolean;
@@ -37,6 +38,7 @@ export default function CategoryDialog({
   onSave,
   category,
 }: CategoryDialogProps) {
+  const { show: showLoading, hide: hideLoading } = useLoading();
   const [formData, setFormData] = useState<Partial<Category>>(() => {
     if (category) {
       return {
@@ -134,6 +136,7 @@ export default function CategoryDialog({
   };
 
   const handleSubmit = async () => {
+    showLoading();
     try {
       const {
         data: { session },
@@ -170,10 +173,13 @@ export default function CategoryDialog({
     } catch (error) {
       console.error("Erro ao salvar categoria:", error);
       alert("Erro ao salvar categoria. Por favor, tente novamente.");
+    } finally {
+      hideLoading();
     }
   };
 
   async function handleIconUpload(file: File) {
+    showLoading();
     console.log("Iniciando upload do arquivo:", file);
     try {
       // Ensure the file path is correct
@@ -205,6 +211,8 @@ export default function CategoryDialog({
           (error instanceof Error ? error.message : "Erro desconhecido")
       );
       return null;
+    } finally {
+      hideLoading();
     }
   }
 
