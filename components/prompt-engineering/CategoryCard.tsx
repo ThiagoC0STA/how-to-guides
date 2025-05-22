@@ -14,7 +14,6 @@ interface Guide {
 
 interface CategoryCardProps extends Omit<Category, "iconName"> {
   iconName: string;
-  count: number;
   featured?: boolean;
   comingSoon?: boolean;
   guides: string[];
@@ -28,7 +27,6 @@ export default function CategoryCard({
   description,
   iconName,
   color,
-  count,
   featured,
   comingSoon,
   guides,
@@ -194,7 +192,8 @@ export default function CategoryCard({
                 fontWeight: 500,
               }}
             >
-              {count} {count === 1 ? "Guide" : "Guides"} Available
+              {guideData.length} {guideData.length === 1 ? "Guide" : "Guides"}
+              Available
             </Typography>
           )}
         </Box>

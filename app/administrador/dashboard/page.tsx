@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Stack,
@@ -19,6 +19,7 @@ import {
   Tab,
   Grid,
   IconButton,
+  Container,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -27,17 +28,27 @@ import {
   Book as BookIcon,
   Category as CategoryIcon,
   SmartToy as ModelIcon,
+  AddCircleOutline as AddCircleOutlineIcon,
 } from "@mui/icons-material";
 import DataTable from "./components/DataTable";
 import { GUIDES } from "@/data/guides";
 import { categories } from "@/data/categories";
 import { modelData } from "@/data/models";
 import { useRouter } from "next/navigation";
-
+import CategoryDialog from "./components/CategoryDialog";
+import ActionButton from "./components/ActionButton";
+import { supabase } from "@/lib/supabaseClient";
+import axios from "axios";
+import { publicRequest, privateRequest } from "@/app/utils/apiClient";
 interface Category {
   id: string;
   title: string;
   description: string;
+  icon_url: string;
+  color: string;
+  guides: string[];
+  featured?: boolean;
+  comingSoon?: boolean;
 }
 
 interface Model {
@@ -87,7 +98,22 @@ export default function Dashboard() {
   );
   const [selectedModel, setSelectedModel] = useState<Model | null>(null);
   const [activeTab, setActiveTab] = useState(0);
+  const [categories, setCategories] = useState<Category[]>([]);
   const router = useRouter();
+
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await publicRequest.get("/api/categories");
+        setCategories(data.categories);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -103,9 +129,74 @@ export default function Dashboard() {
     setOpenCategoryDialog(true);
   };
 
-  const handleDeleteCategory = (category: Category) => {
-    // TODO: Implement delete category
-    console.log("Delete category:", category);
+  const handleDeleteCategory = async (category: Category) => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error("User not authenticated");
+      }
+
+      await privateRequest.delete(`/api/categories/${category.id}`);
+      
+      // Update local state
+      setCategories((prev) => prev.filter((c) => c.id !== category.id));
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      // You might want to show an error message to the user here
+    }
+  };
+
+  const handleSaveCategory = async (category: Partial<Category>) => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error("User not authenticated");
+      }
+
+      let response;
+      
+      if (selectedCategory) {
+        // Update existing category
+        response = await privateRequest.put(`/categories/${selectedCategory.id}`, {
+          ...category,
+        });
+      } else {
+        // Create new category
+        response = await privateRequest.post("/categories", {
+          ...category,
+        });
+      }
+
+      if (!response.data?.category) {
+        throw new Error("Invalid response from server");
+      }
+
+      const { category: savedCategory } = response.data;
+
+      // Update local state
+      setCategories((prev) => {
+        if (selectedCategory) {
+          // Update existing category
+          return prev.map((c) => 
+            c.id === selectedCategory.id ? savedCategory : c
+          );
+        } else {
+          // Add new category
+          return [...prev, savedCategory];
+        }
+      });
+
+      setOpenCategoryDialog(false);
+    } catch (error: any) {
+      console.error("Error saving category:", error);
+      alert(error.message || "Erro ao salvar categoria. Por favor, tente novamente.");
+    }
   };
 
   const handleAddModel = () => {
@@ -333,25 +424,19 @@ export default function Dashboard() {
             px: 1.5,
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            Guides
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            sx={{
-              bgcolor: "var(--primary-blue)",
-              "&:hover": {
-                bgcolor: "var(--primary-blue-dark)",
-              },
-              textTransform: "none",
-              borderRadius: 2,
-              px: 3,
-            }}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <BookIcon sx={{ color: "var(--primary-blue)" }} />
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              Guides
+            </Typography>
+          </Box>
+          <ActionButton
+            icon={<AddCircleOutlineIcon />}
+            color="blue"
             onClick={() => router.push("/administrador/guides/new")}
           >
             New Guide
-          </Button>
+          </ActionButton>
         </Box>
         <DataTable title="" data={GUIDES} columns={columns} />
       </Paper>
@@ -362,6 +447,18 @@ export default function Dashboard() {
     const columns = [
       { field: "title", headerName: "Title", width: 200 },
       { field: "description", headerName: "Description", width: 300 },
+      {
+        field: "featured",
+        headerName: "Featured",
+        width: 100,
+        renderCell: (row: Category) => (
+          <Chip
+            label={row.featured ? "Yes" : "No"}
+            color={row.featured ? "primary" : "default"}
+            size="small"
+          />
+        ),
+      },
       {
         field: "actions",
         headerName: "Actions",
@@ -403,25 +500,19 @@ export default function Dashboard() {
             px: 1.5,
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: 600 }}>  
-            Categories
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            sx={{
-              bgcolor: "var(--primary-purple)",
-              "&:hover": {
-                bgcolor: "var(--primary-purple-dark)",
-              },
-              textTransform: "none",
-              borderRadius: 2,
-              px: 3,
-            }}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <CategoryIcon sx={{ color: "var(--primary-purple)" }} />
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              Categories
+            </Typography>
+          </Box>
+          <ActionButton
+            icon={<AddCircleOutlineIcon />}
+            color="purple"
             onClick={handleAddCategory}
           >
-            New Category
-          </Button>
+            Add New Category
+          </ActionButton>
         </Box>
         <DataTable title="" data={categories} columns={columns} />
       </Paper>
@@ -492,25 +583,19 @@ export default function Dashboard() {
             px: 1.5,
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            AI Models
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            sx={{
-              bgcolor: "var(--primary-red)",
-              "&:hover": {
-                bgcolor: "var(--primary-red-dark)",
-              },
-              textTransform: "none",
-              borderRadius: 2,
-              px: 3,
-            }}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <ModelIcon sx={{ color: "var(--primary-red)" }} />
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              AI Models
+            </Typography>
+          </Box>
+          <ActionButton
+            icon={<AddCircleOutlineIcon />}
+            color="red"
             onClick={handleAddModel}
           >
             New Model
-          </Button>
+          </ActionButton>
         </Box>
         <DataTable title="" data={models} columns={columns} />
       </Paper>
@@ -518,7 +603,7 @@ export default function Dashboard() {
   };
 
   return (
-    <Box sx={{ p: 4 }}>
+    <Container sx={{ pt: 5 }}>
       <Typography
         variant="h4"
         sx={{ fontWeight: 700, mb: 4, color: "var(--foreground)" }}
@@ -588,36 +673,12 @@ export default function Dashboard() {
       </Paper>
 
       {/* Category Dialog */}
-      <Dialog
+      <CategoryDialog
         open={openCategoryDialog}
         onClose={() => setOpenCategoryDialog(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>
-          {selectedCategory ? "Edit Category" : "Add New Category"}
-        </DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2 }}>
-            <TextField
-              label="Title"
-              fullWidth
-              defaultValue={selectedCategory?.title}
-            />
-            <TextField
-              label="Description"
-              fullWidth
-              multiline
-              rows={3}
-              defaultValue={selectedCategory?.description}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenCategoryDialog(false)}>Cancel</Button>
-          <Button variant="contained">Save</Button>
-        </DialogActions>
-      </Dialog>
+        onSave={handleSaveCategory}
+        category={selectedCategory || undefined}
+      />
 
       {/* Model Dialog */}
       <Dialog
@@ -661,6 +722,6 @@ export default function Dashboard() {
           <Button variant="contained">Save</Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Container>
   );
 }

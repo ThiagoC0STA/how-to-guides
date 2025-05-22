@@ -104,19 +104,44 @@ export async function POST(req: NextRequest) {
       updated_at: now,
     };
 
-    const { data, error } = await supabase
+    // Start a transaction
+    const { data: newGuide, error: guideError } = await supabase
       .from("guides")
       .insert(guideWithTimestamps)
       .select()
       .single();
 
-    if (error) {
-      console.error("❌ Error creating guide:", error);
-      return NextResponse.json({ error: error.message }, { status: 400 });
+    if (guideError) {
+      console.error("❌ Error creating guide:", guideError);
+      return NextResponse.json({ error: guideError.message }, { status: 400 });
+    }
+
+    // Add categories if provided
+    if (guide.metadata?.categories?.length > 0) {
+      const categoryRelations = guide.metadata.categories.map(
+        (categoryId: string) => ({
+          guide_id: newGuide.id,
+          category_id: categoryId,
+        })
+      );
+
+      const { error: categoryError } = await supabase
+        .from("guide_categories")
+        .insert(categoryRelations);
+
+      if (categoryError) {
+        console.error("❌ Error adding categories:", categoryError);
+        // Rollback guide creation
+        await supabase.from("guides").delete().eq("id", newGuide.id);
+        return NextResponse.json(
+          { error: categoryError.message },
+          { status: 400 }
+        );
+      }
     }
 
     console.log("✅ Guide created successfully");
-    return NextResponse.json({ guide: data });
+    return NextResponse.json({ guide: newGuide });
   } catch (error) {
     console.error("❌ Error creating guide:", error);
     return NextResponse.json(

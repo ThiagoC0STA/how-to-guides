@@ -6,9 +6,8 @@ export interface Category {
   id: string;
   title: string;
   description: string;
-  iconName: string;
+  icon_url: string;
   color: string;
-  count: number;
   featured?: boolean;
   comingSoon?: boolean;
   guides: string[];
@@ -19,9 +18,8 @@ export const categories: Category[] = [
     id: "text-generation",
     title: "Text Generation AI",
     description: "Master text-based AI models like ChatGPT and Claude",
-    iconName: "chat",
+    icon_url: "chat",
     color: "#74aa9c",
-    count: 2,
     featured: true,
     guides: ["chatgpt", "claude"],
   },
@@ -30,9 +28,8 @@ export const categories: Category[] = [
     title: "Image Generation AI",
     description:
       "Create stunning AI-generated images with DALL-E and Midjourney",
-    iconName: "image",
+    icon_url: "image",
     color: "#e74c3c",
-    count: 2,
     featured: true,
     guides: ["dalle", "midjourney"],
   },
@@ -40,9 +37,8 @@ export const categories: Category[] = [
     id: "multimodal-ai",
     title: "Multimodal AI",
     description: "Explore AI models that can handle multiple types of content",
-    iconName: "layers",
+    icon_url: "layers",
     color: "#8e44ad",
-    count: 1,
     featured: true,
     guides: ["gemini"],
   },
@@ -50,9 +46,8 @@ export const categories: Category[] = [
     id: "content-creation",
     title: "AI Content Creation",
     description: "Learn how to use AI for creating various types of content",
-    iconName: "edit",
+    icon_url: "edit",
     color: "#2ecc71",
-    count: 1,
     featured: true,
     guides: ["aiContentCreation"],
   },
@@ -60,11 +55,9 @@ export const categories: Category[] = [
     id: "prompt-engineering",
     title: "Prompt Engineering",
     description: "Master the art of writing effective prompts for AI models",
-    iconName: "lightbulb",
+    icon_url: "lightbulb",
     color: "#3498db",
-    count: 1,
     featured: true,
     guides: ["how-to-write-effective-ai-prompts"],
   },
 ];
- 

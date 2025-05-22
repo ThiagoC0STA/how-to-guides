@@ -5,7 +5,7 @@ import { Box, Typography, TextField, Button, Alert } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { FaRobot } from "react-icons/fa";
 import { useLoading } from "@/components/LoadingProvider";
-import axios from "axios";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -19,15 +19,20 @@ export default function AdminLoginPage() {
     setError("");
     loading.show();
 
-    try {
-      await axios.post("/api/auth/login", { email, password });
+    // Login 100% pelo Supabase Client
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-      router.push("/administrador/dashboard");
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Login failed");
-    } finally {
+    if (error || !data.session) {
+      setError(error?.message || "Login failed");
       loading.hide();
+      return;
     }
+
+    router.push("/administrador/dashboard");
+    loading.hide();
   }
 
   // async function handleCreateAdmin() {
