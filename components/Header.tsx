@@ -52,13 +52,7 @@ const adminNavLinks = [
     href: "/administrador/dashboard",
     icon: <FaChartBar />,
   },
-  { label: "Usuários", href: "/administrador/usuarios", icon: <FaUsers /> },
-  { label: "Conteúdo", href: "/administrador/conteudo", icon: <FaBook /> },
-  {
-    label: "Configurações",
-    href: "/administrador/configuracoes",
-    icon: <FaCog />,
-  },
+  { label: "Home", href: "/", icon: <FaHome /> },
 ];
 
 export default function Header() {

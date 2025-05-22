@@ -554,6 +554,18 @@ export default function Dashboard() {
         ),
       },
       {
+        field: "is_popular",
+        headerName: "Popular",
+        width: 100,
+        renderCell: (row: any) => (
+          row.is_popular ? (
+            <Chip label="Yes" color="success" size="small" />
+          ) : (
+            <Chip label="No" size="small" />
+          )
+        ),
+      },
+      {
         field: "actions",
         headerName: "Actions",
         width: 100,

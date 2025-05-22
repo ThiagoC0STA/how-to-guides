@@ -26,6 +26,7 @@ export interface Guide {
   description: string;
   image: File | string;
   color: string;
+  is_popular?: boolean;
   showColorPicker?: boolean;
   modules: Module[];
   metadata: {

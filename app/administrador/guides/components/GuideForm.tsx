@@ -47,6 +47,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
     image: "",
     color: "#3f51b5",
     modules: [],
+    is_popular: false,
     metadata: {
       categories: [],
       keywords: [],
@@ -84,6 +85,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
           image: guide.image,
           color: guide.color,
           modules: guide.modules,
+          is_popular: guide.is_popular,
           metadata: guide.metadata,
         });
 
@@ -231,6 +233,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
         image: imageUrl,
         color: formData.color,
         modules: formData.modules,
+        is_popular: formData.is_popular,
         metadata: {
           ...formData.metadata,
           categories: selectedCategoryObjs,

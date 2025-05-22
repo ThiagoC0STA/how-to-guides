@@ -249,6 +249,7 @@ export async function PUT(
         image: body.image,
         color: body.color,
         modules: body.modules,
+        is_popular: body.is_popular,
         metadata: body.metadata,
       })
       .eq("id", params.id)

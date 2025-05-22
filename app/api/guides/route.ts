@@ -97,6 +97,7 @@ export async function POST(req: NextRequest) {
         image: body.image || null,
         color: body.color || null,
         modules: body.modules,
+        is_popular: body.is_popular || false,
         metadata: body.metadata,
       })
       .select()
