@@ -37,21 +37,59 @@ export default function CategoryDialog({
   onSave,
   category,
 }: CategoryDialogProps) {
-  const [formData, setFormData] = useState<Partial<Category>>(
-    category || {
+  const [formData, setFormData] = useState<Partial<Category>>(() => {
+    if (category) {
+      return {
+        id: category.id,
+        title: category.title,
+        description: category.description,
+        icon_url: category.icon_url,
+        color: category.color,
+        featured: category.featured || false,
+        comingSoon: category.comingSoon || false,
+        guides: category.guides || []
+      };
+    }
+    return {
       title: "",
       description: "",
       icon_url: "",
       color: "#74aa9c",
       featured: false,
       comingSoon: false,
-    }
-  );
+      guides: []
+    };
+  });
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [iconFile, setIconFile] = useState<File | null>(null);
   const [recentIcons, setRecentIcons] = useState<
     { name: string; url: string }[]
   >([]);
+
+  useEffect(() => {
+    if (category) {
+      setFormData({
+        id: category.id,
+        title: category.title,
+        description: category.description,
+        icon_url: category.icon_url,
+        color: category.color,
+        featured: category.featured || false,
+        comingSoon: category.comingSoon || false,
+        guides: category.guides || []
+      });
+    } else {
+      setFormData({
+        title: "",
+        description: "",
+        icon_url: "",
+        color: "#74aa9c",
+        featured: false,
+        comingSoon: false,
+        guides: []
+      });
+    }
+  }, [category]);
 
   useEffect(() => {
     fetchRecentIcons();

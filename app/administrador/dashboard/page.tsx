@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import {
   Box,
-  Stack,
   Paper,
   Button,
   Dialog,
@@ -17,12 +16,10 @@ import {
   Typography,
   Tabs,
   Tab,
-  Grid,
   IconButton,
   Container,
 } from "@mui/material";
 import {
-  Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   Book as BookIcon,
@@ -32,14 +29,14 @@ import {
 } from "@mui/icons-material";
 import DataTable from "./components/DataTable";
 import { GUIDES } from "@/data/guides";
-import { categories } from "@/data/categories";
 import { modelData } from "@/data/models";
 import { useRouter } from "next/navigation";
 import CategoryDialog from "./components/CategoryDialog";
 import ActionButton from "./components/ActionButton";
 import { supabase } from "@/lib/supabaseClient";
-import axios from "axios";
 import { publicRequest, privateRequest } from "@/app/utils/apiClient";
+import DeleteConfirmationDialog from "@/app/components/DeleteConfirmationDialog";
+
 interface Category {
   id: string;
   title: string;
@@ -93,6 +90,7 @@ function TabPanel(props: TabPanelProps) {
 export default function Dashboard() {
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
   const [openModelDialog, setOpenModelDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
@@ -125,11 +123,28 @@ export default function Dashboard() {
   };
 
   const handleEditCategory = (category: Category) => {
-    setSelectedCategory(category);
+    console.log("Editing category:", category);
+    setSelectedCategory({
+      id: category.id,
+      title: category.title,
+      description: category.description,
+      icon_url: category.icon_url,
+      color: category.color,
+      featured: category.featured || false,
+      comingSoon: category.comingSoon || false,
+      guides: category.guides || []
+    });
     setOpenCategoryDialog(true);
   };
 
   const handleDeleteCategory = async (category: Category) => {
+    setSelectedCategory(category);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedCategory) return;
+
     try {
       const {
         data: { session },
@@ -139,13 +154,14 @@ export default function Dashboard() {
         throw new Error("User not authenticated");
       }
 
-      await privateRequest.delete(`/categories/${category.id}`);
-      
+      await privateRequest.delete(`/categories/${selectedCategory.id}`);
+
       // Update local state
-      setCategories((prev) => prev.filter((c) => c.id !== category.id));
+      setCategories((prev) => prev.filter((c) => c.id !== selectedCategory.id));
+      setOpenDeleteDialog(false);
     } catch (error) {
       console.error("Error deleting category:", error);
-      // You might want to show an error message to the user here
+      alert("Erro ao excluir categoria. Por favor, tente novamente.");
     }
   };
 
@@ -159,43 +175,31 @@ export default function Dashboard() {
         throw new Error("User not authenticated");
       }
 
-      let response;
-      
       if (selectedCategory) {
         // Update existing category
-        response = await privateRequest.put(`/categories/${selectedCategory.id}`, {
-          ...category,
-        });
+        await privateRequest.put(
+          `/categories/${selectedCategory.id}`,
+          category
+        );
       } else {
         // Create new category
-        response = await privateRequest.post("/categories", {
-          ...category,
-        });
-      }
-
-      if (!response.data?.category) {
-        throw new Error("Invalid response from server");
-      }
-
-      const { category: savedCategory } = response.data;
-
-      // Update local state
-      setCategories((prev) => {
-        if (selectedCategory) {
-          // Update existing category
-          return prev.map((c) => 
-            c.id === selectedCategory.id ? savedCategory : c
-          );
-        } else {
-          // Add new category
-          return [...prev, savedCategory];
+        const response = await privateRequest.post("/categories", category);
+        if (!response.data?.category) {
+          throw new Error("Invalid response from server");
         }
-      });
+      }
+
+      // Fetch updated categories
+      const { data } = await publicRequest.get("/categories");
+      setCategories(data.categories);
 
       setOpenCategoryDialog(false);
+      setSelectedCategory(null);
     } catch (error: any) {
       console.error("Error saving category:", error);
-      alert(error.message || "Erro ao salvar categoria. Por favor, tente novamente.");
+      alert(
+        error.message || "Erro ao salvar categoria. Por favor, tente novamente."
+      );
     }
   };
 
@@ -445,6 +449,31 @@ export default function Dashboard() {
 
   const renderCategories = () => {
     const columns = [
+      {
+        field: "icon_url",
+        headerName: "Icon",
+        width: 100,
+        renderCell: (row: Category) => (
+          <Box
+            sx={{
+              width: 40,
+              height: 40,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: 2,
+              bgcolor: `${row.color}15`,
+              color: row.color,
+            }}
+          >
+            <img
+              src={row.icon_url}
+              alt={row.title}
+              style={{ width: 24, height: 24 }}
+            />
+          </Box>
+        ),
+      },
       { field: "title", headerName: "Title", width: 200 },
       { field: "description", headerName: "Description", width: 300 },
       {
@@ -722,6 +751,15 @@ export default function Dashboard() {
           <Button variant="contained">Save</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmationDialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Category"
+        itemName={selectedCategory?.title || ""}
+      />
     </Container>
   );
 }

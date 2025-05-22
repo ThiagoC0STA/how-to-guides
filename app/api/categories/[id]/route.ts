@@ -38,48 +38,66 @@ export async function GET(
 
 // PUT /api/categories/[id]
 export async function PUT(
-  req: NextRequest,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
-  console.log("📝 Updating category");
+  // Pegar o token do header
+  const authHeader = request.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return NextResponse.json(
+      { error: "Missing or invalid authorization token" },
+      { status: 401 }
+    );
+  }
+  const token = authHeader.split(" ")[1];
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      global: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    }
   );
 
   try {
-    const category = await req.json();
+    const body = await request.json();
+    const { id } = await Promise.resolve(params);
 
-    // Validate required fields
-    if (
-      !category.title ||
-      !category.description ||
-      !category.icon_url ||
-      !category.color
-    ) {
-      return NextResponse.json(
-        { error: "Title, description, icon_url and color are required" },
-        { status: 400 }
-      );
-    }
+    console.log("id:", id);
 
-    const { data, error } = await supabase
+    console.log("📝 Updating category with ID:", id);
+    console.log("[PUT] Request body:", body);
+
+    const objToUpdate = {
+      title: body.title,
+      description: body.description,
+      icon_url: body.icon_url,
+      color: body.color,
+      featured: body.featured,
+      comingSoon: body.comingSoon,
+      guides: body.guides,
+      updated_at: new Date().toISOString(),
+    };
+
+    console.log("objToUpdate:", objToUpdate);
+
+    const { error } = await supabase
       .from("categories")
-      .update(category)
-      .eq("id", params.id)
-      .select()
-      .single();
+      .update(objToUpdate)
+      .eq("id", id);
 
     if (error) {
       console.error("❌ Error updating category:", error);
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    console.log("✅ Category updated successfully");
-    return NextResponse.json({ category: data });
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("❌ Error updating category:", error);
+    console.error("❌ Error in PUT request:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -90,30 +108,107 @@ export async function PUT(
 // DELETE /api/categories/[id]
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  const { id } = context.params;
   console.log("🗑️ Deleting category");
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  // Get the authorization token
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return NextResponse.json(
+      { error: "Missing or invalid authorization token" },
+      { status: 401 }
+    );
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  console.log(
+    "[DELETE] Authorization header:",
+    req.headers.get("Authorization")
   );
 
   try {
-    const { error } = await supabase
-      .from("categories")
-      .delete()
-      .eq("id", params.id);
+    // CRIE O CLIENTE AQUI!
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        global: {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      }
+    );
 
-    if (error) {
-      console.error("❌ Error deleting category:", error);
-      return NextResponse.json({ error: error.message }, { status: 400 });
+    // First, get the category to get the icon URL
+    const { data: category, error: fetchError } = await supabase
+      .from("categories")
+      .select("icon_url")
+      .eq("id", id)
+      .single();
+
+    if (fetchError) {
+      console.error("❌ Error fetching category:", fetchError);
+      return NextResponse.json({ error: fetchError.message }, { status: 400 });
     }
 
-    console.log("✅ Category deleted successfully");
+    // Extract the file path from the icon_url
+    let iconUrl = category.icon_url;
+    let filePath = "";
+    console.log("[DELETE] icon_url from DB:", iconUrl);
+    if (iconUrl.startsWith("http")) {
+      // Public URL: extract after /object/public/icons/
+      filePath = iconUrl.split("/object/public/icons/").pop() || "";
+      console.log("[DELETE] Extracted filePath from public URL:", filePath);
+    } else if (iconUrl.startsWith("icons/")) {
+      // Path with icons/ prefix: remove it
+      filePath = iconUrl.replace(/^icons\//, "");
+      console.log("[DELETE] filePath after removing 'icons/':", filePath);
+    } else {
+      // Already relative to bucket
+      filePath = iconUrl;
+      console.log("[DELETE] filePath used as is:", filePath);
+    }
+
+    console.log("filePath:", filePath);
+
+    if (filePath) {
+      console.log(
+        "[DELETE] Attempting to delete from bucket 'icons':",
+        filePath
+      );
+      // Delete the icon from the bucket
+      const { data: removeData, error: deleteIconError } =
+        await supabase.storage.from("icons").remove([filePath]);
+      console.log("[DELETE] remove() result:", removeData);
+      if (deleteIconError) {
+        console.error("❌ Error deleting icon:", deleteIconError);
+        // Continue with category deletion even if icon deletion fails
+      } else {
+        console.log("✅ Icon deleted successfully from bucket");
+      }
+    } else {
+      console.warn("[DELETE] filePath is empty, skipping icon deletion.");
+    }
+
+    // Delete the category from the database
+    const { error: deleteError } = await supabase
+      .from("categories")
+      .delete()
+      .eq("id", id);
+
+    if (deleteError) {
+      console.error("❌ Error deleting category:", deleteError);
+      return NextResponse.json({ error: deleteError.message }, { status: 400 });
+    }
+
+    console.log("✅ Category and icon deleted successfully");
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("❌ Error deleting category:", error);
+    console.error("❌ Error in delete operation:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
