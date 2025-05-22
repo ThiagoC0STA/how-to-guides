@@ -38,3 +38,19 @@ export interface Guide {
     };
   };
 }
+
+export interface Model {
+  id?: number;
+  name: string;
+  company: string;
+  description: string;
+  strengths: string[];
+  limitations: string[];
+  use_cases: string[];
+  pricing: {
+    free: string;
+    paid: string;
+    api: string;
+  };
+  link: string;
+}

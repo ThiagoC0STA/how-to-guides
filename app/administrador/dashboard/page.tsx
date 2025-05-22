@@ -4,14 +4,6 @@ import { useState, useEffect } from "react";
 import {
   Box,
   Paper,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  FormControlLabel,
-  Switch,
   Chip,
   Typography,
   Tabs,
@@ -28,7 +20,6 @@ import {
   AddCircleOutline as AddCircleOutlineIcon,
 } from "@mui/icons-material";
 import DataTable from "./components/DataTable";
-import { modelData } from "@/data/models";
 import { useRouter } from "next/navigation";
 import CategoryDialog from "./components/CategoryDialog";
 import ActionButton from "./components/ActionButton";
@@ -37,6 +28,8 @@ import { publicRequest, privateRequest } from "@/utils/apiClient";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useLoading } from "@/components/LoadingProvider";
 import Image from "next/image";
+import ModelDialog from "./components/ModelDialog";
+import { Model } from "../guides/types";
 
 interface Category {
   id: string;
@@ -48,24 +41,6 @@ interface Category {
   featured?: boolean;
   comingSoon?: boolean;
 }
-
-interface Model {
-  name: string;
-  company: string;
-  releaseDate: string;
-  description: string;
-  strengths: string[];
-  limitations: string[];
-  useCases: string[];
-  pricing: {
-    free: string;
-    paid: string;
-    api: string;
-  };
-  link: string | null;
-  status?: "active" | "inactive";
-}
-
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
@@ -102,6 +77,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
   const [guides, setGuides] = useState<any[]>([]);
+  const [models, setModels] = useState<any[]>([]);
   const router = useRouter();
 
   // Fetch categories
@@ -135,6 +111,22 @@ export default function Dashboard() {
       }
     };
     fetchGuides();
+  }, []);
+
+  // Fetch AI models
+  useEffect(() => {
+    const fetchModels = async () => {
+      showLoading();
+      try {
+        const { data } = await publicRequest.get("/ai-models");
+        setModels(data.models || []);
+      } catch (error) {
+        console.error("Error fetching models:", error);
+      } finally {
+        hideLoading();
+      }
+    };
+    fetchModels();
   }, []);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -212,9 +204,9 @@ export default function Dashboard() {
       } else {
         // Create new category
         const response = await privateRequest.post("/categories", category);
-      if (!response.data?.category) {
-        throw new Error("Invalid response from server");
-      }
+        if (!response.data?.category) {
+          throw new Error("Invalid response from server");
+        }
       }
 
       // Fetch updated categories
@@ -238,14 +230,62 @@ export default function Dashboard() {
     setOpenModelDialog(true);
   };
 
-  const handleEditModel = (model: Model) => {
+  const handleEditModel = (model: any) => {
     setSelectedModel(model);
     setOpenModelDialog(true);
   };
 
-  const handleDeleteModel = (model: Model) => {
-    // TODO: Implement delete model
-    console.log("Delete model:", model);
+  const handleSaveModel = async (modelData: any) => {
+    showLoading();
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) throw new Error("User not authenticated");
+      let response;
+      if (selectedModel && selectedModel.id) {
+        response = await privateRequest.put(
+          `/ai-models/${selectedModel.id}`,
+          modelData
+        );
+      } else {
+        response = await privateRequest.post("/ai-models", modelData);
+      }
+      if (!response.data?.model) {
+        throw new Error(
+          selectedModel ? "Erro ao atualizar modelo" : "Erro ao criar modelo"
+        );
+      }
+      // Atualizar lista
+      const { data } = await publicRequest.get("/ai-models");
+      setModels(data.models || []);
+      setOpenModelDialog(false);
+      setSelectedModel(null);
+    } catch (error: any) {
+      alert(error.message || "Erro ao salvar modelo");
+    } finally {
+      hideLoading();
+    }
+  };
+
+  const handleDeleteModel = async (model: any) => {
+    if (!window.confirm(`Deseja realmente deletar o modelo "${model.name}"?`))
+      return;
+    showLoading();
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) throw new Error("User not authenticated");
+      await privateRequest.delete(`/ai-models/${model.id}`);
+      // Atualizar lista
+      const { data } = await publicRequest.get("/ai-models");
+      setModels(data.models || []);
+    } catch (error: any) {
+      alert(error.message || "Erro ao deletar modelo");
+    } finally {
+      hideLoading();
+    }
   };
 
   const handleDeleteGuide = (guide: any) => {
@@ -393,7 +433,7 @@ export default function Dashboard() {
               variant="h3"
               sx={{ fontWeight: 700, color: "var(--primary-red)" }}
             >
-              {modelData.text.length}
+              {models.length}
             </Typography>
           </Paper>
         </Box>
@@ -447,9 +487,9 @@ export default function Dashboard() {
           </Box>
         ),
       },
-      { 
-        field: "title", 
-        headerName: "Title", 
+      {
+        field: "title",
+        headerName: "Title",
         width: 200,
         renderCell: (row: any) => (
           <Box>
@@ -469,17 +509,17 @@ export default function Dashboard() {
         renderCell: (row: any) => {
           const categories = row.categories || [];
           return (
-            <Box 
-              sx={{ 
-                display: "flex", 
-                gap: 1, 
+            <Box
+              sx={{
+                display: "flex",
+                gap: 1,
                 flexWrap: "wrap",
                 p: 1,
                 bgcolor: "var(--primary-purple)05",
                 borderRadius: 1,
                 minHeight: 48,
                 alignItems: "center",
-                width: "100%"
+                width: "100%",
               }}
             >
               {categories.length > 0 ? (
@@ -493,19 +533,23 @@ export default function Dashboard() {
                       color: cat.color ? "#fff" : "var(--primary-purple)",
                       fontWeight: 500,
                       border: cat.color ? "none" : "1px solid",
-                      borderColor: cat.color ? "transparent" : "var(--primary-purple)25",
-                      '&:hover': {
-                        bgcolor: cat.color ? cat.color + 'cc' : "var(--primary-purple)10",
+                      borderColor: cat.color
+                        ? "transparent"
+                        : "var(--primary-purple)25",
+                      "&:hover": {
+                        bgcolor: cat.color
+                          ? cat.color + "cc"
+                          : "var(--primary-purple)10",
                       },
                     }}
                   />
                 ))
               ) : (
-                <Typography 
-                  variant="caption" 
-                  sx={{ 
+                <Typography
+                  variant="caption"
+                  sx={{
                     color: "text.secondary",
-                    fontStyle: "italic"
+                    fontStyle: "italic",
                   }}
                 >
                   No categories
@@ -560,13 +604,12 @@ export default function Dashboard() {
         field: "is_popular",
         headerName: "Popular",
         width: 100,
-        renderCell: (row: any) => (
+        renderCell: (row: any) =>
           row.is_popular ? (
             <Chip label="Yes" color="success" size="small" />
           ) : (
             <Chip label="No" size="small" />
-          )
-        ),
+          ),
       },
       {
         field: "actions",
@@ -574,8 +617,8 @@ export default function Dashboard() {
         width: 100,
         renderCell: (row: any) => (
           <Box sx={{ display: "flex", gap: 1 }}>
-            <IconButton 
-              size="small" 
+            <IconButton
+              size="small"
               color="primary"
               onClick={() => router.push(`/administrador/guides/${row.id}`)}
             >
@@ -762,22 +805,10 @@ export default function Dashboard() {
       { field: "description", headerName: "Description", width: 300 },
       { field: "company", headerName: "Company", width: 150 },
       {
-        field: "status",
-        headerName: "Status",
-        width: 100,
-        renderCell: (row: Model) => (
-          <Chip
-            label={row.status || "active"}
-            color={row.status === "active" ? "success" : "default"}
-            size="small"
-          />
-        ),
-      },
-      {
         field: "actions",
         headerName: "Actions",
         width: 100,
-        renderCell: (row: Model) => (
+        renderCell: (row: any) => (
           <Box sx={{ display: "flex", gap: 1 }}>
             <IconButton
               size="small"
@@ -797,11 +828,6 @@ export default function Dashboard() {
         ),
       },
     ];
-
-    const models = modelData.text.map((model) => ({
-      ...model,
-      status: "active" as const,
-    }));
 
     return (
       <Paper
@@ -917,48 +943,15 @@ export default function Dashboard() {
         category={selectedCategory || undefined}
       />
 
-      {/* Model Dialog */}
-      <Dialog
+      <ModelDialog
         open={openModelDialog}
-        onClose={() => setOpenModelDialog(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>
-          {selectedModel ? "Edit Model" : "Add New Model"}
-        </DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2 }}>
-            <TextField
-              label="Title"
-              fullWidth
-              defaultValue={selectedModel?.name}
-            />
-            <TextField
-              label="Description"
-              fullWidth
-              multiline
-              rows={3}
-              defaultValue={selectedModel?.description}
-            />
-            <TextField
-              label="Company"
-              fullWidth
-              defaultValue={selectedModel?.company}
-            />
-            <FormControlLabel
-              control={
-                <Switch defaultChecked={selectedModel?.status === "active"} />
-              }
-              label="Active"
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenModelDialog(false)}>Cancel</Button>
-          <Button variant="contained">Save</Button>
-        </DialogActions>
-      </Dialog>
+        onClose={() => {
+          setOpenModelDialog(false);
+          setSelectedModel(null);
+        }}
+        onSave={handleSaveModel}
+        model={selectedModel || undefined}
+      />
 
       {/* Delete Confirmation Dialog */}
       <DeleteConfirmationDialog
