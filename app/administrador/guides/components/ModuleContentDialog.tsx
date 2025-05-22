@@ -15,7 +15,6 @@ import {
   Switch,
   Paper,
   useTheme,
-  Divider,
   Stepper,
   Step,
   StepLabel,
@@ -28,12 +27,6 @@ import {
   Edit as EditIcon,
 } from "@mui/icons-material";
 import { Module, Section } from "@/types/guide";
-
-interface Question {
-  question: string;
-  options: string[];
-  correctAnswer: number;
-}
 
 interface ModuleContentDialogProps {
   open: boolean;
@@ -56,14 +49,16 @@ export default function ModuleContentDialog({
     title: module?.title || "",
     locked: module?.locked || false,
     content: {
-      sections: module?.content?.sections || [{
-        heading: "",
-        text: "",
-        list: [],
-        expandable: false
-      }]
+      sections: module?.content?.sections || [
+        {
+          heading: "",
+          text: "",
+          list: [],
+          expandable: false,
+        },
+      ],
     },
-    questions: module?.questions || []
+    questions: module?.questions || [],
   }));
 
   // Reset editedModule when module prop changes
@@ -73,28 +68,19 @@ export default function ModuleContentDialog({
         title: module.title,
         locked: module.locked,
         content: {
-          sections: module.content?.sections || [{
-            heading: "",
-            text: "",
-            list: [],
-            expandable: false
-          }]
+          sections: module.content?.sections || [
+            {
+              heading: "",
+              text: "",
+              list: [],
+              expandable: false,
+            },
+          ],
         },
-        questions: module.questions || []
+        questions: module.questions || [],
       });
     }
   }, [module]);
-
-  const [newSection, setNewSection] = useState<Partial<Section>>({
-    heading: "",
-    text: "",
-    expandable: false,
-  });
-  const [newQuestion, setNewQuestion] = useState<Partial<Question>>({
-    question: "",
-    options: ["", "", "", ""],
-    correctAnswer: 0,
-  });
 
   const handleSave = () => {
     onSave(editedModule);
@@ -122,7 +108,10 @@ export default function ModuleContentDialog({
       ...prev,
       content: {
         ...prev.content,
-        sections: prev.content?.sections.filter((_: Section, i: number) => i !== index) || [],
+        sections:
+          prev.content?.sections.filter(
+            (_: Section, i: number) => i !== index
+          ) || [],
       },
     }));
   };
@@ -170,7 +159,9 @@ export default function ModuleContentDialog({
       const updatedSections = [...(prev.content?.sections || [])];
       updatedSections[sectionIndex] = {
         ...updatedSections[sectionIndex],
-        list: updatedSections[sectionIndex].list.filter((_: string, i: number) => i !== itemIndex),
+        list: updatedSections[sectionIndex].list.filter(
+          (_: string, i: number) => i !== itemIndex
+        ),
       };
       return {
         ...prev,
@@ -191,8 +182,8 @@ export default function ModuleContentDialog({
       const updatedSections = [...(prev.content?.sections || [])];
       updatedSections[sectionIndex] = {
         ...updatedSections[sectionIndex],
-        list: updatedSections[sectionIndex].list.map((item: string, i: number) =>
-          i === itemIndex ? value : item
+        list: updatedSections[sectionIndex].list.map(
+          (item: string, i: number) => (i === itemIndex ? value : item)
         ),
       };
       return {
@@ -225,19 +216,28 @@ export default function ModuleContentDialog({
             borderColor: "divider",
             borderRadius: 2,
             background: theme.palette.background.default,
-            transition: 'all 0.2s ease-in-out',
-            '&:hover': {
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-            }
+            transition: "all 0.2s ease-in-out",
+            "&:hover": {
+              boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+            },
           }}
         >
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <Typography variant="subtitle1" sx={{ 
-                fontWeight: 600,
-                color: theme.palette.text.primary,
-                letterSpacing: '-0.3px'
-              }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  fontWeight: 600,
+                  color: theme.palette.text.primary,
+                  letterSpacing: "-0.3px",
+                }}
+              >
                 Section {sectionIndex + 1}
               </Typography>
               <IconButton
@@ -245,10 +245,10 @@ export default function ModuleContentDialog({
                 onClick={() => handleRemoveSection(sectionIndex)}
                 sx={{
                   color: theme.palette.error.main,
-                  '&:hover': {
+                  "&:hover": {
                     background: theme.palette.error.light,
                     color: theme.palette.error.contrastText,
-                  }
+                  },
                 }}
               >
                 <DeleteIcon />
@@ -263,25 +263,29 @@ export default function ModuleContentDialog({
                 handleSectionChange(sectionIndex, "heading", e.target.value)
               }
               sx={{
-                '& .MuiOutlinedInput-root': {
+                "& .MuiOutlinedInput-root": {
                   borderRadius: 2,
-                }
+                },
               }}
             />
 
             <TextField
               fullWidth
               label="Content"
-              value={typeof section.text === "string" ? section.text : section.text.join("\n")}
+              value={
+                typeof section.text === "string"
+                  ? section.text
+                  : section.text.join("\n")
+              }
               onChange={(e) =>
                 handleSectionChange(sectionIndex, "text", e.target.value)
               }
               multiline
               rows={4}
               sx={{
-                '& .MuiOutlinedInput-root': {
+                "& .MuiOutlinedInput-root": {
                   borderRadius: 2,
-                }
+                },
               }}
             />
 
@@ -290,7 +294,11 @@ export default function ModuleContentDialog({
                 <Switch
                   checked={section.expandable || false}
                   onChange={(e) =>
-                    handleSectionChange(sectionIndex, "expandable", e.target.checked)
+                    handleSectionChange(
+                      sectionIndex,
+                      "expandable",
+                      e.target.checked
+                    )
                   }
                 />
               }
@@ -298,11 +306,20 @@ export default function ModuleContentDialog({
             />
 
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography variant="subtitle2" sx={{ 
-                  fontWeight: 600,
-                  color: theme.palette.text.secondary
-                }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontWeight: 600,
+                    color: theme.palette.text.secondary,
+                  }}
+                >
                   List Items
                 </Typography>
                 <Button
@@ -312,11 +329,11 @@ export default function ModuleContentDialog({
                   startIcon={<AddIcon />}
                   sx={{
                     borderRadius: 2,
-                    textTransform: 'none',
+                    textTransform: "none",
                     borderWidth: 2,
-                    '&:hover': {
-                      borderWidth: 2
-                    }
+                    "&:hover": {
+                      borderWidth: 2,
+                    },
                   }}
                 >
                   Add Item
@@ -344,9 +361,9 @@ export default function ModuleContentDialog({
                       )
                     }
                     sx={{
-                      '& .MuiOutlinedInput-root': {
+                      "& .MuiOutlinedInput-root": {
                         borderRadius: 2,
-                      }
+                      },
                     }}
                   />
                   <IconButton
@@ -356,10 +373,10 @@ export default function ModuleContentDialog({
                     }
                     sx={{
                       color: theme.palette.error.main,
-                      '&:hover': {
+                      "&:hover": {
                         background: theme.palette.error.light,
                         color: theme.palette.error.contrastText,
-                      }
+                      },
                     }}
                   >
                     <DeleteIcon />
@@ -377,12 +394,12 @@ export default function ModuleContentDialog({
         startIcon={<AddIcon />}
         sx={{
           borderRadius: 2,
-          textTransform: 'none',
+          textTransform: "none",
           px: 3,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-          '&:hover': {
-            boxShadow: '0 6px 16px rgba(0,0,0,0.1)',
-          }
+          boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+          "&:hover": {
+            boxShadow: "0 6px 16px rgba(0,0,0,0.1)",
+          },
         }}
       >
         Add Section
@@ -402,19 +419,28 @@ export default function ModuleContentDialog({
             borderColor: "divider",
             borderRadius: 2,
             background: theme.palette.background.default,
-            transition: 'all 0.2s ease-in-out',
-            '&:hover': {
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-            }
+            transition: "all 0.2s ease-in-out",
+            "&:hover": {
+              boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+            },
           }}
         >
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <Typography variant="subtitle1" sx={{ 
-                fontWeight: 600,
-                color: theme.palette.text.primary,
-                letterSpacing: '-0.3px'
-              }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  fontWeight: 600,
+                  color: theme.palette.text.primary,
+                  letterSpacing: "-0.3px",
+                }}
+              >
                 Question {questionIndex + 1}
               </Typography>
               <IconButton
@@ -422,15 +448,17 @@ export default function ModuleContentDialog({
                 onClick={() => {
                   setEditedModule((prev) => ({
                     ...prev,
-                    questions: prev.questions.filter((_, i) => i !== questionIndex),
+                    questions: prev.questions.filter(
+                      (_, i) => i !== questionIndex
+                    ),
                   }));
                 }}
                 sx={{
                   color: theme.palette.error.main,
-                  '&:hover': {
+                  "&:hover": {
                     background: theme.palette.error.light,
                     color: theme.palette.error.contrastText,
-                  }
+                  },
                 }}
               >
                 <DeleteIcon />
@@ -452,17 +480,20 @@ export default function ModuleContentDialog({
                 });
               }}
               sx={{
-                '& .MuiOutlinedInput-root': {
+                "& .MuiOutlinedInput-root": {
                   borderRadius: 2,
-                }
+                },
               }}
             />
 
-            <Typography variant="subtitle2" sx={{ 
-              fontWeight: 600,
-              color: theme.palette.text.secondary,
-              mt: 1
-            }}>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                fontWeight: 600,
+                color: theme.palette.text.secondary,
+                mt: 1,
+              }}
+            >
               Options
             </Typography>
             {question.options.map((option, optionIndex) => (
@@ -482,14 +513,15 @@ export default function ModuleContentDialog({
                   onChange={(e) => {
                     setEditedModule((prev) => {
                       const updatedQuestions = [...prev.questions];
-                      updatedQuestions[questionIndex].options[optionIndex] = e.target.value;
+                      updatedQuestions[questionIndex].options[optionIndex] =
+                        e.target.value;
                       return { ...prev, questions: updatedQuestions };
                     });
                   }}
                   sx={{
-                    '& .MuiOutlinedInput-root': {
+                    "& .MuiOutlinedInput-root": {
                       borderRadius: 2,
-                    }
+                    },
                   }}
                 />
                 <FormControlLabel
@@ -499,7 +531,8 @@ export default function ModuleContentDialog({
                       onChange={() => {
                         setEditedModule((prev) => {
                           const updatedQuestions = [...prev.questions];
-                          updatedQuestions[questionIndex].correctAnswer = optionIndex;
+                          updatedQuestions[questionIndex].correctAnswer =
+                            optionIndex;
                           return { ...prev, questions: updatedQuestions };
                         });
                       }}
@@ -512,10 +545,14 @@ export default function ModuleContentDialog({
                   onClick={() => {
                     setEditedModule((prev) => {
                       const updatedQuestions = [...prev.questions];
-                      updatedQuestions[questionIndex].options = updatedQuestions[questionIndex].options.filter(
-                        (_, i) => i !== optionIndex
-                      );
-                      if (updatedQuestions[questionIndex].correctAnswer === optionIndex) {
+                      updatedQuestions[questionIndex].options =
+                        updatedQuestions[questionIndex].options.filter(
+                          (_, i) => i !== optionIndex
+                        );
+                      if (
+                        updatedQuestions[questionIndex].correctAnswer ===
+                        optionIndex
+                      ) {
                         updatedQuestions[questionIndex].correctAnswer = 0;
                       }
                       return { ...prev, questions: updatedQuestions };
@@ -523,10 +560,10 @@ export default function ModuleContentDialog({
                   }}
                   sx={{
                     color: theme.palette.error.main,
-                    '&:hover': {
+                    "&:hover": {
                       background: theme.palette.error.light,
                       color: theme.palette.error.contrastText,
-                    }
+                    },
                   }}
                 >
                   <DeleteIcon />
@@ -542,7 +579,7 @@ export default function ModuleContentDialog({
                   const updatedQuestions = [...prev.questions];
                   updatedQuestions[questionIndex] = {
                     ...updatedQuestions[questionIndex],
-                    options: [...updatedQuestions[questionIndex].options, ""]
+                    options: [...updatedQuestions[questionIndex].options, ""],
                   };
                   return { ...prev, questions: updatedQuestions };
                 });
@@ -550,11 +587,11 @@ export default function ModuleContentDialog({
               startIcon={<AddIcon />}
               sx={{
                 borderRadius: 2,
-                textTransform: 'none',
+                textTransform: "none",
                 borderWidth: 2,
-                '&:hover': {
-                  borderWidth: 2
-                }
+                "&:hover": {
+                  borderWidth: 2,
+                },
               }}
             >
               Add Option
@@ -581,12 +618,12 @@ export default function ModuleContentDialog({
         startIcon={<AddIcon />}
         sx={{
           borderRadius: 2,
-          textTransform: 'none',
+          textTransform: "none",
           px: 3,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-          '&:hover': {
-            boxShadow: '0 6px 16px rgba(0,0,0,0.1)',
-          }
+          boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+          "&:hover": {
+            boxShadow: "0 6px 16px rgba(0,0,0,0.1)",
+          },
         }}
       >
         Add Question
@@ -595,25 +632,34 @@ export default function ModuleContentDialog({
   );
 
   return (
-    <Dialog 
-      open={open} 
-      onClose={onClose} 
-      maxWidth="md" 
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
       fullWidth
       PaperProps={{
         sx: {
           borderRadius: 2,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-        }
+          boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+        },
       }}
     >
-      <DialogTitle sx={{ 
-        borderBottom: '1px solid',
-        borderColor: 'divider',
-        pb: 2,
-        background: theme.palette.background.default
-      }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2 }}>
+      <DialogTitle
+        sx={{
+          borderBottom: "1px solid",
+          borderColor: "divider",
+          pb: 2,
+          background: theme.palette.background.default,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 2,
+          }}
+        >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, flex: 1 }}>
             {isEditingTitle ? (
               <TextField
@@ -627,24 +673,27 @@ export default function ModuleContentDialog({
                 }
                 onBlur={() => setIsEditingTitle(false)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     setIsEditingTitle(false);
                   }
                 }}
                 autoFocus
                 sx={{
-                  '& .MuiOutlinedInput-root': {
+                  "& .MuiOutlinedInput-root": {
                     borderRadius: 2,
-                  }
+                  },
                 }}
               />
             ) : (
               <>
-                <Typography variant="h5" sx={{ 
-                  fontWeight: 600,
-                  color: theme.palette.text.primary,
-                  letterSpacing: '-0.5px'
-                }}>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 600,
+                    color: theme.palette.text.primary,
+                    letterSpacing: "-0.5px",
+                  }}
+                >
                   {editedModule.title || "Untitled Module"}
                 </Typography>
                 <IconButton
@@ -652,9 +701,9 @@ export default function ModuleContentDialog({
                   onClick={() => setIsEditingTitle(true)}
                   sx={{
                     color: theme.palette.text.secondary,
-                    '&:hover': {
+                    "&:hover": {
                       color: theme.palette.primary.main,
-                    }
+                    },
                   }}
                 >
                   <EditIcon fontSize="small" />
@@ -670,10 +719,12 @@ export default function ModuleContentDialog({
               }))
             }
             sx={{
-              color: editedModule.locked ? theme.palette.primary.main : theme.palette.text.secondary,
-              '&:hover': {
+              color: editedModule.locked
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
+              "&:hover": {
                 color: theme.palette.primary.main,
-              }
+              },
             }}
           >
             {editedModule.locked ? <LockIcon /> : <LockOpenIcon />}
@@ -681,21 +732,21 @@ export default function ModuleContentDialog({
         </Box>
       </DialogTitle>
       <DialogContent sx={{ p: 4 }}>
-        <Stepper 
-          activeStep={activeStep} 
-          sx={{ 
+        <Stepper
+          activeStep={activeStep}
+          sx={{
             mb: 4,
             mt: 4,
-            '& .MuiStepLabel-label': {
+            "& .MuiStepLabel-label": {
               fontWeight: 500,
-              fontSize: '0.9rem'
+              fontSize: "0.9rem",
             },
-            '& .MuiStepIcon-root': {
+            "& .MuiStepIcon-root": {
               color: theme.palette.primary.main,
-              '&.Mui-active': {
+              "&.Mui-active": {
                 color: theme.palette.primary.main,
-              }
-            }
+              },
+            },
           }}
         >
           {steps.map((label) => (
@@ -707,18 +758,20 @@ export default function ModuleContentDialog({
 
         {activeStep === 0 ? renderModuleContent() : renderQuestions()}
       </DialogContent>
-      <DialogActions sx={{ 
-        p: 3,
-        borderTop: '1px solid',
-        borderColor: 'divider',
-        background: theme.palette.background.default
-      }}>
-        <Button 
+      <DialogActions
+        sx={{
+          p: 3,
+          borderTop: "1px solid",
+          borderColor: "divider",
+          background: theme.palette.background.default,
+        }}
+      >
+        <Button
           onClick={onClose}
           sx={{
             borderRadius: 2,
-            textTransform: 'none',
-            px: 3
+            textTransform: "none",
+            px: 3,
           }}
         >
           Cancel
@@ -730,44 +783,44 @@ export default function ModuleContentDialog({
             variant="outlined"
             sx={{
               borderRadius: 2,
-              textTransform: 'none',
+              textTransform: "none",
               px: 3,
               borderWidth: 2,
-              '&:hover': {
-                borderWidth: 2
-              }
+              "&:hover": {
+                borderWidth: 2,
+              },
             }}
           >
             Back
           </Button>
           {activeStep === steps.length - 1 ? (
-            <Button 
-              onClick={handleSave} 
+            <Button
+              onClick={handleSave}
               variant="contained"
               sx={{
                 borderRadius: 2,
-                textTransform: 'none',
+                textTransform: "none",
                 px: 4,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                '&:hover': {
-                  boxShadow: '0 6px 16px rgba(0,0,0,0.1)',
-                }
+                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                "&:hover": {
+                  boxShadow: "0 6px 16px rgba(0,0,0,0.1)",
+                },
               }}
             >
               Save Changes
             </Button>
           ) : (
-            <Button 
-              onClick={handleNext} 
+            <Button
+              onClick={handleNext}
               variant="contained"
               sx={{
                 borderRadius: 2,
-                textTransform: 'none',
+                textTransform: "none",
                 px: 4,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                '&:hover': {
-                  boxShadow: '0 6px 16px rgba(0,0,0,0.1)',
-                }
+                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                "&:hover": {
+                  boxShadow: "0 6px 16px rgba(0,0,0,0.1)",
+                },
               }}
             >
               Next
@@ -777,4 +830,4 @@ export default function ModuleContentDialog({
       </DialogActions>
     </Dialog>
   );
-} 
+}

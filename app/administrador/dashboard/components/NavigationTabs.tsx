@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Paper, useTheme } from "@mui/material";
+import { Button, Paper, useTheme } from "@mui/material";
 
 interface NavigationTabsProps {
   sections: {

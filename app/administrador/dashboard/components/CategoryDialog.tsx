@@ -11,9 +11,7 @@ import {
   FormControlLabel,
   Switch,
   IconButton,
-  Divider,
   Paper,
-  Grid,
 } from "@mui/material";
 import { ChromePicker } from "react-color";
 import { Category } from "@/data/categories";
@@ -24,6 +22,7 @@ import {
 import ActionButton from "./ActionButton";
 import { supabase } from "@/lib/supabaseClient";
 import { useLoading } from "@/components/LoadingProvider";
+import Image from "next/image";
 
 interface CategoryDialogProps {
   open: boolean;
@@ -49,7 +48,7 @@ export default function CategoryDialog({
         color: category.color,
         featured: category.featured || false,
         comingSoon: category.comingSoon || false,
-        guides: category.guides || []
+        guides: category.guides || [],
       };
     }
     return {
@@ -59,7 +58,7 @@ export default function CategoryDialog({
       color: "#74aa9c",
       featured: false,
       comingSoon: false,
-      guides: []
+      guides: [],
     };
   });
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -67,7 +66,6 @@ export default function CategoryDialog({
   const [recentIcons, setRecentIcons] = useState<
     { name: string; url: string }[]
   >([]);
-  const [iconSearch, setIconSearch] = useState("");
 
   useEffect(() => {
     if (category) {
@@ -79,7 +77,7 @@ export default function CategoryDialog({
         color: category.color,
         featured: category.featured || false,
         comingSoon: category.comingSoon || false,
-        guides: category.guides || []
+        guides: category.guides || [],
       });
     } else {
       setFormData({
@@ -89,7 +87,7 @@ export default function CategoryDialog({
         color: "#74aa9c",
         featured: false,
         comingSoon: false,
-        guides: []
+        guides: [],
       });
     }
   }, [category]);
@@ -115,14 +113,14 @@ export default function CategoryDialog({
         data
           .filter((file) => file.name !== ".emptyFolderPlaceholder")
           .map(async (file) => {
-          const { data: publicUrlData } = supabase.storage
-            .from("icons")
-            .getPublicUrl(`category-icons/${file.name}`);
-          return {
-            name: file.name,
-            url: publicUrlData.publicUrl,
-          };
-        })
+            const { data: publicUrlData } = supabase.storage
+              .from("icons")
+              .getPublicUrl(`category-icons/${file.name}`);
+            return {
+              name: file.name,
+              url: publicUrlData.publicUrl,
+            };
+          })
       );
 
       setRecentIcons(icons);
@@ -170,12 +168,17 @@ export default function CategoryDialog({
 
       const isEdit = category && category.id && category.id !== "new";
       const response = isEdit
-        ? await supabase.from("categories").update(categoryData).eq("id", category.id)
+        ? await supabase
+            .from("categories")
+            .update(categoryData)
+            .eq("id", category.id)
         : await supabase.from("categories").insert(categoryData);
 
       if (response.error) {
         console.error("Erro ao salvar categoria:", response.error);
-        alert("Erro ao salvar categoria. Por favor, tente novamente mais tarde.");
+        alert(
+          "Erro ao salvar categoria. Por favor, tente novamente mais tarde."
+        );
       } else {
         onSave(categoryData);
         onClose();
@@ -196,7 +199,7 @@ export default function CategoryDialog({
       const filePath = `category-icons/${Date.now()}-${file.name}`;
 
       // Upload the file
-      const { data, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from("icons")
         .upload(filePath, file, {
           cacheControl: "3600",
@@ -313,7 +316,15 @@ export default function CategoryDialog({
                 >
                   Recent Icons
                 </Typography>
-                <Box sx={{ display: "flex", flexDirection: "row", gap: 1, overflowX: "auto", maxWidth: "100%" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: 1,
+                    overflowX: "auto",
+                    maxWidth: "100%",
+                  }}
+                >
                   {recentIcons.map((icon) => (
                     <Box key={icon.name}>
                       <Paper
@@ -325,7 +336,9 @@ export default function CategoryDialog({
                           borderRadius: 2,
                           border: "2px solid",
                           borderColor:
-                            formData.icon_url === icon.url ? "primary.main" : "divider",
+                            formData.icon_url === icon.url
+                              ? "primary.main"
+                              : "divider",
                           overflow: "hidden",
                           cursor: "pointer",
                           transition: "all 0.2s",
@@ -335,9 +348,11 @@ export default function CategoryDialog({
                           },
                         }}
                       >
-                        <img
+                        <Image
                           src={icon.url}
                           alt={icon.name}
+                          width={48}
+                          height={48}
                           style={{
                             width: "100%",
                             height: "100%",
@@ -371,9 +386,11 @@ export default function CategoryDialog({
                     overflow: "hidden",
                   }}
                 >
-                  <img
+                  <Image
                     src={formData.icon_url}
                     alt="Current icon"
+                    width={64}
+                    height={64}
                     style={{
                       width: "100%",
                       height: "100%",

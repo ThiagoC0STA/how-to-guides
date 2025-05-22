@@ -13,7 +13,6 @@ interface CategoriesAndKeywordsStepProps {
   formData: Partial<Guide>;
   selectedCategories: string[];
   newKeyword: string;
-  onFormDataChange: (field: string, value: any) => void;
   onCategoryChange: (event: any) => void;
   onNewKeywordChange: (value: string) => void;
   onAddKeyword: () => void;
@@ -26,7 +25,6 @@ export default function CategoriesAndKeywordsStep({
   formData,
   selectedCategories,
   newKeyword,
-  onFormDataChange,
   onCategoryChange,
   onNewKeywordChange,
   onAddKeyword,

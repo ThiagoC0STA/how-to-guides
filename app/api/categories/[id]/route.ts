@@ -2,10 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/categories/[id]
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, { params }: any) {
   console.log("📚 Fetching category by ID");
 
   const supabase = createClient(
@@ -37,10 +34,7 @@ export async function GET(
 }
 
 // PUT /api/categories/[id]
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: Request, { params }: any) {
   // Pegar o token do header
   const authHeader = request.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {
@@ -106,10 +100,7 @@ export async function PUT(
 }
 
 // DELETE /api/categories/[id]
-export async function DELETE(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, context: any) {
   const { id } = context.params;
   console.log("🗑️ Deleting category");
 
@@ -156,7 +147,7 @@ export async function DELETE(
     }
 
     // Extract the file path from the icon_url
-    let iconUrl = category.icon_url;
+    const iconUrl = category.icon_url;
     let filePath = "";
     console.log("[DELETE] icon_url from DB:", iconUrl);
     if (iconUrl.startsWith("http")) {

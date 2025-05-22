@@ -116,9 +116,9 @@ export default function CategoryPage({ params }: any) {
               mr: { xs: 0, sm: 2 },
             }}
           >
-            {iconMap[category.iconName as keyof typeof iconMap] ? (
+            {iconMap[category.icon_url as keyof typeof iconMap] ? (
               React.createElement(
-                iconMap[category.iconName as keyof typeof iconMap],
+                iconMap[category.icon_url as keyof typeof iconMap],
                 { size: 36, color: category.color }
               )
             ) : (

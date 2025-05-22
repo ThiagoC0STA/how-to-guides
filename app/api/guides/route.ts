@@ -109,6 +109,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ guide: data });
   } catch (error) {
+    console.error("❌ Error creating guide:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

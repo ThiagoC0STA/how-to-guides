@@ -3,10 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/guides/[id]
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, { params }: any) {
   console.log("📚 Fetching guide:", params.id);
   const res = NextResponse.json({ success: true });
 
@@ -64,10 +61,7 @@ export async function GET(
 }
 
 // DELETE /api/guides/[id]
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, { params }: any) {
   console.log("🗑️ Deleting guide:", params.id);
 
   // Get the authorization token
@@ -111,7 +105,7 @@ export async function DELETE(
     }
 
     // Extract the file path from the image
-    let imageUrl = guide.image;
+    const imageUrl = guide.image;
     let filePath = "";
     console.log("[DELETE] image from DB:", imageUrl);
     if (imageUrl && imageUrl.startsWith("http")) {
@@ -168,10 +162,7 @@ export async function DELETE(
 }
 
 // PUT /api/guides/[id]
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest, { params }: any) {
   console.log("✏️ Updating guide:", params.id);
 
   // Get the authorization token
@@ -212,8 +203,6 @@ export async function PUT(
       return NextResponse.json({ error: "Guide not found" }, { status: 404 });
     }
 
-    let imageUrl = body.image;
-    // Se a imagem mudou e não for string vazia
     if (
       body.image &&
       typeof body.image === "string" &&

@@ -28,7 +28,6 @@ import {
   AddCircleOutline as AddCircleOutlineIcon,
 } from "@mui/icons-material";
 import DataTable from "./components/DataTable";
-import { GUIDES } from "@/data/guides";
 import { modelData } from "@/data/models";
 import { useRouter } from "next/navigation";
 import CategoryDialog from "./components/CategoryDialog";
@@ -37,6 +36,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { publicRequest, privateRequest } from "@/utils/apiClient";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useLoading } from "@/components/LoadingProvider";
+import Image from "next/image";
 
 interface Category {
   id: string;
@@ -266,7 +266,7 @@ export default function Dashboard() {
       setOpenDeleteGuideDialog(false);
       setSelectedGuide(null);
     } catch (error) {
-      alert("Erro ao deletar guide");
+      alert("Erro ao deletar guide" + error);
     } finally {
       hideLoading();
     }
@@ -418,13 +418,16 @@ export default function Dashboard() {
             }}
           >
             {row.image ? (
-              <img
+              <Image
                 src={row.image}
                 alt={row.title}
+                width={48}
+                height={48}
                 style={{
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
+                  borderRadius: 8,
                 }}
               />
             ) : (
@@ -644,10 +647,12 @@ export default function Dashboard() {
               color: row.color,
             }}
           >
-            <img
+            <Image
               src={row.icon_url}
               alt={row.title}
-              style={{ width: 24, height: 24 }}
+              width={24}
+              height={24}
+              style={{ width: 24, height: 24, objectFit: "cover" }}
             />
           </Box>
         ),

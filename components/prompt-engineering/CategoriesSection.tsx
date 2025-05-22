@@ -144,7 +144,7 @@ export default function CategoriesSection() {
                     >
                       <CategoryCard
                         {...category}
-                        iconName={category.iconName}
+                        iconName={category.icon_url}
                       />
                     </Box>
                   </SwiperSlide>

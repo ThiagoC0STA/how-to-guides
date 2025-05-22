@@ -15,7 +15,6 @@ import {
   ListItemText,
   ListItemIcon,
   Divider,
-  Badge,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
@@ -25,9 +24,6 @@ import {
   FaDatabase,
   FaInfoCircle,
   FaChartBar,
-  FaUsers,
-  FaCog,
-  FaBell,
   FaSignOutAlt,
 } from "react-icons/fa";
 import { useState } from "react";

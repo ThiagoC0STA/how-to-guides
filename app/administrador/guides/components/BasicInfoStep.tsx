@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Box, TextField, Typography, Button, Popover, Switch, FormControlLabel } from "@mui/material";
-import { Image as ImageIcon } from "@mui/icons-material";
-import { Guide } from "../types";
 import { ChromePicker } from "react-color";
+import { Guide } from "../types";
 
 interface BasicInfoStepProps {
   formData: Partial<Guide>;

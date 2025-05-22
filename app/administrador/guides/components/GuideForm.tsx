@@ -12,7 +12,6 @@ import {
   StepLabel,
   Container,
 } from "@mui/material";
-import { GUIDES } from "@/data/guides";
 import ModuleContentDialog from "./ModuleContentDialog";
 import BasicInfoStep from "./BasicInfoStep";
 import CategoriesAndKeywordsStep from "./CategoriesAndKeywordsStep";
@@ -149,7 +148,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
       handleFormDataChange("metadata", {
         ...formData.metadata,
         overview: {
-          ...formData.metadata?.overview!,
+          ...formData.metadata?.overview,
           bullets: [
             ...(formData.metadata?.overview?.bullets || []),
             newBullet.trim(),
@@ -164,7 +163,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
     handleFormDataChange("metadata", {
       ...formData.metadata,
       overview: {
-        ...formData.metadata?.overview!,
+        ...formData.metadata?.overview,
         bullets:
           formData.metadata?.overview?.bullets.filter((b) => b !== bullet) ||
           [],
@@ -311,7 +310,6 @@ export default function GuideForm({ guideId }: GuideFormProps) {
             formData={formData}
             selectedCategories={selectedCategories}
             newKeyword={newKeyword}
-            onFormDataChange={handleFormDataChange}
             onCategoryChange={handleCategoryChange}
             onNewKeywordChange={setNewKeyword}
             onAddKeyword={handleAddKeyword}

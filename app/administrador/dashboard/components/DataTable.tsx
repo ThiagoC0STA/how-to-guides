@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   Box,
-  Button,
   Paper,
   Table,
   TableBody,
@@ -13,14 +11,7 @@ import {
   TableHead,
   TableRow,
   Typography,
-  Chip,
-  IconButton,
 } from "@mui/material";
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-} from "@mui/icons-material";
 
 interface Column<T> {
   field: keyof T | string;
@@ -33,18 +24,9 @@ interface DataTableProps<T> {
   title: string;
   data: T[];
   columns: Column<T>[];
-  onAdd?: () => void;
-  onEdit?: (row: T) => void;
-  onDelete?: (row: T) => void;
 }
 
-export default function DataTable<T>({
-  data,
-  columns,
-  onEdit,
-  onDelete,
-}: DataTableProps<T>) {
-  const router = useRouter();
+export default function DataTable<T>({ data, columns }: DataTableProps<T>) {
   const [selectedRow, setSelectedRow] = useState<T | null>(null);
 
   return (

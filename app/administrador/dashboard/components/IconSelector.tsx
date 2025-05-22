@@ -1,9 +1,7 @@
 import { useState, useRef } from "react";
 import {
   Box,
-  Paper,
   Typography,
-  IconButton,
   Popover,
   Button,
 } from "@mui/material";
