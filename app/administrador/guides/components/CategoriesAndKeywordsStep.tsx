@@ -1,6 +1,13 @@
-import { Box, TextField, Button, Typography, FormControl, InputLabel, Select, MenuItem, Chip } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, TextField, Button, Typography, FormControl, InputLabel, Select, MenuItem, Chip, CircularProgress } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import { Guide } from "../types";
+import { publicRequest } from "@/utils/apiClient";
+
+interface Category {
+  id: string;
+  title: string;
+}
 
 interface CategoriesAndKeywordsStepProps {
   formData: Partial<Guide>;
@@ -11,6 +18,8 @@ interface CategoriesAndKeywordsStepProps {
   onNewKeywordChange: (value: string) => void;
   onAddKeyword: () => void;
   onRemoveKeyword: (keyword: string) => void;
+  onAddCategoryClick?: () => void;
+  refreshKey?: number;
 }
 
 export default function CategoriesAndKeywordsStep({
@@ -21,8 +30,21 @@ export default function CategoriesAndKeywordsStep({
   onCategoryChange,
   onNewKeywordChange,
   onAddKeyword,
-  onRemoveKeyword
+  onRemoveKeyword,
+  onAddCategoryClick,
+  refreshKey,
 }: CategoriesAndKeywordsStepProps) {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    publicRequest.get("/categories").then((res) => {
+      setCategories(res.data.categories || []);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, [refreshKey]);
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       <FormControl fullWidth>
@@ -33,23 +55,20 @@ export default function CategoriesAndKeywordsStep({
           onChange={onCategoryChange}
           renderValue={(selected) => (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-              {selected.map((value) => (
-                <Chip 
-                  key={value} 
-                  label={value}
-                  sx={{
-                    borderRadius: 1,
-                    bgcolor: 'primary.50',
-                    color: 'primary.main',
-                    '& .MuiChip-deleteIcon': {
-                      color: 'primary.main',
-                      '&:hover': {
-                        color: 'primary.dark'
-                      }
-                    }
-                  }}
-                />
-              ))}
+              {selected.map((value) => {
+                const cat = categories.find((c) => c.id === value);
+                return (
+                  <Chip
+                    key={value}
+                    label={cat ? cat.title : value}
+                    sx={{
+                      borderRadius: 1,
+                      bgcolor: "primary.50",
+                      color: "primary.main",
+                    }}
+                  />
+                );
+              })}
             </Box>
           )}
           sx={{
@@ -62,18 +81,32 @@ export default function CategoriesAndKeywordsStep({
             }
           }}
         >
-          {["Beginner", "Intermediate", "Advanced"].map((category) => (
-            <MenuItem key={category} value={category}>
-              {category}
+          {loading ? (
+            <MenuItem disabled>
+              <CircularProgress size={20} /> Carregando...
             </MenuItem>
-          ))}
+          ) : (
+            categories.map((category) => (
+              <MenuItem key={category.id} value={category.id}>
+                {category.title}
+              </MenuItem>
+            ))
+          )}
         </Select>
+        <Button
+          variant="text"
+          startIcon={<AddIcon />}
+          onClick={onAddCategoryClick}
+          sx={{ mt: 1, alignSelf: "flex-end", textTransform: "none" }}
+        >
+          Nova Categoria
+        </Button>
       </FormControl>
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <Typography 
-          variant="subtitle1" 
-          sx={{ 
+        <Typography
+          variant="subtitle1"
+          sx={{
             fontWeight: 600,
             color: 'text.primary'
           }}

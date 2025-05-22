@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Box,
@@ -20,6 +20,10 @@ import OverviewStep from "./OverviewStep";
 import ModulesStep from "./ModulesStep";
 import ReviewStep from "./ReviewStep";
 import { Guide, Module } from "../types";
+import { supabase } from "@/lib/supabaseClient";
+import { privateRequest, publicRequest } from "@/utils/apiClient";
+import CategoryDialog from "../../dashboard/components/CategoryDialog";
+import { useLoading } from "@/components/LoadingProvider";
 
 const steps = [
   "Basic Information",
@@ -29,8 +33,13 @@ const steps = [
   "Review",
 ];
 
-export default function GuideForm() {
+interface GuideFormProps {
+  guideId?: string;
+}
+
+export default function GuideForm({ guideId }: GuideFormProps) {
   const router = useRouter();
+  const { show: showLoading, hide: hideLoading } = useLoading();
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState<Partial<Guide>>({
     title: "",
@@ -52,6 +61,9 @@ export default function GuideForm() {
   const [newBullet, setNewBullet] = useState("");
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [moduleDialogOpen, setModuleDialogOpen] = useState(false);
+  const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
+  const [categoriesRefreshKey, setCategoriesRefreshKey] = useState(0);
+  const [categoriesList, setCategoriesList] = useState<any[]>([]);
 
   const handleNext = () => {
     setActiveStep((prevStep) => prevStep + 1);
@@ -99,7 +111,10 @@ export default function GuideForm() {
         ...formData.metadata,
         overview: {
           ...formData.metadata?.overview!,
-          bullets: [...(formData.metadata?.overview?.bullets || []), newBullet.trim()],
+          bullets: [
+            ...(formData.metadata?.overview?.bullets || []),
+            newBullet.trim(),
+          ],
         },
       });
       setNewBullet("");
@@ -111,7 +126,9 @@ export default function GuideForm() {
       ...formData.metadata,
       overview: {
         ...formData.metadata?.overview!,
-        bullets: formData.metadata?.overview?.bullets.filter((b) => b !== bullet) || [],
+        bullets:
+          formData.metadata?.overview?.bullets.filter((b) => b !== bullet) ||
+          [],
       },
     });
   };
@@ -128,7 +145,7 @@ export default function GuideForm() {
     setModuleDialogOpen(true);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (
       !formData.title ||
       !formData.description ||
@@ -140,22 +157,96 @@ export default function GuideForm() {
       return;
     }
 
-    const newGuide = {
-      id: `guide-${Date.now()}`,
-      title: formData.title,
-      description: formData.description,
-      image: formData.image,
-      color: formData.color,
-      modules: formData.modules || [],
-      metadata: {
-        categories: formData.metadata?.categories || [],
-        keywords: formData.metadata?.keywords || [],
-        overview: formData.metadata?.overview || "",
-      },
-    } as Guide;
+    showLoading();
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) throw new Error("User not authenticated");
 
-    console.log("New Guide:", newGuide);
+      let imageUrl = formData.image;
+      if (formData.image && typeof formData.image !== "string") {
+        // Upload para o bucket 'images'
+        const file = formData.image as File;
+        const filePath = `guides/${Date.now()}-${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from("images")
+          .upload(filePath, file, {
+            cacheControl: "3600",
+            upsert: false,
+          });
+        if (uploadError) throw new Error(uploadError.message);
+        // Pega a URL pública
+        const { data: publicUrlData } = supabase.storage
+          .from("images")
+          .getPublicUrl(filePath);
+        imageUrl = publicUrlData.publicUrl;
+      }
+
+      // Montar array de objetos {id, title} das categorias selecionadas
+      const selectedCategoryObjs = categoriesList
+        .filter((cat) => selectedCategories.includes(cat.id))
+        .map((cat) => ({ id: cat.id, title: cat.title }));
+
+      const response = await privateRequest.post("/guides", {
+        title: formData.title,
+        description: formData.description,
+        image: imageUrl,
+        color: formData.color,
+        modules: formData.modules,
+        metadata: {
+          ...formData.metadata,
+          categories: selectedCategoryObjs,
+        },
+      });
+
+      if (!response.data?.guide) {
+        throw new Error("Erro ao criar guide");
+      }
+
+      router.push("/administrador/dashboard");
+    } catch (error: any) {
+      alert(error.message || "Erro ao criar guide");
+    } finally {
+      hideLoading();
+    }
   };
+
+  const handleAddCategoryClick = () => {
+    setOpenCategoryDialog(true);
+  };
+
+  const handleCategoryDialogSave = async (categoryData: any) => {
+    showLoading();
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) throw new Error("User not authenticated");
+      const response = await privateRequest.post("/categories", categoryData);
+      if (!response.data?.category) {
+        throw new Error("Erro ao criar categoria");
+      }
+      setOpenCategoryDialog(false);
+      setCategoriesRefreshKey((k) => k + 1);
+      setSelectedCategories((prev) => [...prev, response.data.category.id]);
+    } catch (error: any) {
+      alert(error.message || "Erro ao criar categoria");
+    } finally {
+      hideLoading();
+    }
+  };
+
+  // Buscar categorias reais para montar o array de objetos no submit
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await publicRequest.get("/categories");
+        setCategoriesList(data.categories || []);
+      } catch {}
+    };
+    fetchCategories();
+  }, []);
 
   const renderStepContent = (step: number) => {
     switch (step) {
@@ -178,6 +269,8 @@ export default function GuideForm() {
             onNewKeywordChange={setNewKeyword}
             onAddKeyword={handleAddKeyword}
             onRemoveKeyword={handleRemoveKeyword}
+            onAddCategoryClick={handleAddCategoryClick}
+            refreshKey={categoriesRefreshKey}
           />
         );
       case 2:
@@ -208,50 +301,52 @@ export default function GuideForm() {
 
   return (
     <Container maxWidth="lg">
-      <Box sx={{ 
-        py: 4,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 4
-      }}>
-        <Typography 
-          variant="h4" 
-          sx={{ 
+      <Box
+        sx={{
+          py: 4,
+          display: "flex",
+          flexDirection: "column",
+          gap: 4,
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{
             fontWeight: 700,
-            color: 'text.primary',
-            letterSpacing: '-0.5px'
+            color: "text.primary",
+            letterSpacing: "-0.5px",
           }}
         >
           Create New Guide
         </Typography>
 
-        <Paper 
-          elevation={0} 
-          sx={{ 
+        <Paper
+          elevation={0}
+          sx={{
             p: 4,
             borderRadius: 2,
-            border: '1px solid',
-            borderColor: 'divider',
-            bgcolor: 'background.paper'
+            border: "1px solid",
+            borderColor: "divider",
+            bgcolor: "background.paper",
           }}
         >
-          <Stepper 
-            activeStep={activeStep} 
-            sx={{ 
+          <Stepper
+            activeStep={activeStep}
+            sx={{
               mb: 6,
-              '& .MuiStepLabel-label': {
+              "& .MuiStepLabel-label": {
                 fontWeight: 500,
-                fontSize: '0.875rem'
+                fontSize: "0.875rem",
               },
-              '& .MuiStepIcon-root': {
-                color: 'primary.main',
-                '&.Mui-active': {
-                  color: 'primary.main'
+              "& .MuiStepIcon-root": {
+                color: "primary.main",
+                "&.Mui-active": {
+                  color: "primary.main",
                 },
-                '&.Mui-completed': {
-                  color: 'success.main'
-                }
-              }
+                "&.Mui-completed": {
+                  color: "success.main",
+                },
+              },
             }}
           >
             {steps.map((label) => (
@@ -261,20 +356,24 @@ export default function GuideForm() {
             ))}
           </Stepper>
 
-          <Box sx={{ 
-            mb: 6,
-            minHeight: '400px'
-          }}>
+          <Box
+            sx={{
+              mb: 6,
+              minHeight: "400px",
+            }}
+          >
             {renderStepContent(activeStep)}
           </Box>
 
-          <Box sx={{ 
-            display: "flex", 
-            justifyContent: "space-between",
-            pt: 2,
-            borderTop: '1px solid',
-            borderColor: 'divider'
-          }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              pt: 2,
+              borderTop: "1px solid",
+              borderColor: "divider",
+            }}
+          >
             <Button
               disabled={activeStep === 0}
               onClick={handleBack}
@@ -282,24 +381,26 @@ export default function GuideForm() {
               sx={{
                 borderRadius: 2,
                 px: 4,
-                textTransform: 'none',
-                fontWeight: 500
+                textTransform: "none",
+                fontWeight: 500,
               }}
             >
               Back
             </Button>
             <Button
               variant="contained"
-              onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
+              onClick={
+                activeStep === steps.length - 1 ? handleSubmit : handleNext
+              }
               sx={{
                 borderRadius: 2,
                 px: 4,
-                textTransform: 'none',
+                textTransform: "none",
                 fontWeight: 500,
-                boxShadow: 'none',
-                '&:hover': {
-                  boxShadow: 'none'
-                }
+                boxShadow: "none",
+                "&:hover": {
+                  boxShadow: "none",
+                },
               }}
             >
               {activeStep === steps.length - 1 ? "Submit" : "Next"}
@@ -329,6 +430,12 @@ export default function GuideForm() {
           setModuleDialogOpen(false);
           setSelectedModule(null);
         }}
+      />
+
+      <CategoryDialog
+        open={openCategoryDialog}
+        onClose={() => setOpenCategoryDialog(false)}
+        onSave={handleCategoryDialogSave}
       />
     </Container>
   );

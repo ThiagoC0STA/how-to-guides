@@ -34,8 +34,8 @@ import { useRouter } from "next/navigation";
 import CategoryDialog from "./components/CategoryDialog";
 import ActionButton from "./components/ActionButton";
 import { supabase } from "@/lib/supabaseClient";
-import { publicRequest, privateRequest } from "@/app/utils/apiClient";
-import DeleteConfirmationDialog from "@/app/components/DeleteConfirmationDialog";
+import { publicRequest, privateRequest } from "@/utils/apiClient";
+import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useLoading } from "@/components/LoadingProvider";
 
 interface Category {
@@ -93,12 +93,15 @@ export default function Dashboard() {
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
   const [openModelDialog, setOpenModelDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openDeleteGuideDialog, setOpenDeleteGuideDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
   const [selectedModel, setSelectedModel] = useState<Model | null>(null);
+  const [selectedGuide, setSelectedGuide] = useState<any>(null);
   const [activeTab, setActiveTab] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [guides, setGuides] = useState<any[]>([]);
   const router = useRouter();
 
   // Fetch categories
@@ -116,6 +119,22 @@ export default function Dashboard() {
     };
 
     fetchCategories();
+  }, []);
+
+  // Fetch guides
+  useEffect(() => {
+    const fetchGuides = async () => {
+      showLoading();
+      try {
+        const { data } = await publicRequest.get("/guides");
+        setGuides(data.guides);
+      } catch (error) {
+        console.error("Error fetching guides:", error);
+      } finally {
+        hideLoading();
+      }
+    };
+    fetchGuides();
   }, []);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -137,7 +156,7 @@ export default function Dashboard() {
       color: category.color,
       featured: category.featured || false,
       comingSoon: category.comingSoon || false,
-      guides: category.guides || []
+      guides: category.guides || [],
     });
     setOpenCategoryDialog(true);
   };
@@ -229,6 +248,30 @@ export default function Dashboard() {
     console.log("Delete model:", model);
   };
 
+  const handleDeleteGuide = (guide: any) => {
+    setSelectedGuide(guide);
+    setOpenDeleteGuideDialog(true);
+  };
+
+  const handleConfirmDeleteGuide = async () => {
+    if (!selectedGuide) return;
+    showLoading();
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) throw new Error("User not authenticated");
+      await privateRequest.delete(`/guides/${selectedGuide.id}`);
+      setGuides((prev) => prev.filter((g) => g.id !== selectedGuide.id));
+      setOpenDeleteGuideDialog(false);
+      setSelectedGuide(null);
+    } catch (error) {
+      alert("Erro ao deletar guide");
+    } finally {
+      hideLoading();
+    }
+  };
+
   const renderStats = () => {
     return (
       <Box sx={{ display: "flex", gap: 3, mb: 4, flexWrap: "wrap" }}>
@@ -268,7 +311,7 @@ export default function Dashboard() {
               variant="h3"
               sx={{ fontWeight: 700, color: "var(--primary-blue)" }}
             >
-              {GUIDES.length}
+              {guides.length}
             </Typography>
           </Paper>
         </Box>
@@ -370,10 +413,10 @@ export default function Dashboard() {
           const categories = row.metadata?.categories || [];
           return (
             <Box sx={{ display: "flex", gap: 1 }}>
-              {categories.map((category: string) => (
+              {categories.map((cat: any) => (
                 <Chip
-                  key={category}
-                  label={category}
+                  key={cat.id}
+                  label={cat.title}
                   size="small"
                   sx={{
                     bgcolor: "var(--primary-blue)15",
@@ -390,6 +433,12 @@ export default function Dashboard() {
         },
       },
       {
+        field: "modules",
+        headerName: "Modules",
+        width: 100,
+        renderCell: (row: any) => row.modules?.length || 0,
+      },
+      {
         field: "featured",
         headerName: "Featured",
         width: 100,
@@ -402,9 +451,10 @@ export default function Dashboard() {
         ),
       },
       {
-        field: "lastUpdated",
-        headerName: "Last Updated",
+        field: "created_at",
+        headerName: "Created At",
         width: 150,
+        renderCell: (row: any) => new Date(row.created_at).toLocaleDateString(),
       },
       {
         field: "actions",
@@ -415,7 +465,11 @@ export default function Dashboard() {
             <IconButton size="small" color="primary">
               <EditIcon fontSize="small" />
             </IconButton>
-            <IconButton size="small" color="error">
+            <IconButton
+              size="small"
+              color="error"
+              onClick={() => handleDeleteGuide(row)}
+            >
               <DeleteIcon fontSize="small" />
             </IconButton>
           </Box>
@@ -453,7 +507,7 @@ export default function Dashboard() {
             New Guide
           </ActionButton>
         </Box>
-        <DataTable title="" data={GUIDES} columns={columns} />
+        <DataTable title="" data={guides} columns={columns} />
       </Paper>
     );
   };
@@ -770,6 +824,14 @@ export default function Dashboard() {
         onConfirm={handleConfirmDelete}
         title="Delete Category"
         itemName={selectedCategory?.title || ""}
+      />
+
+      <DeleteConfirmationDialog
+        open={openDeleteGuideDialog}
+        onClose={() => setOpenDeleteGuideDialog(false)}
+        onConfirm={handleConfirmDeleteGuide}
+        title="Delete Guide"
+        itemName={selectedGuide?.title || ""}
       />
     </Container>
   );

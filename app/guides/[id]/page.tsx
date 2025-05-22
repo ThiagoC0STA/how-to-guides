@@ -59,7 +59,5 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 export default function GuidePage({ params }: any) {
   const guide = GUIDES.find((g) => g.id === params.id);
 
-  if (!guide) return notFound();
-
   return <GuideLayout guide={guide} />;
 }
