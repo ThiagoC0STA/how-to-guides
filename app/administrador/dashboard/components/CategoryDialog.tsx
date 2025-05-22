@@ -65,6 +65,7 @@ export default function CategoryDialog({
   const [recentIcons, setRecentIcons] = useState<
     { name: string; url: string }[]
   >([]);
+  const [iconSearch, setIconSearch] = useState("");
 
   useEffect(() => {
     if (category) {
@@ -92,35 +93,39 @@ export default function CategoryDialog({
   }, [category]);
 
   useEffect(() => {
-    fetchRecentIcons();
-  }, []);
+    if (open) {
+      fetchAllIcons();
+    }
+  }, [open]);
 
-  const fetchRecentIcons = async () => {
+  const fetchAllIcons = async () => {
     try {
       const { data, error } = await supabase.storage
         .from("icons")
         .list("category-icons", {
-          limit: 5,
+          limit: 1000,
           sortBy: { column: "created_at", order: "desc" },
         });
 
       if (error) throw error;
 
       const icons = await Promise.all(
-        data.map(async (file) => {
-          const { data: publicUrlData } = supabase.storage
-            .from("icons")
-            .getPublicUrl(`category-icons/${file.name}`);
-          return {
-            name: file.name,
-            url: publicUrlData.publicUrl,
-          };
-        })
+        data
+          .filter((file) => file.name !== ".emptyFolderPlaceholder")
+          .map(async (file) => {
+            const { data: publicUrlData } = supabase.storage
+              .from("icons")
+              .getPublicUrl(`category-icons/${file.name}`);
+            return {
+              name: file.name,
+              url: publicUrlData.publicUrl,
+            };
+          })
       );
 
       setRecentIcons(icons);
     } catch (error) {
-      console.error("Error fetching recent icons:", error);
+      console.error("Error fetching icons:", error);
     }
   };
 
@@ -290,7 +295,7 @@ export default function CategoryDialog({
                 >
                   Recent Icons
                 </Typography>
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                <Box sx={{ display: "flex", flexDirection: "row", gap: 1, overflowX: "auto", maxWidth: "100%" }}>
                   {recentIcons.map((icon) => (
                     <Box key={icon.name}>
                       <Paper
@@ -302,9 +307,7 @@ export default function CategoryDialog({
                           borderRadius: 2,
                           border: "2px solid",
                           borderColor:
-                            formData.icon_url === icon.url
-                              ? "primary.main"
-                              : "divider",
+                            formData.icon_url === icon.url ? "primary.main" : "divider",
                           overflow: "hidden",
                           cursor: "pointer",
                           transition: "all 0.2s",
