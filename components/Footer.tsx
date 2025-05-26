@@ -33,7 +33,9 @@ const resources = [
 
 export default function Footer() {
   const pathname = usePathname();
-  const isAdminRoute = pathname?.startsWith("/administrador") && pathname !== "/administrador/login";
+  const isAdminRoute =
+    pathname?.startsWith("/administrador") &&
+    pathname !== "/administrador/login";
 
   // Não exibe o footer nas rotas administrativas
   if (isAdminRoute) {
@@ -237,6 +239,74 @@ export default function Footer() {
       <Box textAlign="center">
         <Typography variant="caption" sx={{ color: "var(--footer-text)" }}>
           © {new Date().getFullYear()} How-ToGuides.com. All rights reserved.
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          mt: 4,
+          mb: 1,
+          textAlign: "center",
+          px: { xs: 2, sm: 8 },
+          maxWidth: 900,
+          mx: "auto",
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: 12,
+            color: "var(--footer-text)",
+            mb: 1,
+            lineHeight: 1.6,
+          }}
+        >
+          <strong>DISCLAIMER</strong>
+          <br />
+          This website provides informational content only, and all access is
+          completely free. Our only revenue comes from advertisements clearly
+          labeled as "Advertisement." We never request payment for any services.
+          If you encounter such requests, please contact us immediately.
+          <br />
+          How-ToGuides.com may contain affiliate links. When you make purchases
+          through these links, we may receive a commission at no additional cost
+          to you. All affiliate relationships are transparently disclosed.
+          <br />
+          All content and materials on this website are copyright protected.
+          Unauthorized reproduction or distribution is prohibited without prior
+          written permission.
+          <br />
+          While we strive for accuracy in our AI tool guides, we cannot
+          guarantee identical results for all users. AI technologies frequently
+          update their features and interfaces, which may cause variations in
+          user experience compared to our guides.
+        </Typography>
+
+        <Typography
+          sx={{
+            fontSize: 12,
+            color: "var(--footer-text)",
+            lineHeight: 1.6,
+            marginTop: 5,
+          }}
+        >
+          <strong>EDITORIAL NOTE</strong>
+          <br />
+          We are committed to keeping all information on How-ToGuides.com as
+          current as possible. However, due to the rapid evolution of AI
+          technologies, information may occasionally differ from official
+          websites. We cannot guarantee the accuracy or timeliness of all
+          content presented.
+          <br />
+          AI tools frequently update their features, interfaces, and
+          capabilities. While we thoroughly test the techniques in our guides,
+          results may vary based on tool updates, regional differences, and
+          account-specific limitations. We recommend consulting official
+          documentation for the most current information about specific AI
+          tools.
+          <br />
+          Our guides include both factual instructions and expert
+          recommendations based on our experience. We encourage readers to adapt
+          our guidance to their specific needs and use cases.
+          <br />
         </Typography>
       </Box>
     </Box>
