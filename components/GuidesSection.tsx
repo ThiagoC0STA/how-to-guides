@@ -199,7 +199,6 @@ export default function GuidesSection({
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     borderRadius: 2,
-                    boxShadow: "0 2px 8px 0 rgba(37,99,235,0.06)",
                   },
                 }}
               />

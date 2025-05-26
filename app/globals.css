@@ -99,3 +99,7 @@ pre, code {
 .MuiAutocomplete-endAdornment {
   margin-top: 3px !important;
 }
+
+.MuiInputBase-input {
+  margin-top: 3px !important;
+}

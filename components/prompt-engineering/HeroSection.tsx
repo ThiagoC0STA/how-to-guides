@@ -1,11 +1,41 @@
 "use client";
 
-import { useState } from "react";
-import { Box, Typography, TextField, Paper, Button } from "@mui/material";
+import { useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  TextField,
+  Paper,
+  Button,
+  Autocomplete,
+} from "@mui/material";
 import { FaSearch, FaArrowRight } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import { publicRequest } from "@/utils/apiClient";
 
 export default function HeroSection() {
   const [searchTerm, setSearchTerm] = useState("");
+  const router = useRouter();
+  const [guides, setGuides] = useState<{ id: string; title: string }[]>([]);
+
+  useEffect(() => {
+    const fetchGuides = async () => {
+      try {
+        const { data } = await publicRequest.get("/guides");
+        if (data.guides) {
+          setGuides(
+            data.guides.map((g: any) => ({
+              id: g.id,
+              title: g.title,
+            }))
+          );
+        }
+      } catch (error) {
+        // Trate o erro se quiser
+      }
+    };
+    fetchGuides();
+  }, []);
 
   return (
     <Box
@@ -118,50 +148,62 @@ export default function HeroSection() {
                 flexDirection: { xs: "column", sm: "row" },
               }}
             >
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                  flex: 1,
-                  width: "100%",
-                  bgcolor: "#f8fafc",
-                  borderRadius: 2,
-                  px: { xs: 1.5, sm: 2 },
-                  py: { xs: 0.8, sm: 1 },
-                  transition: "all 0.2s ease",
-                  "&:hover": {
-                    bgcolor: "#f1f5f9",
-                  },
+              <Autocomplete
+                freeSolo
+                options={guides}
+                getOptionLabel={(option) =>
+                  typeof option === "string" ? option : option.title
+                }
+                value={searchTerm}
+                onChange={(_, newValue) => {
+                  if (typeof newValue === "object" && newValue?.id) {
+                    router.push(`/guides/${newValue.id}`);
+                  } else if (typeof newValue === "string") {
+                    setSearchTerm(newValue);
+                  }
                 }}
-              >
-                <FaSearch size={20} color="#666" />
-                <TextField
-                  fullWidth
-                  placeholder="Search prompt engineering guides..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  variant="standard"
-                  sx={{
-                    "& .MuiInputBase-root": {
-                      fontSize: { xs: "1rem", sm: "1.1rem" },
-                    },
-                    "& .MuiInput-underline:before": {
-                      display: "none",
-                    },
-                    "& .MuiInput-underline:hover:before": {
-                      display: "none",
-                    },
-                    "& .MuiInput-underline:after": {
-                      display: "none",
-                    },
-                    "& .MuiInputBase-input": {
-                      padding: "8px 0",
-                      marginBottom: "10px",
-                    },
-                  }}
-                />
-              </Box>
+                onInputChange={(_, newInputValue) =>
+                  setSearchTerm(newInputValue)
+                }
+                fullWidth
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    fullWidth
+                    placeholder="Search prompt engineering guides..."
+                    variant="standard"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <FaSearch
+                          size={20}
+                          color="#666"
+                          style={{ marginRight: 8 }}
+                        />
+                      ),
+                    }}
+                    sx={{
+                      width: "100%",
+                      "& .MuiInputBase-root": {
+                        fontSize: { xs: "1rem", sm: "1.1rem" },
+                      },
+                      "& .MuiInput-underline:before": {
+                        display: "none",
+                      },
+                      "& .MuiInput-underline:hover:before": {
+                        display: "none",
+                      },
+                      "& .MuiInput-underline:after": {
+                        display: "none",
+                      },
+                      "& .MuiInputBase-input": {
+                        padding: "8px 0",
+                        marginBottom: "10px",
+                      },
+                    }}
+                  />
+                )}
+              />
               <Button
                 variant="contained"
                 endIcon={<FaArrowRight />}

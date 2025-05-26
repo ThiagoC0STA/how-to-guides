@@ -1,16 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Typography, TextField, InputAdornment, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Autocomplete,
+} from "@mui/material";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import CategoryCard from "./CategoryCard";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay } from 'swiper/modules';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay } from "swiper/modules";
 import { publicRequest } from "@/utils/apiClient";
 import { useLoading } from "../LoadingProvider";
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 interface Category {
   id: string;
@@ -38,7 +45,13 @@ export default function CategoriesSection() {
       try {
         const { data } = await publicRequest.get("/categories");
         if (data.categories) {
-          setCategories(data.categories);
+          const categoriesWithGuides = data.categories.map((cat: any) => ({
+            ...cat,
+            guides: Array.isArray(cat.guide_categories)
+              ? cat.guide_categories.map((gc: any) => gc.guide).filter(Boolean)
+              : [],
+          }));
+          setCategories(categoriesWithGuides);
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -66,7 +79,7 @@ export default function CategoriesSection() {
             mb: 2,
             fontSize: { xs: "1.8rem", md: "2.6rem" },
             fontWeight: 800,
-            letterSpacing: -0.5, 
+            letterSpacing: -0.5,
             pt: 4,
           }}
         >
@@ -83,63 +96,66 @@ export default function CategoriesSection() {
             mx: "auto",
           }}
         >
-          Explore our comprehensive collection of prompt engineering guides, organized by category to help you master different aspects of AI prompting.
+          Explore our comprehensive collection of prompt engineering guides,
+          organized by category to help you master different aspects of AI
+          prompting.
         </Typography>
 
-        <Box
-          sx={{
-            maxWidth: 500,
-            mx: "auto",
-            mb: 6,
-          }}
-        >
-          <TextField
-            fullWidth
-            placeholder="Search categories..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <FaSearch color="#666" />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 3,
-                bgcolor: "background.paper",
-                "& fieldset": {
-                  borderColor: "divider",
+        <Autocomplete
+          freeSolo
+          options={categories.map((cat) => cat.title)}
+          value={searchTerm}
+          onChange={(_, newValue) => setSearchTerm(newValue || "")}
+          onInputChange={(_, newInputValue) => setSearchTerm(newInputValue)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              fullWidth
+              placeholder="Search categories..."
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <FaSearch color="#666" />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 3,
+                  "& fieldset": {
+                    borderColor: "divider",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "primary.main",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "primary.main",
+                  },
                 },
-                "&:hover fieldset": {
-                  borderColor: "primary.main",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "primary.main",
-                },
-              },
-            }}
-          />
-        </Box>
+              }}
+            />
+          )}
+          sx={{ mb: 3 }}
+        />
 
-        <Box sx={{ position: 'relative', maxWidth: 1200, mx: 'auto' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ position: "relative", maxWidth: 1200, mx: "auto" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <IconButton
               onClick={() => swiper?.slidePrev()}
               sx={{
-                display: { xs: 'none', md: 'flex' },
-                bgcolor: 'white',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                '&:hover': {
-                  bgcolor: '#f5f5f5',
+                display: { xs: "none", md: "flex" },
+                bgcolor: "white",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                "&:hover": {
+                  bgcolor: "#f5f5f5",
                 },
               }}
             >
               <FaChevronLeft />
             </IconButton>
 
-            <Box sx={{ flex: 1, overflow: 'hidden' }}>
+            <Box sx={{ flex: 1, overflow: "hidden" }}>
               <Swiper
                 onSwiper={setSwiper}
                 modules={[Pagination, Autoplay]}
@@ -149,7 +165,7 @@ export default function CategoriesSection() {
                 autoplay={{
                   delay: 3000,
                   disableOnInteraction: false,
-                  pauseOnMouseEnter: true
+                  pauseOnMouseEnter: true,
                 }}
                 loop={true}
                 breakpoints={{
@@ -164,7 +180,7 @@ export default function CategoriesSection() {
                   },
                 }}
                 style={{
-                  padding: '20px 0 40px',
+                  padding: "20px 0 40px",
                 }}
               >
                 {filteredCategories.map((category) => (
@@ -191,11 +207,11 @@ export default function CategoriesSection() {
             <IconButton
               onClick={() => swiper?.slideNext()}
               sx={{
-                display: { xs: 'none', md: 'flex' },
-                bgcolor: 'white',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                '&:hover': {
-                  bgcolor: '#f5f5f5',
+                display: { xs: "none", md: "flex" },
+                bgcolor: "white",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                "&:hover": {
+                  bgcolor: "#f5f5f5",
                 },
               }}
             >
@@ -216,7 +232,8 @@ export default function CategoriesSection() {
               No categories found
             </Typography>
             <Typography>
-              Try adjusting your search terms to find what you&apos;re looking for.
+              Try adjusting your search terms to find what you&apos;re looking
+              for.
             </Typography>
           </Box>
         )}
@@ -236,4 +253,3 @@ export default function CategoriesSection() {
     </Box>
   );
 }
- 

@@ -32,14 +32,15 @@ export default function CategoryCard({
   color,
   featured,
   comingSoon,
-  guides,
+  guides = [],
   id,
 }: CategoryCardProps) {
   const Icon = iconMap[iconName as IconName] || FaQuestionCircle;
+  const safeGuides = Array.isArray(guides) ? guides : [];
 
   return (
     <Paper
-      elevation={0}
+      elevation={0} 
       sx={{
         height: "100%",
         minHeight: 380,
@@ -183,8 +184,7 @@ export default function CategoryCard({
                 fontWeight: 500,
               }}
             >
-              {guides.length} {guides.length === 1 ? "Guide" : "Guides"}
-              Available
+              {safeGuides.length} {safeGuides.length === 1 ? "Guide" : "Guides"} Available
             </Typography>
           )}
         </Box>
@@ -242,7 +242,7 @@ export default function CategoryCard({
               textAlign: "center",
             }}
           >
-            <Link href={`/guides?category=${id}`} passHref>
+            <Link href={`/guides`} passHref>
               <Button
                 variant="outlined"
                 className="view-button"
@@ -260,7 +260,7 @@ export default function CategoryCard({
                   },
                 }}
               >
-                View {guides.length === 1 ? "Guide" : "All Guides"}
+                View Category
               </Button>
             </Link>
           </Box>

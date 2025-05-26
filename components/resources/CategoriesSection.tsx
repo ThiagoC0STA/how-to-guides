@@ -22,7 +22,7 @@ export default function CategoriesSection() {
 
   return (
     <Box sx={{ mb: 8 }}>
-      <Typography
+      {/* <Typography
         variant="h2"
         sx={{
           textAlign: "center",
@@ -73,7 +73,6 @@ export default function CategoriesSection() {
           sx={{
             "& .MuiOutlinedInput-root": {
               borderRadius: 3,
-              bgcolor: "background.paper",
               "& fieldset": {
                 borderColor: "divider",
               },
@@ -86,7 +85,7 @@ export default function CategoriesSection() {
             },
           }}
         />
-      </Box>
+      </Box> */}
 
       <Box sx={{ position: "relative", maxWidth: 1200, mx: "auto" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
