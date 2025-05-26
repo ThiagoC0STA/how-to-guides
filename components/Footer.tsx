@@ -89,7 +89,6 @@ export default function Footer() {
           {/* Popular Guides */}
           <Box sx={{ minWidth: 180, flex: 1, mb: { xs: 2, md: 0 } }}>
             <Typography
-              variant="subtitle1"
               fontWeight={700}
               gutterBottom
               sx={{ color: "var(--foreground)", fontSize: 20 }}
