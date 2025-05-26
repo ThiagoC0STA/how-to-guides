@@ -18,7 +18,7 @@ export default function GuidesPage() {
             fontSize: { xs: 32, md: 48 },
             fontWeight: 800,
             mb: 2,
-            background: "linear-gradient(90deg, #2563eb 0%, #4f46e5 100%)",
+            background: "linear-gradient(90deg, #134CCD 0%, #4f46e5 100%)",
             backgroundClip: "text",
             WebkitBackgroundClip: "text",
             color: "black",

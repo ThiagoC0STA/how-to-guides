@@ -149,7 +149,7 @@ export default function AdminLoginPage() {
               mt: 1,
               letterSpacing: 0.5,
               transition: "all 0.2s ease-in-out",
-              background: "linear-gradient(90deg, #6366f1 60%, #2563eb 100%)",
+              background: "linear-gradient(90deg, #6366f1 60%, #134CCD 100%)",
 
               "&:hover": {
                 color: "white",

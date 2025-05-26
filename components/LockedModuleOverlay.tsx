@@ -15,7 +15,7 @@ export default function LockedModuleOverlay({
   moduleTitle,
   onUnlock,
   onBack,
-  guideColor = '#2563eb',
+  guideColor = '#134CCD',
   guideColorRgb = '37,99,235',
 }: LockedModuleOverlayProps) {
 

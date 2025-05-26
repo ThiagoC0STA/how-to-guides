@@ -19,7 +19,7 @@ import { useState } from "react";
 const bonuses = [
   { icon: <FaFilePdf color="#e74c3c" size={19} />, text: "Full PDF Guide" },
   {
-    icon: <FaRegListAlt color="#2563eb" size={19} />,
+    icon: <FaRegListAlt color="#134CCD" size={19} />,
     text: "Longer Response Prompt Templates",
   },
   {

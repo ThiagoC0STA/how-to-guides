@@ -42,7 +42,7 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
       : 0;
   const current = modules[currentModule];
 
-  const guideColor = guide.color || "#2563eb";
+  const guideColor = guide.color || "#134CCD";
   const guideColorRgb = hexToRgb(guideColor);
 
   function handleQuestionSuccess(qIdx: number) {

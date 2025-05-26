@@ -46,7 +46,7 @@ export default function HeroSection() {
               number: {
                 value: 40,
               },
-              color: { value: ["#2563eb", "#3b82f6", "#60a5fa"] },
+              color: { value: ["#134CCD", "#3b82f6", "#60a5fa"] },
               shape: { type: "circle" },
               opacity: {
                 value: 0.1,
@@ -65,7 +65,7 @@ export default function HeroSection() {
               links: {
                 enable: true,
                 distance: 120,
-                color: "#2563eb",
+                color: "#134CCD",
                 opacity: 0.1,
                 width: 1.2,
               },

@@ -16,7 +16,7 @@ export default function ExpandableSection({
   children: ReactNode;
   guideColor?: string;
 }) {
-  const color = guideColor || "var(--primary-blue, #2563eb)";
+  const color = guideColor || "var(--primary-blue, #134CCD)";
   return (
     <Accordion
       sx={{

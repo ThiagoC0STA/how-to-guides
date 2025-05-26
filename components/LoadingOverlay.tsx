@@ -22,7 +22,7 @@ export default function LoadingOverlay() {
         gap: 2,
       }}
     >
-      <RiseLoader color="#2563eb" size={15} />
+      <RiseLoader color="#134CCD" size={15} />
       {/* <Typography
         variant="body2"
         sx={{

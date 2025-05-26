@@ -5,7 +5,7 @@ const values = [
     title: "Accessibility",
     description:
       "We believe AI should be accessible to everyone. Our guides use clear language, avoid unnecessary jargon, and break down complex concepts into digestible steps.",
-    color: "#2563eb",
+    color: "#134CCD",
   },
   {
     title: "Thoroughness",

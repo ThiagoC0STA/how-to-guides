@@ -18,7 +18,7 @@ export default function KnowledgeCheck({
   options, 
   correctAnswer, 
   onSuccess, 
-  guideColor = '#2563eb', 
+  guideColor = '#134CCD', 
   guideColorRgb = '37,99,235',
   completedQuestions = {},
   questionIndex = 0,

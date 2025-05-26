@@ -48,7 +48,7 @@ export default function NewsletterSection() {
             position: "absolute",
             top: 24,
             right: 24,
-            bgcolor: "var(--primary, #2563eb)",
+            bgcolor: "var(--primary, #134CCD)",
             color: "#fff",
             fontWeight: 700,
             fontSize: 13,
@@ -123,10 +123,10 @@ export default function NewsletterSection() {
                 border: "none",
               },
               "&:hover": {
-                borderColor: "var(--primary, #2563eb)",
+                borderColor: "var(--primary, #134CCD)",
               },
               "&.Mui-focused": {
-                borderColor: "var(--primary, #2563eb)",
+                borderColor: "var(--primary, #134CCD)",
                 boxShadow: "0 2px 8px 0 rgba(37,99,235,0.10)",
               },
               width: { xs: "100%", sm: 260 },
@@ -139,7 +139,7 @@ export default function NewsletterSection() {
             size="large"
             disabled={submitted}
             sx={{
-              bgcolor: "var(--primary, #2563eb)",
+              bgcolor: "var(--primary, #134CCD)",
               color: "#fff",
               fontWeight: 700,
               borderRadius: 4,
@@ -153,7 +153,7 @@ export default function NewsletterSection() {
               width: { xs: "100%", sm: "auto" },
               height: { sm: 49 },
               "&:hover": {
-                bgcolor: "var(--primary, #2563eb)",
+                bgcolor: "var(--primary, #134CCD)",
                 filter: "brightness(1.08)",
                 boxShadow: "0 4px 16px 0 rgba(37,99,235,0.18)",
                 transform: "scale(1.04)",

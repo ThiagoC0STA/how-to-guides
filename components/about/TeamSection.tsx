@@ -6,7 +6,7 @@ const teamMembers = [
     title: "Founder & Lead Content Strategist",
     bio: "With over 10 years of experience in technology education, John founded How-ToGuides.com to help bridge the gap between powerful AI tools and everyday users.",
     initials: "JD",
-    color: "#2563eb",
+    color: "#134CCD",
   },
   {
     name: "Jane Smith",
