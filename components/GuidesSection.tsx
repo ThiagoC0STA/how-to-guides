@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -20,16 +20,33 @@ import {
   InputLabel,
   useTheme,
   useMediaQuery,
+  CircularProgress,
 } from "@mui/material";
-import { GUIDES } from "@/data/guides";
 import { categories as categoryData } from "@/data/categories";
 import { Category } from "@/data/categories";
 import Link from "next/link";
 import { FaSearch } from "react-icons/fa";
 import { FaRobot } from "react-icons/fa";
+import { useLoading } from "./LoadingProvider";
+import { publicRequest } from "@/utils/apiClient";
 
 interface GuidesSectionProps {
   isPopular?: boolean;
+}
+
+interface Guide {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  color: string;
+  updated_at: string;
+  is_popular: boolean;
+  categories: {
+    id: string;
+    color: string;
+    title: string;
+  }[];
 }
 
 const FallbackIcon = ({ color }: { color: string }) => (
@@ -55,26 +72,70 @@ export default function GuidesSection({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+  const [guides, setGuides] = useState<Guide[]>([]);
+  const { show: showLoading, hide: hideLoading } = useLoading();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const categories = ["all", ...categoryData.map((cat: Category) => cat.id)].sort();
+  const categories = [
+    "all",
+    ...categoryData.map((cat: Category) => cat.id),
+  ].sort();
 
-  const filteredGuides = GUIDES.filter((guide) => {
-    if (isPopular) {
-      return guide.featured;
-    }
+  useEffect(() => {
+    let isMounted = true;
+    let loadingShown = false;
 
-    const matchesSearch =
-      guide.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      guide.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    // Find guides that belong to the selected category
-    const matchesCategory = selectedCategory === "all" || 
-      categoryData.find((cat: Category) => cat.id === selectedCategory)?.guides.includes(guide.id);
+    const fetchGuides = async () => {
+      if (!loadingShown) {
+        showLoading();
+        loadingShown = true;
+      }
 
-    return matchesSearch && matchesCategory;
-  });
+      try {
+        const { data } = await publicRequest.get(
+          `/guides${isPopular ? "?popular=true" : ""}`
+        );
+        if (data.guides && isMounted) {
+          setGuides(data.guides);
+        }
+      } catch (error) {
+        console.error("Error fetching guides:", error);
+      } finally {
+        if (isMounted && loadingShown) {
+          hideLoading();
+          loadingShown = false;
+        }
+      }
+    };
+
+    fetchGuides();
+
+    return () => {
+      isMounted = false;
+      if (loadingShown) {
+        hideLoading();
+      }
+    };
+  }, []);
+
+  const filteredGuides = React.useMemo(() => {
+    return guides.filter((guide) => {
+      const matchesSearch =
+        guide.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        guide.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesCategory =
+        selectedCategory === "all" ||
+        guide.categories.some((cat) => cat.id === selectedCategory);
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [guides, searchTerm, selectedCategory]);
+
+  const searchOptions = React.useMemo(() => {
+    return guides.map((guide) => guide.title);
+  }, [guides]);
 
   return (
     <Box
@@ -87,24 +148,24 @@ export default function GuidesSection({
       }}
     >
       {isPopular && (
-      <Typography
-        variant="h3"
-        sx={{
-          fontWeight: 800,
-          color: "var(--foreground)",
-          fontSize: { xs: 24, md: 32 },
+        <Typography
+          variant="h3"
+          sx={{
+            fontWeight: 800,
+            color: "var(--foreground)",
+            fontSize: { xs: 24, md: 32 },
             mb: 4,
-        }}
-      >
-        Popular Guides
-      </Typography>
+          }}
+        >
+          Popular Guides
+        </Typography>
       )}
 
       {!isPopular && (
         <Stack spacing={3}>
           <Autocomplete
             freeSolo
-            options={GUIDES.map((guide) => guide.title)}
+            options={searchOptions}
             value={searchTerm}
             onChange={(_, newValue) => setSearchTerm(newValue || "")}
             onInputChange={(_, newInputValue) => setSearchTerm(newInputValue)}
@@ -160,7 +221,9 @@ export default function GuidesSection({
                       textTransform: "capitalize",
                     }}
                   >
-                    {category === "all" ? "All Categories" : category.replace(/-/g, " ")}
+                    {category === "all"
+                      ? "All Categories"
+                      : category.replace(/-/g, " ")}
                   </MenuItem>
                 ))}
               </Select>
@@ -212,7 +275,9 @@ export default function GuidesSection({
                         textTransform: "capitalize",
                       }}
                     >
-                      {category === "all" ? "All Categories" : category.replace(/-/g, " ")}
+                      {category === "all"
+                        ? "All Categories"
+                        : category.replace(/-/g, " ")}
                     </Typography>
                   </Paper>
                 ))}
@@ -265,7 +330,7 @@ export default function GuidesSection({
             />
             {/* Last updated chip */}
             <Chip
-              label={guide.lastUpdated}
+              label={new Date(guide.updated_at).toLocaleDateString()}
               size="small"
               sx={{
                 position: "absolute",
@@ -291,16 +356,24 @@ export default function GuidesSection({
                 mb: 1,
               }}
             >
-              {failedImages.has(typeof guide.image === 'string' ? guide.image : '') ? (
+              {failedImages.has(
+                typeof guide.image === "string" ? guide.image : ""
+              ) ? (
                 <FallbackIcon color={guide.color} />
               ) : (
                 <CardMedia
                   component="img"
-                  image={typeof guide.image === 'string' ? guide.image : URL.createObjectURL(guide.image)}
+                  image={
+                    typeof guide.image === "string"
+                      ? guide.image
+                      : URL.createObjectURL(guide.image)
+                  }
                   alt={guide.title}
                   onError={() => {
-                    if (typeof guide.image === 'string' && guide.image) {
-                      setFailedImages((prev) => new Set([...prev, guide.image as string]));
+                    if (typeof guide.image === "string" && guide.image) {
+                      setFailedImages(
+                        (prev) => new Set([...prev, guide.image as string])
+                      );
                     }
                   }}
                   sx={{

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { GUIDES } from "@/data/guides";
 import GuideLayout from "@/components/GuideLayout";
 import { Metadata } from "next";
+import { createClient } from "@supabase/supabase-js";
 
 const defaultMetadata: Metadata = {
   title: "AI Guide Platform",
@@ -40,26 +40,138 @@ const defaultMetadata: Metadata = {
   },
 };
 
-export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const guide = GUIDES.find((g) => g.id === params.id);
+async function getGuideById(id: string) {
+  console.log('🔍 Buscando guia com ID:', id);
+  
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  console.log('📡 URL do Supabase:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+
+  try {
+    // Primeiro, buscar o guia
+    const { data: guide, error: guideError } = await supabase
+      .from("guides")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (guideError) {
+      console.error('❌ Erro ao buscar guia:', guideError);
+      return null;
+    }
+
+    if (!guide) {
+      console.log('⚠️ Guia não encontrado');
+      return null;
+    }
+
+    // Depois, buscar as categorias separadamente
+    const { data: categories, error: categoriesError } = await supabase
+      .from("guide_categories")
+      .select(`
+        categories (
+          id,
+          title,
+          color
+        )
+      `)
+      .eq("guide_id", id);
+
+    if (categoriesError) {
+      console.error('❌ Erro ao buscar categorias:', categoriesError);
+    }
+
+    // Combinar os dados
+    const guideWithCategories = {
+      ...guide,
+      categories: categories?.map(c => c.categories) || []
+    };
+
+    console.log('✅ Guia encontrado:', {
+      id: guideWithCategories.id,
+      title: guideWithCategories.title,
+      categories: guideWithCategories.categories?.length
+    });
+
+    return guideWithCategories;
+  } catch (error) {
+    console.error('❌ Erro inesperado:', error);
+    return null;
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
+  console.log('📝 Gerando metadata para ID:', params.id);
+  
+  const guide = await getGuideById(params.id);
 
   if (!guide) {
+    console.log('⚠️ Guia não encontrado para metadata');
     return {
       title: "Guide Not Found",
     };
   }
 
-  if (guide.metadata) {
-    return guide.metadata;
-  }
+  // Construct metadata from guide data
+  const metadata: Metadata = {
+    title: guide.title,
+    description: guide.description,
+    keywords: guide.metadata?.keywords || defaultMetadata.keywords,
+    openGraph: {
+      title: guide.title,
+      description: guide.description,
+      url: `https://how-to-guides-kappa.vercel.app/guides/${guide.id}`,
+      type: "article",
+      images: [
+        {
+          url: guide.image,
+          width: 1200,
+          height: 630,
+          alt: guide.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: guide.title,
+      description: guide.description,
+      images: [guide.image],
+    },
+  };
 
-  return defaultMetadata;
+  console.log('✅ Metadata gerada:', {
+    title: metadata.title,
+    description: metadata.description?.slice(0, 50) + '...'
+  });
+
+  return metadata;
 }
 
-export default function GuidePage({ params }: any) {
-  const guide = GUIDES.find((g) => g.id === params.id);
+export default async function GuidePage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  console.log('📄 Renderizando página do guia:', params.id);
+  
+  const guide = await getGuideById(params.id);
 
-  if (!guide) return notFound();
+  if (!guide) {
+    console.log('⚠️ Guia não encontrado, redirecionando para 404');
+    return notFound();
+  }
+
+  console.log('✅ Renderizando guia:', {
+    id: guide.id,
+    title: guide.title
+  });
 
   return <GuideLayout guide={guide} />;
 }

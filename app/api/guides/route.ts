@@ -7,6 +7,10 @@ export async function GET(req: NextRequest) {
   console.log("📚 Fetching guides");
   const res = NextResponse.json({ success: true });
 
+  // Get the popular parameter from the URL
+  const { searchParams } = new URL(req.url);
+  const popular = searchParams.get("popular") === "true";
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -34,10 +38,17 @@ export async function GET(req: NextRequest) {
   );
 
   try {
-    const { data: guides, error } = await supabase
+    let query = supabase
       .from("guides")
       .select("*")
       .order("created_at", { ascending: false });
+
+    // If popular is true, only get popular guides
+    if (popular) {
+      query = query.eq("is_popular", true);
+    }
+
+    const { data: guides, error } = await query;
 
     if (error) {
       console.error("❌ Error fetching guides:", error);
