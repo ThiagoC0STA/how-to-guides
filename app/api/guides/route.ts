@@ -40,7 +40,18 @@ export async function GET(req: NextRequest) {
   try {
     let query = supabase
       .from("guides")
-      .select("*")
+      .select(
+        `
+        *,
+        guide_categories!inner (
+          category:categories (
+            id,
+            title,
+            color
+          )
+        )
+      `
+      )
       .order("created_at", { ascending: false });
 
     // If popular is true, only get popular guides
@@ -55,8 +66,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
+    // Adapta guide_categories para categories
+    const guidesWithCategories = (guides || []).map((guide: any) => ({
+      ...guide,
+      categories: Array.isArray(guide.guide_categories)
+        ? guide.guide_categories.map((gc: any) => gc.category).filter(Boolean)
+        : [],
+    }));
+
     console.log("✅ Guides fetched successfully");
-    return NextResponse.json({ guides });
+    return NextResponse.json({ guides: guidesWithCategories });
   } catch (error) {
     console.error("❌ Error fetching guides:", error);
     return NextResponse.json(
@@ -109,7 +128,6 @@ export async function POST(req: NextRequest) {
         color: body.color || null,
         modules: body.modules,
         is_popular: body.is_popular || false,
-        categories: body.categories,
         metadata: body.metadata,
       })
       .select()
@@ -119,15 +137,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    // Atualizar o campo guides das categorias envolvidas
+    // Criar relacionamentos na tabela de junção
     if (body.categories && Array.isArray(body.categories)) {
-      for (const cat of body.categories) {
-        await supabase
-          .from("categories")
-          .update({ guides: [...(cat.guides || []), data.id] })
-          .eq("id", cat.id);
+      const guideCategories = body.categories.map((cat: { id: string }) => ({
+        guide_id: data.id,
+        category_id: cat.id,
+      }));
+
+      const { error: junctionError } = await supabase
+        .from("guide_categories")
+        .insert(guideCategories);
+
+      if (junctionError) {
+        console.error(
+          "❌ Error creating guide-category relationships:",
+          junctionError
+        );
+        return NextResponse.json(
+          { error: junctionError.message },
+          { status: 400 }
+        );
       }
     }
+
     return NextResponse.json({ guide: data });
   } catch (error) {
     console.error("❌ Error creating guide:", error);

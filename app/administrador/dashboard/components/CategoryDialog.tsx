@@ -12,6 +12,7 @@ import {
   Switch,
   IconButton,
   Paper,
+  Autocomplete,
 } from "@mui/material";
 import { ChromePicker } from "react-color";
 import { Category } from "@/data/categories";
@@ -23,12 +24,14 @@ import ActionButton from "./ActionButton";
 import { supabase } from "@/lib/supabaseClient";
 import { useLoading } from "@/components/LoadingProvider";
 import Image from "next/image";
+import { api } from "@/utils/apiClient";
 
 interface CategoryDialogProps {
   open: boolean;
   onClose: () => void;
   onSave: (category: Partial<Category>) => void;
   category?: Category;
+  withGuides?: boolean;
 }
 
 export default function CategoryDialog({
@@ -36,6 +39,7 @@ export default function CategoryDialog({
   onClose,
   onSave,
   category,
+  withGuides,
 }: CategoryDialogProps) {
   const { show: showLoading, hide: hideLoading } = useLoading();
   const [formData, setFormData] = useState<Partial<Category>>(() => {
@@ -66,6 +70,11 @@ export default function CategoryDialog({
   const [recentIcons, setRecentIcons] = useState<
     { name: string; url: string }[]
   >([]);
+  const [allGuides, setAllGuides] = useState<any[]>([]);
+  const [guideSearch, setGuideSearch] = useState("");
+  const [selectedGuides, setSelectedGuides] = useState<any[]>(
+    formData.guides || []
+  );
 
   useEffect(() => {
     if (category) {
@@ -97,6 +106,19 @@ export default function CategoryDialog({
       fetchAllIcons();
     }
   }, [open]);
+
+  useEffect(() => {
+    if (withGuides && guideSearch.length > 0) {
+      const fetchGuides = async () => {
+        const { data, error } = await supabase
+          .from("guides")
+          .select("id, title")
+          .ilike("title", `%${guideSearch}%`);
+        if (!error) setAllGuides(data || []);
+      };
+      fetchGuides();
+    }
+  }, [guideSearch, withGuides]);
 
   const fetchAllIcons = async () => {
     try {
@@ -136,15 +158,6 @@ export default function CategoryDialog({
   const handleSubmit = async () => {
     showLoading();
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        alert("Você não está autenticado! Faça login para continuar.");
-        return;
-      }
-
       // Validar campos obrigatórios
       if (!formData.title || !formData.description) {
         alert("Por favor, preencha todos os campos obrigatórios.");
@@ -157,34 +170,22 @@ export default function CategoryDialog({
         if (!iconUrl) return;
       }
 
-      // Preparar dados para envio
-      const categoryData = {
+      // Montar o objeto para enviar para a API
+      const categoryData: any = {
         ...formData,
+        guides: selectedGuides.map((g) => ({ id: g.id, title: g.title })),
         icon_url: iconUrl,
-        guides: formData.guides || [],
         featured: formData.featured || false,
         comingSoon: formData.comingSoon || false,
       };
 
-      const isEdit = category && category.id && category.id !== "new";
-      const response = isEdit
-        ? await supabase
-            .from("categories")
-            .update(categoryData)
-            .eq("id", category.id)
-        : await supabase.from("categories").insert(categoryData);
+      // Chamar a API Next.js usando o client já configurado
+      const result: any = await api.post("/categories", categoryData);
 
-      if (response.error) {
-        console.error("Erro ao salvar categoria:", response.error);
-        alert(
-          "Erro ao salvar categoria. Por favor, tente novamente mais tarde."
-        );
-      } else {
-        onSave(categoryData);
-        onClose();
-      }
-    } catch (error) {
-      console.error("Erro ao salvar categoria:", error);
+      onSave(result.category);
+      onClose();
+    } catch (error: any) {
+      console.error("Erro ao salvar categoria:", error?.message || error);
       alert("Erro ao salvar categoria. Por favor, tente novamente mais tarde.");
     } finally {
       hideLoading();
@@ -536,6 +537,25 @@ export default function CategoryDialog({
               label="Coming Soon"
             />
           </Box>
+          {withGuides && (
+            <Autocomplete
+              multiple
+              options={allGuides}
+              getOptionLabel={(option) => option.title}
+              value={selectedGuides}
+              onChange={(_, newValue) => setSelectedGuides(newValue)}
+              onInputChange={(_, value) => setGuideSearch(value)}
+              filterSelectedOptions
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Guides"
+                  placeholder="Search guides..."
+                />
+              )}
+              sx={{ mb: 2 }}
+            />
+          )}
         </Box>
       </DialogContent>
       <DialogActions

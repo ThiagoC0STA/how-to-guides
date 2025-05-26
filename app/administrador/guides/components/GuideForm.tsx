@@ -120,7 +120,9 @@ export default function GuideForm({ guideId }: GuideFormProps) {
 
   const handleCategoryChange = (event: any) => {
     setSelectedCategories(event.target.value);
-    const selectedObjs = categoriesList.filter((cat) => event.target.value.includes(cat.id)).map((cat) => ({ id: cat.id, title: cat.title, color: cat.color }));
+    const selectedObjs = categoriesList
+      .filter((cat) => event.target.value.includes(cat.id))
+      .map((cat) => ({ id: cat.id, title: cat.title, color: cat.color }));
     handleFormDataChange("categories", selectedObjs);
   };
 

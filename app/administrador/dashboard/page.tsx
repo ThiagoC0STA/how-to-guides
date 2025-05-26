@@ -706,17 +706,16 @@ export default function Dashboard() {
         field: "guides",
         headerName: "Guides",
         width: 200,
-        renderCell: (row: Category) => {
-          const guideTitles = row.guides
-            .map((guideId) => {
-              const guide = guides.find((g) => g.id === guideId);
-              return guide ? guide.title : null;
-            })
-            .filter(Boolean);
+        renderCell: (row: any) => {
+          const guideTitles = row.guide_categories
+            ? row.guide_categories
+                .map((gc: any) => gc.guide?.title)
+                .filter(Boolean)
+            : [];
 
           return guideTitles.length > 0 ? (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-              {guideTitles.map((title, idx) => (
+              {guideTitles.map((title: any, idx: any) => (
                 <Chip key={idx} label={title} size="small" />
               ))}
             </Box>
@@ -941,6 +940,7 @@ export default function Dashboard() {
         onClose={() => setOpenCategoryDialog(false)}
         onSave={handleSaveCategory}
         category={selectedCategory || undefined}
+        withGuides={true}
       />
 
       <ModelDialog

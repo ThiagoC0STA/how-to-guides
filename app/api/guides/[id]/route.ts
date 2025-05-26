@@ -36,7 +36,17 @@ export async function GET(req: NextRequest, { params }: any) {
   try {
     const { data: guide, error } = await supabase
       .from("guides")
-      .select("*")
+      .select(
+        `
+        *,
+        guide_categories (
+          category:categories (
+            id,
+            name
+          )
+        )
+      `
+      )
       .eq("id", params.id)
       .single();
 

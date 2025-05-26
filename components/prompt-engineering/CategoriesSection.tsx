@@ -1,19 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Typography, TextField, InputAdornment, IconButton } from "@mui/material";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import CategoryCard from "./CategoryCard";
-import { categories } from "@/data/categories";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
+import { publicRequest } from "@/utils/apiClient";
+import { useLoading } from "../LoadingProvider";
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
+interface Category {
+  id: string;
+  title: string;
+  description: string;
+  color: string;
+  icon_url: string;
+  guides: {
+    id: string;
+    title: string;
+    description: string;
+    image: string;
+  }[];
+}
+
 export default function CategoriesSection() {
   const [searchTerm, setSearchTerm] = useState("");
   const [swiper, setSwiper] = useState<any>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const { show: showLoading, hide: hideLoading } = useLoading();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      showLoading();
+      try {
+        const { data } = await publicRequest.get("/categories");
+        if (data.categories) {
+          setCategories(data.categories);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        hideLoading();
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const filteredCategories = categories.filter(
     (category) =>
@@ -145,6 +180,7 @@ export default function CategoriesSection() {
                       <CategoryCard
                         {...category}
                         iconName={category.icon_url}
+                        guides={category.guides}
                       />
                     </Box>
                   </SwiperSlide>

@@ -35,7 +35,18 @@ export async function GET(req: NextRequest) {
   try {
     const { data: categories, error } = await supabase
       .from("categories")
-      .select("*")
+      .select(
+        `
+        *,
+        guide_categories (
+          guide:guides (
+            id,
+            title,
+            color
+          )
+        )
+      `
+      )
       .order("title", { ascending: true });
 
     if (error) {
@@ -126,13 +137,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Add default values
+    // Add default values (NÃO inclui guides)
     const categoryWithDefaults = {
       ...category,
-      guides: [],
       featured: category.featured || false,
       comingSoon: category.comingSoon || false,
     };
+    delete categoryWithDefaults.guides;
 
     const { data, error } = await supabase
       .from("categories")
@@ -143,6 +154,29 @@ export async function POST(req: NextRequest) {
     if (error) {
       console.error("❌ Error creating category:", error);
       return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    // Se vier guides, cria os relacionamentos na guide_categories
+    if (category.guides && Array.isArray(category.guides) && data?.id) {
+      const guideCategories = category.guides.map((g: any) => ({
+        guide_id: g.id,
+        category_id: data.id,
+      }));
+      if (guideCategories.length > 0) {
+        const { error: relError } = await supabase
+          .from("guide_categories")
+          .insert(guideCategories);
+        if (relError) {
+          console.error(
+            "❌ Error creating guide-category relationships:",
+            relError
+          );
+          return NextResponse.json(
+            { error: relError.message },
+            { status: 400 }
+          );
+        }
+      }
     }
 
     console.log("✅ Category created successfully");

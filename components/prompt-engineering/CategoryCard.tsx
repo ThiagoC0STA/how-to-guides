@@ -3,21 +3,24 @@
 import { Box, Typography, Paper, List, ListItem, Button } from "@mui/material";
 import Link from "next/link";
 import { FaArrowRight, FaLock, FaQuestionCircle } from "react-icons/fa";
-import { Category } from "@/data/categories";
-import { GUIDES } from "@/data/guides";
 import iconMap from "../../data/iconMap";
 
 interface Guide {
+  id: string;
   title: string;
-  link: string;
+  description: string;
+  image: string;
 }
 
-interface CategoryCardProps extends Omit<Category, "iconName"> {
+interface CategoryCardProps {
+  id: string;
+  title: string;
+  description: string;
+  color: string;
   iconName: string;
   featured?: boolean;
   comingSoon?: boolean;
-  guides: string[];
-  id: string;
+  guides: Guide[];
 }
 
 type IconName = keyof typeof iconMap;
@@ -33,18 +36,6 @@ export default function CategoryCard({
   id,
 }: CategoryCardProps) {
   const Icon = iconMap[iconName as IconName] || FaQuestionCircle;
-
-  // Map guide IDs to their full data
-  const guideData = guides
-    .map((guideId) => {
-      const guide = GUIDES.find((g) => g.id === guideId);
-      if (!guide) return null;
-      return {
-        title: guide.title,
-        link: `/guides/${guide.id}`,
-      };
-    })
-    .filter(Boolean) as Guide[];
 
   return (
     <Paper
@@ -192,14 +183,14 @@ export default function CategoryCard({
                 fontWeight: 500,
               }}
             >
-              {guideData.length} {guideData.length === 1 ? "Guide" : "Guides"}
+              {guides.length} {guides.length === 1 ? "Guide" : "Guides"}
               Available
             </Typography>
           )}
         </Box>
       </Box>
 
-      {!comingSoon && guideData.length > 0 && (
+      {!comingSoon && guides.length > 0 && (
         <>
           <Box
             sx={{
@@ -217,9 +208,9 @@ export default function CategoryCard({
                 },
               }}
             >
-              {guideData.map((guide, index) => (
-                <ListItem key={index}>
-                  <Link href={guide.link} passHref className="guide-link">
+              {guides.map((guide) => (
+                <ListItem key={guide.id}>
+                  <Link href={`/guides/${guide.id}`} passHref className="guide-link">
                     <Typography
                       sx={{
                         color: "text.secondary",
@@ -251,7 +242,7 @@ export default function CategoryCard({
               textAlign: "center",
             }}
           >
-            <Link href={`/categories/${id}`} passHref>
+            <Link href={`/guides?category=${id}`} passHref>
               <Button
                 variant="outlined"
                 className="view-button"
@@ -269,7 +260,7 @@ export default function CategoryCard({
                   },
                 }}
               >
-                View {guideData.length === 1 ? "Guide" : "All Guides"}
+                View {guides.length === 1 ? "Guide" : "All Guides"}
               </Button>
             </Link>
           </Box>
