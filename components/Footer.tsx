@@ -241,15 +241,10 @@ export default function Footer() {
           © {new Date().getFullYear()} How-ToGuides.com. All rights reserved.
         </Typography>
       </Box>
-      <Box
-        sx={{
-          mt: 4,
-          mb: 1,
-          textAlign: "center",
-          px: { xs: 2, sm: 8 },
-          maxWidth: 900,
-          mx: "auto",
-        }}
+
+      <Container
+        maxWidth={false}
+        sx={{ maxWidth: "1440px", px: { xs: 2, md: 6 }, mt: 4, mb: 1 }}
       >
         <Typography
           sx={{
@@ -257,6 +252,7 @@ export default function Footer() {
             color: "var(--footer-text)",
             mb: 1,
             lineHeight: 1.6,
+            textAlign: "left",
           }}
         >
           <strong>DISCLAIMER</strong>
@@ -264,8 +260,8 @@ export default function Footer() {
           This website provides informational content only, and all access is
           completely free. Our only revenue comes from advertisements clearly
           labeled as &quot;Advertisement.&quot; We never request payment for any
-          services.
-          If you encounter such requests, please contact us immediately.
+          services. If you encounter such requests, please contact us
+          immediately.
           <br />
           How-ToGuides.com may contain affiliate links. When you make purchases
           through these links, we may receive a commission at no additional cost
@@ -287,6 +283,7 @@ export default function Footer() {
             color: "var(--footer-text)",
             lineHeight: 1.6,
             marginTop: 5,
+            textAlign: "left",
           }}
         >
           <strong>EDITORIAL NOTE</strong>
@@ -309,7 +306,7 @@ export default function Footer() {
           our guidance to their specific needs and use cases.
           <br />
         </Typography>
-      </Box>
+      </Container>
     </Box>
   );
 }
