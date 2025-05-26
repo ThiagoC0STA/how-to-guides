@@ -163,9 +163,8 @@ export default function GuidesSection({
     >
       {isPopular && (
         <Typography
-          variant="h3"
           sx={{
-            fontWeight: 800,
+            fontWeight: 700,
             color: "var(--foreground)",
             fontSize: { xs: 24, md: 32 },
             mb: 4,
@@ -308,8 +307,8 @@ export default function GuidesSection({
 
       {/* Mensagem quando não há guias */}
       {filteredGuides.length === 0 && (
-        <Box sx={{ width: '100%', textAlign: 'center', mt: 8, mb: 8 }}>
-          <Typography variant="h6" sx={{ color: 'var(--footer-text)', fontWeight: 500 }}>
+        <Box sx={{ width: "100%", textAlign: "center", mt: 8, mb: 8 }}>
+          <Typography sx={{ color: "var(--footer-text)", fontWeight: 500 }}>
             No guides found.
           </Typography>
         </Box>
@@ -426,7 +425,6 @@ export default function GuidesSection({
               }}
             >
               <Typography
-                variant="h6"
                 sx={{
                   fontWeight: 700,
                   color: "var(--foreground)",

@@ -118,7 +118,6 @@ export default function HeroSection() {
           Guides
         </Typography>
         <Typography
-          variant="h5"
           sx={{
             color: "var(--footer-text)",
             fontWeight: 400,
