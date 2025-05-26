@@ -306,6 +306,15 @@ export default function GuidesSection({
         </Stack>
       )}
 
+      {/* Mensagem quando não há guias */}
+      {filteredGuides.length === 0 && (
+        <Box sx={{ width: '100%', textAlign: 'center', mt: 8, mb: 8 }}>
+          <Typography variant="h6" sx={{ color: 'var(--footer-text)', fontWeight: 500 }}>
+            No guides found.
+          </Typography>
+        </Box>
+      )}
+
       <Box
         sx={{
           display: "flex",
