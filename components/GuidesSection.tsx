@@ -22,8 +22,6 @@ import {
   useMediaQuery,
   CircularProgress,
 } from "@mui/material";
-import { categories as categoryData } from "@/data/categories";
-import { Category } from "@/data/categories";
 import Link from "next/link";
 import { FaSearch } from "react-icons/fa";
 import { FaRobot } from "react-icons/fa";
@@ -34,6 +32,12 @@ interface GuidesSectionProps {
   isPopular?: boolean;
 }
 
+interface Category {
+  id: string;
+  title: string;
+  color: string;
+}
+
 interface Guide {
   id: string;
   title: string;
@@ -42,11 +46,7 @@ interface Guide {
   color: string;
   updated_at: string;
   is_popular: boolean;
-  categories: {
-    id: string;
-    color: string;
-    title: string;
-  }[];
+  categories: Category[];
 }
 
 const FallbackIcon = ({ color }: { color: string }) => (
@@ -73,15 +73,28 @@ export default function GuidesSection({
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [guides, setGuides] = useState<Guide[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const { show: showLoading, hide: hideLoading } = useLoading();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const categories = [
-    "all",
-    ...categoryData.map((cat: Category) => cat.id),
-  ].sort();
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await publicRequest.get("/categories");
+        if (data.categories) {
+          setCategories(data.categories);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
 
+    fetchCategories();
+  }, []);
+
+  // Fetch guides
   useEffect(() => {
     let isMounted = true;
     let loadingShown = false;
@@ -117,7 +130,7 @@ export default function GuidesSection({
         hideLoading();
       }
     };
-  }, []);
+  }, [isPopular]);
 
   const filteredGuides = React.useMemo(() => {
     return guides.filter((guide) => {
@@ -136,6 +149,8 @@ export default function GuidesSection({
   const searchOptions = React.useMemo(() => {
     return guides.map((guide) => guide.title);
   }, [guides]);
+
+  const categoryOptions = ["all", ...categories.map((cat) => cat.id)];
 
   return (
     <Box
@@ -213,19 +228,24 @@ export default function GuidesSection({
                   },
                 }}
               >
-                {categories.map((category: string) => (
-                  <MenuItem
-                    key={category}
-                    value={category}
-                    sx={{
-                      textTransform: "capitalize",
-                    }}
-                  >
-                    {category === "all"
-                      ? "All Categories"
-                      : category.replace(/-/g, " ")}
-                  </MenuItem>
-                ))}
+                {categoryOptions.map((categoryId) => {
+                  const category = categories.find(
+                    (cat) => cat.id === categoryId
+                  );
+                  return (
+                    <MenuItem
+                      key={categoryId}
+                      value={categoryId}
+                      sx={{
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {categoryId === "all"
+                        ? "All Categories"
+                        : category?.title || categoryId}
+                    </MenuItem>
+                  );
+                })}
               </Select>
             </FormControl>
           ) : (
@@ -240,47 +260,48 @@ export default function GuidesSection({
                   mb: 2,
                 }}
               >
-                {categories.map((category: string) => (
-                  <Paper
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    sx={{
-                      px: 3,
-                      py: 1.5,
-                      borderRadius: 2,
-                      cursor: "pointer",
-                      whiteSpace: "nowrap",
-                      transition: "all 0.2s",
-                      bgcolor:
-                        selectedCategory === category
-                          ? "var(--primary-blue)"
-                          : "transparent",
-                      color:
-                        selectedCategory === category
-                          ? "#fff"
-                          : "var(--foreground)",
-                      boxShadow:
-                        selectedCategory === category
-                          ? "0 2px 8px 0 rgba(37,99,235,0.2)"
-                          : "0 2px 8px 0 rgba(37,99,235,0.06)",
-                      "&:hover": {
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 4px 12px 0 rgba(37,99,235,0.1)",
-                      },
-                    }}
-                  >
-                    <Typography
+                {categoryOptions.map((categoryId) => {
+                  const category = categories.find(
+                    (cat) => cat.id === categoryId
+                  );
+                  return (
+                    <Paper
+                      key={categoryId}
+                      onClick={() => setSelectedCategory(categoryId)}
                       sx={{
-                        fontWeight: 600,
-                        textTransform: "capitalize",
+                        px: 3,
+                        py: 1.5,
+                        borderRadius: 2,
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                        transition: "all 0.2s",
+                        bgcolor:
+                          selectedCategory === categoryId
+                            ? category?.color || "var(--primary-blue)"
+                            : "transparent",
+                        color:
+                          selectedCategory === categoryId
+                            ? "#fff"
+                            : "var(--foreground)",
+                        "&:hover": {
+                          transform: "translateY(-2px)",
+                          boxShadow: "0 4px 12px 0 rgba(37,99,235,0.1)",
+                        },
                       }}
                     >
-                      {category === "all"
-                        ? "All Categories"
-                        : category.replace(/-/g, " ")}
-                    </Typography>
-                  </Paper>
-                ))}
+                      <Typography
+                        sx={{
+                          fontWeight: 600,
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {categoryId === "all"
+                          ? "All Categories"
+                          : category?.title || categoryId}
+                      </Typography>
+                    </Paper>
+                  );
+                })}
               </Box>
             </Box>
           )}
