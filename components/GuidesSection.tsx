@@ -20,7 +20,6 @@ import {
   InputLabel,
   useTheme,
   useMediaQuery,
-  CircularProgress,
 } from "@mui/material";
 import Link from "next/link";
 import { FaSearch } from "react-icons/fa";

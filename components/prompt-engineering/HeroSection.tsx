@@ -31,7 +31,7 @@ export default function HeroSection() {
           );
         }
       } catch (error) {
-        // Trate o erro se quiser
+        console.error(error);
       }
     };
     fetchGuides();

@@ -41,14 +41,14 @@ const defaultMetadata: Metadata = {
 };
 
 async function getGuideById(id: string) {
-  console.log('🔍 Buscando guia com ID:', id);
-  
+  console.log("🔍 Buscando guia com ID:", id);
+
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  console.log('📡 URL do Supabase:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+  console.log("📡 URL do Supabase:", process.env.NEXT_PUBLIC_SUPABASE_URL);
 
   try {
     // Primeiro, buscar o guia
@@ -59,46 +59,41 @@ async function getGuideById(id: string) {
       .single();
 
     if (guideError) {
-      console.error('❌ Erro ao buscar guia:', guideError);
+      console.error("❌ Erro ao buscar guia:", guideError);
       return null;
     }
 
     if (!guide) {
-      console.log('⚠️ Guia não encontrado');
+      console.log("⚠️ Guia não encontrado");
       return null;
     }
 
     // Depois, buscar as categorias separadamente
     const { data: categories, error: categoriesError } = await supabase
       .from("guide_categories")
-      .select(`
+      .select(
+        `
         categories (
           id,
           title,
           color
         )
-      `)
+      `
+      )
       .eq("guide_id", id);
 
     if (categoriesError) {
-      console.error('❌ Erro ao buscar categorias:', categoriesError);
+      console.error("❌ Erro ao buscar categorias:", categoriesError);
     }
 
-    // Combinar os dados
     const guideWithCategories = {
       ...guide,
-      categories: categories?.map(c => c.categories) || []
+      categories: categories?.map((c) => c.categories) || [],
     };
-
-    console.log('✅ Guia encontrado:', {
-      id: guideWithCategories.id,
-      title: guideWithCategories.title,
-      categories: guideWithCategories.categories?.length
-    });
 
     return guideWithCategories;
   } catch (error) {
-    console.error('❌ Erro inesperado:', error);
+    console.error("❌ Erro inesperado:", error);
     return null;
   }
 }
@@ -106,14 +101,12 @@ async function getGuideById(id: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: any;
 }): Promise<Metadata> {
-  console.log('📝 Gerando metadata para ID:', params.id);
-  
   const guide = await getGuideById(params.id);
 
   if (!guide) {
-    console.log('⚠️ Guia não encontrado para metadata');
+    console.log("⚠️ Guia não encontrado para metadata");
     return {
       title: "Guide Not Found",
     };
@@ -146,31 +139,22 @@ export async function generateMetadata({
     },
   };
 
-  console.log('✅ Metadata gerada:', {
-    title: metadata.title,
-    description: metadata.description?.slice(0, 50) + '...'
-  });
-
   return metadata;
 }
 
-export default async function GuidePage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  console.log('📄 Renderizando página do guia:', params.id);
-  
+export default async function GuidePage({ params }: any) {
+  console.log("📄 Renderizando página do guia:", params.id);
+
   const guide = await getGuideById(params.id);
 
   if (!guide) {
-    console.log('⚠️ Guia não encontrado, redirecionando para 404');
+    console.log("⚠️ Guia não encontrado, redirecionando para 404");
     return notFound();
   }
 
-  console.log('✅ Renderizando guia:', {
+  console.log("✅ Renderizando guia:", {
     id: guide.id,
-    title: guide.title
+    title: guide.title,
   });
 
   return <GuideLayout guide={guide} />;

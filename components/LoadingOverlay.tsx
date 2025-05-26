@@ -1,12 +1,9 @@
 "use client";
 
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box } from "@mui/material";
+import { RiseLoader } from "react-spinners";
 
-interface LoadingOverlayProps {
-  text?: string;
-}
-
-export default function LoadingOverlay({ text = "Carregando..." }: LoadingOverlayProps) {
+export default function LoadingOverlay() {
   return (
     <Box
       sx={{
@@ -23,33 +20,19 @@ export default function LoadingOverlay({ text = "Carregando..." }: LoadingOverla
         alignItems: "center",
         justifyContent: "center",
         gap: 2,
-        animation: "fadeIn 0.2s ease-in-out",
-        "@keyframes fadeIn": {
-          from: {
-            opacity: 0,
-          },
-          to: {
-            opacity: 1,
-          },
-        },
       }}
     >
-      <CircularProgress 
-        size={48} 
-        thickness={4}
-        sx={{
-          color: "var(--primary-blue)",
-        }}
-      />
-      <Typography
+      <RiseLoader color="#2563eb" size={15} />
+      {/* <Typography
         variant="body2"
         sx={{
           color: "text.secondary",
           fontWeight: 500,
+          mt: 2,
         }}
       >
         {text}
-      </Typography>
+      </Typography> */}
     </Box>
   );
-} 
+}

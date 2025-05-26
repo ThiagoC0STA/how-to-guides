@@ -263,7 +263,8 @@ export default function Footer() {
           <br />
           This website provides informational content only, and all access is
           completely free. Our only revenue comes from advertisements clearly
-          labeled as "Advertisement." We never request payment for any services.
+          labeled as &quot;Advertisement.&quot; We never request payment for any
+          services.
           If you encounter such requests, please contact us immediately.
           <br />
           How-ToGuides.com may contain affiliate links. When you make purchases

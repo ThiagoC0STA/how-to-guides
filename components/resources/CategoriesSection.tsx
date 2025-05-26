@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Box, Typography, TextField, InputAdornment } from "@mui/material";
-import { FaSearch } from "react-icons/fa";
+import { Box, Typography } from "@mui/material";
 import { resources } from "@/data/resources";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
@@ -12,14 +10,6 @@ import "swiper/css/navigation";
 import ResourceCard from "./ResourceCard";
 
 export default function CategoriesSection() {
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const filteredResources = resources.filter(
-    (resource) =>
-      resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      resource.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
     <Box sx={{ mb: 8 }}>
       {/* <Typography
@@ -116,7 +106,7 @@ export default function CategoriesSection() {
                 padding: "20px 0 40px",
               }}
             >
-              {filteredResources.map((resource) => (
+              {resources.map((resource) => (
                 <SwiperSlide key={resource.id}>
                   <Box
                     sx={{
@@ -135,7 +125,7 @@ export default function CategoriesSection() {
         </Box>
       </Box>
 
-      {filteredResources.length === 0 && (
+      {resources.length === 0 && (
         <Box
           sx={{
             textAlign: "center",
