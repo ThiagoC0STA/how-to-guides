@@ -77,57 +77,32 @@ export default function GuidesSection({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Fetch categories
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const { data } = await publicRequest.get("/categories");
-        if (data.categories) {
-          setCategories(data.categories);
-        }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  // Fetch guides
+  // Fetch categories and guides
   useEffect(() => {
     let isMounted = true;
-    let loadingShown = false;
+    showLoading();
 
-    const fetchGuides = async () => {
-      if (!loadingShown) {
-        showLoading();
-        loadingShown = true;
-      }
-
+    const fetchAll = async () => {
       try {
-        const { data } = await publicRequest.get(
-          `/guides${isPopular ? "?popular=true" : ""}`
-        );
-        if (data.guides && isMounted) {
-          setGuides(data.guides);
+        const [catRes, guidesRes] = await Promise.all([
+          publicRequest.get("/categories"),
+          publicRequest.get(`/guides${isPopular ? "?popular=true" : ""}`),
+        ]);
+        if (isMounted) {
+          if (catRes.data.categories) setCategories(catRes.data.categories);
+          if (guidesRes.data.guides) setGuides(guidesRes.data.guides);
         }
       } catch (error) {
-        console.error("Error fetching guides:", error);
+        console.error("Error fetching data:", error);
       } finally {
-        if (isMounted && loadingShown) {
-          hideLoading();
-          loadingShown = false;
-        }
+        if (isMounted) hideLoading();
       }
     };
 
-    fetchGuides();
+    fetchAll();
 
     return () => {
       isMounted = false;
-      if (loadingShown) {
-        hideLoading();
-      }
     };
   }, [isPopular]);
 

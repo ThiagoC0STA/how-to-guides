@@ -170,7 +170,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
     // Só atualiza se houver mudança real
     if (JSON.stringify(selectedObjs) !== JSON.stringify(formData.categories)) {
       console.log('Updating formData.categories with:', selectedObjs);
-      handleFormDataChange("categories", selectedObjs);
+    handleFormDataChange("categories", selectedObjs);
     }
   }, [selectedCategories, categoriesList]);
 
