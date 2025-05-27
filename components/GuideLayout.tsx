@@ -54,10 +54,10 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
   }
 
   const allQuestionsCorrect = useMemo(() => {
-    if (!current.questions || current.questions.length === 0) return true;
-    const arr = completedQuestions[currentModule] || [];
-    return arr.length === current.questions.length && arr.every(Boolean);
-  }, [completedQuestions, current.questions, currentModule]);
+    if (!current?.questions || current.questions.length === 0) return true;
+    const moduleQuestions = completedQuestions[currentModule] || [];
+    return moduleQuestions.length === current.questions.length && moduleQuestions.every(Boolean);
+  }, [completedQuestions, current?.questions, currentModule]);
 
   useMemo(() => {
     if (allQuestionsCorrect && !completedModules.includes(currentModule)) {

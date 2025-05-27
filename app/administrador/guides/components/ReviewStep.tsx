@@ -6,6 +6,8 @@ import GuideSidebar from "@/components/GuideSidebar";
 import ModuleContent from "@/components/ModuleContent";
 import ModuleNavigation from "@/components/ModuleNavigation";
 import LeadMagnetKit from "@/components/LeadMagnetKit";
+import LockedModuleOverlay from "@/components/LockedModuleOverlay";
+import { useState } from "react";
 
 function hexToRgb(hex: string) {
   hex = hex.replace("#", "");
@@ -26,6 +28,8 @@ interface ReviewStepProps {
 export default function ReviewStep({ formData }: ReviewStepProps) {
   const guideColor = formData.color || "var(--primary-blue)";
   const guideColorRgb = hexToRgb(guideColor);
+  const [currentModule, setCurrentModule] = useState(0);
+  const [unlocked, setUnlocked] = useState(false);
 
   // Criar um objeto guide compatível com o layout
   const previewGuide = {
@@ -37,6 +41,10 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
       bullets: formData.metadata?.overview?.bullets || [],
     },
   };
+
+  const modules = formData.modules || [];
+  const current = modules[currentModule];
+  const isLocked = current?.locked && !unlocked;
 
   return (
     <Container maxWidth="lg" sx={{ px: { xs: 2, md: 4 } }}>
@@ -68,14 +76,14 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
         my={{ xs: 4, md: 6 }}
       >
         <GuideSidebar
-          modules={formData.modules || []}
-          currentModule={0}
+          modules={modules}
+          currentModule={currentModule}
           completedModules={[]}
           progress={0}
           guideColor={guideColor}
           guideColorRgb={guideColorRgb}
-          unlocked={true}
-          onModuleClick={() => {}}
+          unlocked={unlocked}
+          onModuleClick={setCurrentModule}
           sx={{
             width: { xs: "100%", md: 320 },
             position: { xs: "sticky", md: "static" },
@@ -102,25 +110,37 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
             },
           }}
         >
-          {formData.modules?.[0] && (
+          {current && (
             <Box>
-              <ModuleContent
-                module={formData.modules[0]}
-                onQuestionSuccess={() => {}}
-                completedQuestions={{}}
-                guideColor={guideColor}
-                guideColorRgb={guideColorRgb}
-                moduleIndex={0}
-              />
-              <ModuleNavigation
-                currentModule={0}
-                totalModules={formData.modules.length}
-                allQuestionsCorrect={true}
-                guideColor={guideColor}
-                guideColorRgb={guideColorRgb}
-                onPrevious={() => {}}
-                onNext={() => {}}
-              />
+              {isLocked ? (
+                <LockedModuleOverlay
+                  moduleTitle={current.title}
+                  onUnlock={() => setUnlocked(true)}
+                  onBack={() => setCurrentModule(currentModule - 1)}
+                  guideColor={guideColor}
+                  guideColorRgb={guideColorRgb}
+                />
+              ) : (
+                <>
+                  <ModuleContent
+                    module={current}
+                    onQuestionSuccess={() => {}}
+                    completedQuestions={{}}
+                    guideColor={guideColor}
+                    guideColorRgb={guideColorRgb}
+                    moduleIndex={currentModule}
+                  />
+                  <ModuleNavigation
+                    currentModule={currentModule}
+                    totalModules={modules.length}
+                    allQuestionsCorrect={true}
+                    guideColor={guideColor}
+                    guideColorRgb={guideColorRgb}
+                    onPrevious={() => setCurrentModule(prev => Math.max(0, prev - 1))}
+                    onNext={() => setCurrentModule(prev => Math.min(modules.length - 1, prev + 1))}
+                  />
+                </>
+              )}
             </Box>
           )}
         </Paper>

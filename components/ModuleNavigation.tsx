@@ -49,7 +49,7 @@ export default function ModuleNavigation({
             },
           }}
         >
-          Anterior
+          Back
         </Button>
       )}
       {currentModule < totalModules - 1 && (
@@ -82,7 +82,7 @@ export default function ModuleNavigation({
             },
           }}
         >
-          Próximo
+          Next
         </Button>
       )}
     </Box>

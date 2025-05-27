@@ -10,6 +10,10 @@ import {
   Tab,
   IconButton,
   Container,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import {
   Edit as EditIcon,
@@ -18,6 +22,8 @@ import {
   Category as CategoryIcon,
   SmartToy as ModelIcon,
   AddCircleOutline as AddCircleOutlineIcon,
+  Code as CodeIcon,
+  Create as CreateIcon,
 } from "@mui/icons-material";
 import DataTable from "./components/DataTable";
 import { useRouter } from "next/navigation";
@@ -89,6 +95,8 @@ export default function Dashboard() {
   const [guides, setGuides] = useState<any[]>([]);
   const [models, setModels] = useState<any[]>([]);
   const router = useRouter();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   // Fetch categories
   useEffect(() => {
@@ -377,6 +385,24 @@ export default function Dashboard() {
   const handleAddAnotherCategory = () => {
     setSelectedCategory(null);
     setOpenCategoryDialog(true);
+  };
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleAddManually = () => {
+    handleClose();
+    router.push("/administrador/guides/new");
+  };
+
+  const handleAddByJson = () => {
+    handleClose();
+    router.push("/administrador/guides/json");
   };
 
   const renderStats = () => {
@@ -728,10 +754,31 @@ export default function Dashboard() {
           <ActionButton
             icon={<AddCircleOutlineIcon />}
             color="blue"
-            onClick={() => router.push("/administrador/guides/new")}
+            onClick={handleClick}
           >
             New Guide
           </ActionButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            onClick={handleClose}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            <MenuItem onClick={handleAddManually}>
+              <ListItemIcon>
+                <CreateIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Add Manually</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={handleAddByJson}>
+              <ListItemIcon>
+                <CodeIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Add by JSON</ListItemText>
+            </MenuItem>
+          </Menu>
         </Box>
         <DataTable title="" data={guides} columns={columns} />
       </Paper>
