@@ -20,6 +20,7 @@ import {
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { categories } from "@/data/categories";
 import { GUIDES } from "@/data/guides";
+import { useErrorStore } from "@/store/errorStore";
 
 interface Module {
   title: string;
@@ -85,6 +86,7 @@ interface AddGuideFormProps {
 
 export default function AddGuideForm({ onClose }: AddGuideFormProps) {
   const theme = useTheme();
+  const { showError } = useErrorStore();
   const [guide, setGuide] = useState<Partial<Guide>>({
     featured: false,
     lastUpdated: new Date().toISOString().split("T")[0],
@@ -223,14 +225,18 @@ export default function AddGuideForm({ onClose }: AddGuideFormProps) {
     e.preventDefault();
 
     // Validate required fields
-    if (
-      !guide.id ||
-      !guide.title ||
-      !guide.description ||
-      !guide.image ||
-      !guide.color
-    ) {
-      alert("Please fill in all required fields");
+    const missingFields = [];
+    if (!guide.id) missingFields.push("ID");
+    if (!guide.title) missingFields.push("Title");
+    if (!guide.description) missingFields.push("Description");
+    if (!guide.image) missingFields.push("Image");
+    if (!guide.color) missingFields.push("Color");
+
+    if (missingFields.length > 0) {
+      showError(
+        "Required Fields",
+        `Please fill in the following fields before continuing:\n\n${missingFields.join("\n")}`
+      );
       return;
     }
 

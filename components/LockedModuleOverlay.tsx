@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Paper, Typography, List, ListItem, TextField, Button } from '@mui/material';
 import { FaCheckCircle, FaLock } from 'react-icons/fa';
 import React from 'react';
+import { useErrorStore } from "@/store/errorStore";
 
 interface LockedModuleOverlayProps {
   moduleTitle: string;
@@ -18,6 +19,8 @@ export default function LockedModuleOverlay({
   guideColor = '#134CCD',
   guideColorRgb = '37,99,235',
 }: LockedModuleOverlayProps) {
+  const [email, setEmail] = useState("");
+  const { showError } = useErrorStore();
 
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
@@ -26,6 +29,28 @@ export default function LockedModuleOverlay({
       document.body.style.overflow = originalOverflow;
     };
   }, []);
+
+  const handleUnlock = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email) {
+      showError(
+        "Email Required",
+        "Please enter your email address to unlock this module."
+      );
+      return;
+    }
+
+    if (!email.includes('@')) {
+      showError(
+        "Invalid Email",
+        "Please enter a valid email address."
+      );
+      return;
+    }
+
+    onUnlock();
+  };
 
   return (
     <Box
@@ -97,13 +122,15 @@ export default function LockedModuleOverlay({
             <FaCheckCircle style={{ marginRight: 10, minWidth: 22 }} /> AI Terminology Glossary
           </ListItem>
         </List>
-        <Box component="form" onSubmit={e => { e.preventDefault(); onUnlock(); }} width="100%" display="flex" flexDirection="column" gap={2}>
+        <Box component="form" onSubmit={handleUnlock} width="100%" display="flex" flexDirection="column" gap={2}>
           <TextField
             type="email"
             required
             label="Your email address"
             size="medium"
             fullWidth
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             sx={{ bgcolor: '#fff', borderRadius: 2 }}
           />
           <Button

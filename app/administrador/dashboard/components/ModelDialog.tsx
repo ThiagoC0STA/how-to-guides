@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { Add as AddIcon, Close as CloseIcon } from "@mui/icons-material";
 import { Model } from "../../guides/types";
+import { useErrorStore } from "@/store/errorStore";
 
 interface ModelDialogProps {
   open: boolean;
@@ -28,18 +29,23 @@ export default function ModelDialog({
   model,
 }: ModelDialogProps) {
   const [formData, setFormData] = useState<Partial<Model>>({
-    name: "",
-    company: "",
-    description: "",
-    strengths: [],
-    limitations: [],
-    use_cases: [],
-    pricing: { free: "", paid: "", api: "" },
-    link: "",
+    name: model?.name || "",
+    company: model?.company || "",
+    description: model?.description || "",
+    strengths: model?.strengths || [],
+    limitations: model?.limitations || [],
+    use_cases: model?.use_cases || [],
+    pricing: model?.pricing || {
+      free: "",
+      paid: "",
+      api: "",
+    },
+    link: model?.link || "",
   });
   const [newStrength, setNewStrength] = useState("");
   const [newLimitation, setNewLimitation] = useState("");
   const [newUseCase, setNewUseCase] = useState("");
+  const { showError } = useErrorStore();
 
   useEffect(() => {
     if (model) {
@@ -103,10 +109,25 @@ export default function ModelDialog({
   };
 
   const handleSubmit = () => {
-    if (!formData.name || !formData.company || !formData.description) {
-      alert("Preencha os campos obrigatórios");
+    // Validate required fields
+    const missingFields = [];
+    if (!formData.name) missingFields.push("Name");
+    if (!formData.company) missingFields.push("Company");
+    if (!formData.description) missingFields.push("Description");
+    if (!formData.pricing?.free) missingFields.push("Free Pricing");
+    if (!formData.pricing?.paid) missingFields.push("Paid Pricing");
+    if (!formData.pricing?.api) missingFields.push("API Pricing");
+
+    if (missingFields.length > 0) {
+      showError(
+        "Required Fields",
+        `Please fill in the following fields before continuing:\n\n${missingFields.join(
+          "\n"
+        )}`
+      );
       return;
     }
+
     onSave(formData);
   };
 

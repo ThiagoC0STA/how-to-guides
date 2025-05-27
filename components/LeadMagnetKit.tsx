@@ -15,6 +15,7 @@ import {
   FaBolt,
 } from "react-icons/fa";
 import { useState } from "react";
+import { useErrorStore } from "@/store/errorStore";
 
 const bonuses = [
   { icon: <FaFilePdf color="#e74c3c" size={19} />, text: "Full PDF Guide" },
@@ -40,9 +41,27 @@ export default function LeadMagnetKit() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const { showError } = useErrorStore();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    
+    if (!email) {
+      showError(
+        "Email Required",
+        "Please enter your email address to receive the free kit."
+      );
+      return;
+    }
+
+    if (!email.includes('@')) {
+      showError(
+        "Invalid Email",
+        "Please enter a valid email address."
+      );
+      return;
+    }
+
     setLoading(true);
     setTimeout(() => {
       setLoading(false);

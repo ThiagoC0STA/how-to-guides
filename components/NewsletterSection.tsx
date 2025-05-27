@@ -2,15 +2,36 @@
 
 import React, { useState } from "react";
 import { Box, Typography, TextField, Button, Chip } from "@mui/material";
+import { useErrorStore } from "@/store/errorStore";
 
 export default function NewsletterSection() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const { showError } = useErrorStore();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    // Add integration logic here
+
+    if (!email) {
+      showError(
+        "Email Required",
+        "Please enter your email address to subscribe to our newsletter."
+      );
+      return;
+    }
+
+    if (!email.includes('@')) {
+      showError(
+        "Invalid Email",
+        "Please enter a valid email address."
+      );
+      return;
+    }
+
+    // Simulate API call
+    setTimeout(() => {
+      setSubmitted(true);
+    }, 1000);
   };
 
   return (
