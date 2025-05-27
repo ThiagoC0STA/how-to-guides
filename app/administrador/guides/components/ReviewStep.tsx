@@ -136,8 +136,14 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                     allQuestionsCorrect={true}
                     guideColor={guideColor}
                     guideColorRgb={guideColorRgb}
-                    onPrevious={() => setCurrentModule(prev => Math.max(0, prev - 1))}
-                    onNext={() => setCurrentModule(prev => Math.min(modules.length - 1, prev + 1))}
+                    onPrevious={() =>
+                      setCurrentModule((prev) => Math.max(0, prev - 1))
+                    }
+                    onNext={() =>
+                      setCurrentModule((prev) =>
+                        Math.min(modules.length - 1, prev + 1)
+                      )
+                    }
                   />
                 </>
               )}

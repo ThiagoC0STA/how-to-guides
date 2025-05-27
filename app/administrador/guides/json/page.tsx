@@ -15,13 +15,12 @@ import {
   Select,
   MenuItem,
   Chip,
-  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { Add as AddIcon } from "@mui/icons-material";
 import { useLoading } from "@/components/LoadingProvider";
 import { useErrorStore } from "@/store/errorStore";
 import { useSuccessStore } from "@/store/successStore";
@@ -103,6 +102,7 @@ export default function AddGuideByJson() {
       setShowPreview(true);
     } catch (error) {
       showError("Invalid JSON", "Please check your JSON format");
+      console.error(error);
     }
   };
 
@@ -403,9 +403,9 @@ Make sure to:
             sx={{ mb: 2 }}
           />
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Enter your topic above and click "Copy Example" to copy the prompt.
-            Then paste it into ChatGPT and copy the generated JSON back to the
-            field below.
+            Enter your topic above and click &quot;Copy Example&quot; to copy
+            the prompt. Then paste it into ChatGPT and copy the generated JSON
+            back to the field below.
           </Typography>
         </Paper>
 
@@ -457,13 +457,13 @@ Make sure to:
               )}
             >
               {categories.map((category) => (
-                <MenuItem 
-                  key={category.id} 
+                <MenuItem
+                  key={category.id}
                   value={category.id}
                   sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
                   }}
                 >
                   {category.icon_url && (
