@@ -73,7 +73,6 @@ export async function PUT(request: Request, { params }: any) {
       color: body.color,
       featured: body.featured,
       comingSoon: body.comingSoon,
-      guides: body.guides,
       updated_at: new Date().toISOString(),
     };
 
@@ -87,6 +86,47 @@ export async function PUT(request: Request, { params }: any) {
     if (error) {
       console.error("❌ Error updating category:", error);
       return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    if (body.guides && Array.isArray(body.guides)) {
+      // Remove todas as ligações antigas
+      const { error: deleteLinksError } = await supabase
+        .from("guide_categories")
+        .delete()
+        .eq("category_id", id);
+
+      if (deleteLinksError) {
+        console.error(
+          "❌ Error deleting old guide_categories:",
+          deleteLinksError
+        );
+        return NextResponse.json(
+          { error: deleteLinksError.message },
+          { status: 400 }
+        );
+      }
+
+      // Cria as novas ligações
+      const relations = body.guides.map((guideId: string) => ({
+        guide_id: guideId,
+        category_id: id,
+      }));
+      if (relations.length > 0) {
+        const { error: insertLinksError } = await supabase
+          .from("guide_categories")
+          .insert(relations);
+
+        if (insertLinksError) {
+          console.error(
+            "❌ Error inserting new guide_categories:",
+            insertLinksError
+          );
+          return NextResponse.json(
+            { error: insertLinksError.message },
+            { status: 400 }
+          );
+        }
+      }
     }
 
     return NextResponse.json({ success: true });
@@ -115,13 +155,7 @@ export async function DELETE(req: NextRequest, context: any) {
 
   const token = authHeader.split(" ")[1];
 
-  console.log(
-    "[DELETE] Authorization header:",
-    req.headers.get("Authorization")
-  );
-
   try {
-    // CRIE O CLIENTE AQUI!
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -134,69 +168,35 @@ export async function DELETE(req: NextRequest, context: any) {
       }
     );
 
-    // First, get the category to get the icon URL
-    const { data: category, error: fetchError } = await supabase
-      .from("categories")
-      .select("icon_url")
-      .eq("id", id)
-      .single();
+    // 1. Deletar todas as referências na tabela guide_categories
+    const { error: deleteRefsError } = await supabase
+      .from("guide_categories")
+      .delete()
+      .eq("category_id", id);
 
-    if (fetchError) {
-      console.error("❌ Error fetching category:", fetchError);
-      return NextResponse.json({ error: fetchError.message }, { status: 400 });
-    }
-
-    // Extract the file path from the icon_url
-    const iconUrl = category.icon_url;
-    let filePath = "";
-    console.log("[DELETE] icon_url from DB:", iconUrl);
-    if (iconUrl.startsWith("http")) {
-      // Public URL: extract after /object/public/icons/
-      filePath = iconUrl.split("/object/public/icons/").pop() || "";
-      console.log("[DELETE] Extracted filePath from public URL:", filePath);
-    } else if (iconUrl.startsWith("icons/")) {
-      // Path with icons/ prefix: remove it
-      filePath = iconUrl.replace(/^icons\//, "");
-      console.log("[DELETE] filePath after removing 'icons/':", filePath);
-    } else {
-      // Already relative to bucket
-      filePath = iconUrl;
-      console.log("[DELETE] filePath used as is:", filePath);
-    }
-
-    console.log("filePath:", filePath);
-
-    if (filePath) {
-      console.log(
-        "[DELETE] Attempting to delete from bucket 'icons':",
-        filePath
+    if (deleteRefsError) {
+      console.error("❌ Error deleting references:", deleteRefsError);
+      return NextResponse.json(
+        { error: deleteRefsError.message },
+        { status: 400 }
       );
-      // Delete the icon from the bucket
-      const { data: removeData, error: deleteIconError } =
-        await supabase.storage.from("icons").remove([filePath]);
-      console.log("[DELETE] remove() result:", removeData);
-      if (deleteIconError) {
-        console.error("❌ Error deleting icon:", deleteIconError);
-        // Continue with category deletion even if icon deletion fails
-      } else {
-        console.log("✅ Icon deleted successfully from bucket");
-      }
-    } else {
-      console.warn("[DELETE] filePath is empty, skipping icon deletion.");
     }
 
-    // Delete the category from the database
-    const { error: deleteError } = await supabase
+    // 2. Deletar a categoria
+    const { error: deleteCategoryError } = await supabase
       .from("categories")
       .delete()
       .eq("id", id);
 
-    if (deleteError) {
-      console.error("❌ Error deleting category:", deleteError);
-      return NextResponse.json({ error: deleteError.message }, { status: 400 });
+    if (deleteCategoryError) {
+      console.error("❌ Error deleting category:", deleteCategoryError);
+      return NextResponse.json(
+        { error: deleteCategoryError.message },
+        { status: 400 }
+      );
     }
 
-    console.log("✅ Category and icon deleted successfully");
+    console.log("✅ Category and references deleted successfully");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("❌ Error in delete operation:", error);

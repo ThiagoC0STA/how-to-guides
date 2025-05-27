@@ -66,7 +66,7 @@ export default function ErrorModal() {
 
           {messageLines.length > 1 && (
             <List sx={{ py: 0 }}>
-              {messageLines.slice(1).map((line, index) => (
+              {messageLines.slice(1).filter(line => line.trim() !== "").map((line, index) => (
                 <ListItem key={index} sx={{ py: 0.5 }}>
                   <ListItemIcon sx={{ minWidth: 36 }}>
                     <WarningIcon color="warning" sx={{ fontSize: 20 }} />

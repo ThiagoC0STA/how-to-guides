@@ -69,7 +69,6 @@ export default function GuideForm({ guideId }: GuideFormProps) {
   const [categoriesRefreshKey, setCategoriesRefreshKey] = useState(0);
   const [categoriesList, setCategoriesList] = useState<any[]>([]);
 
-  // Fetch guide data if guideId is present
   useEffect(() => {
     const fetchGuide = async () => {
       if (!guideId || guideId === "new") return;
@@ -107,7 +106,39 @@ export default function GuideForm({ guideId }: GuideFormProps) {
     fetchGuide();
   }, [guideId]);
 
+  // Função para validar campos obrigatórios por passo
+  const validateStep = (step: number) => {
+    const missing: string[] = [];
+    if (step === 0) {
+      if (!formData.title) missing.push("Title");
+      if (!formData.description) missing.push("Description");
+      if (!formData.image) missing.push("Image");
+    }
+    if (step === 1) {
+      if (!formData.metadata?.keywords || !formData.metadata.keywords.length)
+        missing.push("At least one Keyword");
+    }
+    if (step === 2) {
+      if (!formData.metadata?.overview?.text) missing.push("Overview Text");
+    }
+    if (step === 3) {
+      if (!formData.modules || !formData.modules.length)
+        missing.push("At least one Module");
+    }
+    return missing;
+  };
+
   const handleNext = () => {
+    const missing = validateStep(activeStep);
+    if (missing.length > 0) {
+      showError(
+        "Required fields",
+        `Please fill in the following fields before continuing:\n\n${missing.join(
+          "\n"
+        )}`
+      );
+      return;
+    }
     setActiveStep((prevStep) => prevStep + 1);
   };
 
@@ -193,7 +224,6 @@ export default function GuideForm({ guideId }: GuideFormProps) {
     if (!formData.title) missingFields.push("Title");
     if (!formData.description) missingFields.push("Description");
     if (!formData.image) missingFields.push("Image");
-    if (!formData.categories?.length) missingFields.push("Categories");
     if (!formData.metadata?.overview?.text) missingFields.push("Overview");
     if (!formData.modules?.length) missingFields.push("Modules");
 
@@ -308,15 +338,9 @@ export default function GuideForm({ guideId }: GuideFormProps) {
     fetchCategories();
   }, []);
 
-  // Handler to keep the modal open and reset the form
   const handleAddAnotherCategory = () => {
-    console.log('[GuideForm] Add Another Category button clicked');
     setOpenCategoryDialog(true);
   };
-
-  useEffect(() => {
-    console.log('[GuideForm] openCategoryDialog changed:', openCategoryDialog);
-  }, [openCategoryDialog]);
 
   const renderStepContent = (step: number) => {
     switch (step) {

@@ -158,24 +158,19 @@ export async function POST(req: NextRequest) {
 
     // Se vier guides, cria os relacionamentos na guide_categories
     if (category.guides && Array.isArray(category.guides) && data?.id) {
-      const guideCategories = category.guides.map((g: any) => ({
-        guide_id: g.id,
+      // 1. Remove todas as relações antigas
+      await supabase
+        .from("guide_categories")
+        .delete()
+        .eq("category_id", data.id);
+
+      // 2. Cria as novas relações
+      const relations = category.guides.map((guideId: string) => ({
+        guide_id: guideId,
         category_id: data.id,
       }));
-      if (guideCategories.length > 0) {
-        const { error: relError } = await supabase
-          .from("guide_categories")
-          .insert(guideCategories);
-        if (relError) {
-          console.error(
-            "❌ Error creating guide-category relationships:",
-            relError
-          );
-          return NextResponse.json(
-            { error: relError.message },
-            { status: 400 }
-          );
-        }
+      if (relations.length > 0) {
+        await supabase.from("guide_categories").insert(relations);
       }
     }
 

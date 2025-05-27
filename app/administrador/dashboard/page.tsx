@@ -42,6 +42,12 @@ interface Category {
   guides: string[];
   featured?: boolean;
   comingSoon?: boolean;
+  guide_categories?: Array<{
+    guide?: {
+      id: string;
+      title: string;
+    };
+  }>;
 }
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -90,7 +96,18 @@ export default function Dashboard() {
       showLoading();
       try {
         const { data } = await publicRequest.get("/categories");
-        setCategories(data.categories);
+        // A query precisa incluir os guias relacionados
+        const { data: categoriesWithGuides } = await supabase.from("categories")
+          .select(`
+            *,
+            guide_categories (
+              guide:guides (
+                id,
+                title
+              )
+            )
+          `);
+        setCategories(categoriesWithGuides || []);
       } catch (error: any) {
         showError(
           "Error loading categories",
@@ -153,6 +170,12 @@ export default function Dashboard() {
 
   const handleEditCategory = (category: Category) => {
     console.log("Editing category:", category);
+    const guides = Array.isArray(category.guide_categories)
+      ? category.guide_categories
+          .map((gc: any) => gc.guide?.id)
+          .filter(Boolean)
+      : [];
+    
     setSelectedCategory({
       id: category.id,
       title: category.title,
@@ -161,7 +184,7 @@ export default function Dashboard() {
       color: category.color,
       featured: category.featured || false,
       comingSoon: category.comingSoon || false,
-      guides: category.guides || [],
+      guides,
     });
     setOpenCategoryDialog(true);
   };
@@ -189,14 +212,11 @@ export default function Dashboard() {
       // Update local state
       setCategories((prev) => prev.filter((c) => c.id !== selectedCategory.id));
       setOpenDeleteDialog(false);
-      
-      showSuccess(
-        "Category deleted successfully!",
-        {
-          text: "OK",
-          onClick: () => setSelectedCategory(null)
-        }
-      );
+
+      showSuccess("Category deleted successfully!", {
+        text: "OK",
+        onClick: () => setSelectedCategory(null),
+      });
     } catch (error: any) {
       showError(
         "Error deleting category",
@@ -235,6 +255,10 @@ export default function Dashboard() {
       // Fetch updated categories
       const { data } = await publicRequest.get("/categories");
       setCategories(data.categories);
+
+      // Fetch updated guides
+      const { data: guidesData } = await publicRequest.get("/guides");
+      setGuides(guidesData.guides);
 
       setOpenCategoryDialog(false);
       setSelectedCategory(null);

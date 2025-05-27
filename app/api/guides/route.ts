@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
       .select(
         `
         *,
-        guide_categories!inner (
+        guide_categories (
           category:categories (
             id,
             title,

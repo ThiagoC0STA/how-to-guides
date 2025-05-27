@@ -26,11 +26,17 @@ import { useLoading } from "@/components/LoadingProvider";
 import { useSuccessStore } from "@/store/successStore";
 import Image from "next/image";
 
+interface Guide {
+  id: string;
+  title: string;
+  color: string;
+}
+
 interface CategoryDialogProps {
   open: boolean;
   onClose: () => void;
   onSave: (category: Partial<Category>) => void;
-  category?: Category;
+  category?: any;
   withGuides?: boolean;
   onAddAnotherCategory?: () => void;
 }
@@ -44,6 +50,8 @@ export default function CategoryDialog({
   onAddAnotherCategory,
 }: CategoryDialogProps) {
   const { show: showLoading, hide: hideLoading } = useLoading();
+
+  console.log("category", category);
   const { showSuccess } = useSuccessStore();
   const [formData, setFormData] = useState<Partial<Category>>(() => {
     if (category) {
@@ -55,6 +63,7 @@ export default function CategoryDialog({
         color: category.color,
         featured: category.featured || false,
         comingSoon: category.comingSoon || false,
+        guides: category.guides || [],
       };
     }
     return {
@@ -64,6 +73,7 @@ export default function CategoryDialog({
       color: "#74aa9c",
       featured: false,
       comingSoon: false,
+      guides: [],
     };
   });
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -85,6 +95,7 @@ export default function CategoryDialog({
         color: category.color,
         featured: category.featured || false,
         comingSoon: category.comingSoon || false,
+        guides: category.guides || [],
       });
     } else {
       setFormData({
@@ -94,6 +105,7 @@ export default function CategoryDialog({
         color: "#74aa9c",
         featured: false,
         comingSoon: false,
+        guides: [],
       });
     }
   }, [category]);
@@ -105,23 +117,32 @@ export default function CategoryDialog({
   }, [open]);
 
   useEffect(() => {
-    if (withGuides && guideSearch.length > 0) {
+    if (withGuides && formData.guides && allGuides.length > 0) {
+      console.log('formData.guides:', formData.guides);
+      console.log('allGuides:', allGuides);
+      const selected = formData.guides
+        .map((id: string) => allGuides.find((g) => g.id === id))
+        .filter(Boolean);
+      console.log('selected:', selected);
+      setSelectedGuides(selected);
+    } else if (!category) {
+      setSelectedGuides([]);
+    }
+  }, [formData.guides, allGuides, withGuides, category]);
+
+  useEffect(() => {
+    if (withGuides && open) {
       const fetchGuides = async () => {
-        const { data, error } = await supabase
-          .from("guides")
-          .select("id, title")
-          .ilike("title", `%${guideSearch}%`);
-        if (!error) setAllGuides(data || []);
+        let query = supabase.from("guides").select("id, title, color");
+        const { data, error } = await query;
+        if (!error) {
+          console.log('Fetched guides:', data);
+          setAllGuides(data || []);
+        }
       };
       fetchGuides();
     }
-  }, [guideSearch, withGuides]);
-
-  useEffect(() => {
-    if (open) {
-      console.log("[CategoryDialog] Dialog opened. formData:", formData);
-    }
-  }, [open]);
+  }, [withGuides, open]);
 
   const fetchAllIcons = async () => {
     try {
@@ -168,6 +189,7 @@ export default function CategoryDialog({
       color: "#74aa9c",
       featured: false,
       comingSoon: false,
+      guides: [],
     });
     setIconFile(null);
   };
@@ -206,6 +228,7 @@ export default function CategoryDialog({
       const categoryData = {
         ...formData,
         icon_url: iconUrl,
+        guides: selectedGuides.map((g) => g.id),
       };
 
       await onSave(categoryData);
@@ -551,7 +574,11 @@ export default function CategoryDialog({
               options={allGuides}
               getOptionLabel={(option) => option.title}
               value={selectedGuides}
-              onChange={(_, newValue) => setSelectedGuides(newValue)}
+              onChange={(_, newValue) => {
+                console.log('New selected guides:', newValue);
+                setSelectedGuides(newValue);
+                handleChange('guides', newValue.map(g => g.id));
+              }}
               onInputChange={(_, value) => setGuideSearch(value)}
               filterSelectedOptions
               renderInput={(params) => (

@@ -42,7 +42,8 @@ export async function GET(req: NextRequest, { params }: any) {
         guide_categories (
           category:categories (
             id,
-            name
+            title,
+            color
           )
         )
       `
@@ -59,8 +60,16 @@ export async function GET(req: NextRequest, { params }: any) {
       return NextResponse.json({ error: "Guide not found" }, { status: 404 });
     }
 
+    // Adapta guide_categories para categories (garante array)
+    const guideWithCategories = {
+      ...guide,
+      categories: Array.isArray(guide.guide_categories)
+        ? guide.guide_categories.map((gc: any) => gc.category).filter(Boolean)
+        : [],
+    };
+
     console.log("✅ Guide fetched successfully");
-    return NextResponse.json({ guide });
+    return NextResponse.json({ guide: guideWithCategories });
   } catch (error) {
     console.error("❌ Error fetching guide:", error);
     return NextResponse.json(
@@ -98,69 +107,35 @@ export async function DELETE(req: NextRequest, { params }: any) {
   );
 
   try {
-    // First, get the guide to get the image URL
-    const { data: guide, error: fetchError } = await supabase
-      .from("guides")
-      .select("image")
-      .eq("id", params.id)
-      .single();
+    // 1. Deletar todas as referências na tabela guide_categories
+    const { error: deleteRefsError } = await supabase
+      .from("guide_categories")
+      .delete()
+      .eq("guide_id", params.id);
 
-    if (fetchError) {
-      console.error("❌ Error fetching guide:", fetchError);
-      return NextResponse.json({ error: fetchError.message }, { status: 400 });
-    }
-
-    if (!guide) {
-      return NextResponse.json({ error: "Guide not found" }, { status: 404 });
-    }
-
-    // Extract the file path from the image
-    const imageUrl = guide.image;
-    let filePath = "";
-    console.log("[DELETE] image from DB:", imageUrl);
-    if (imageUrl && imageUrl.startsWith("http")) {
-      // Public URL: extract after /object/public/images/
-      filePath = imageUrl.split("/object/public/images/").pop() || "";
-      console.log("[DELETE] Extracted filePath from public URL:", filePath);
-    } else if (imageUrl && imageUrl.startsWith("guides/")) {
-      filePath = imageUrl;
-    } else if (imageUrl) {
-      filePath = imageUrl;
-    }
-
-    console.log("filePath:", filePath);
-
-    if (filePath) {
-      console.log(
-        "[DELETE] Attempting to delete from bucket 'images':",
-        filePath
+    if (deleteRefsError) {
+      console.error("❌ Error deleting references:", deleteRefsError);
+      return NextResponse.json(
+        { error: deleteRefsError.message },
+        { status: 400 }
       );
-      // Delete the image from the bucket
-      const { data: removeData, error: deleteImageError } =
-        await supabase.storage.from("images").remove([filePath]);
-      console.log("[DELETE] remove() result:", removeData);
-      if (deleteImageError) {
-        console.error("❌ Error deleting image:", deleteImageError);
-        // Continue with guide deletion even if image deletion fails
-      } else {
-        console.log("✅ Image deleted successfully from bucket");
-      }
-    } else {
-      console.warn("[DELETE] filePath is empty, skipping image deletion.");
     }
 
-    // Delete the guide from the database
-    const { error: deleteError } = await supabase
+    // 2. Deletar o guide
+    const { error: deleteGuideError } = await supabase
       .from("guides")
       .delete()
       .eq("id", params.id);
 
-    if (deleteError) {
-      console.error("❌ Error deleting guide:", deleteError);
-      return NextResponse.json({ error: deleteError.message }, { status: 400 });
+    if (deleteGuideError) {
+      console.error("❌ Error deleting guide:", deleteGuideError);
+      return NextResponse.json(
+        { error: deleteGuideError.message },
+        { status: 400 }
+      );
     }
 
-    console.log("✅ Guide and image deleted successfully");
+    console.log("✅ Guide and references deleted successfully");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("❌ Error in delete operation:", error);
