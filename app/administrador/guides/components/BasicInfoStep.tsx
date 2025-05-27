@@ -220,7 +220,7 @@ export default function BasicInfoStep({
             color="primary"
           />
         }
-        label="Popular?"
+        label="Is Popular"
         sx={{ mt: 2 }}
       />
     </Box>

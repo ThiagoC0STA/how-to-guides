@@ -119,7 +119,7 @@ export default function CategoryDialog({
 
   useEffect(() => {
     if (open) {
-      console.log('[CategoryDialog] Dialog opened. formData:', formData);
+      console.log("[CategoryDialog] Dialog opened. formData:", formData);
     }
   }, [open]);
 
@@ -159,7 +159,7 @@ export default function CategoryDialog({
   };
 
   const handleAddAnother = () => {
-    console.log('[CategoryDialog] Add Another Category button clicked');
+    console.log("[CategoryDialog] Add Another Category button clicked");
     if (onAddAnotherCategory) onAddAnotherCategory();
     setFormData({
       title: "",
@@ -486,7 +486,9 @@ export default function CategoryDialog({
               />
             </Box>
             {showColorPicker && (
-              <Box sx={{ position: "absolute", zIndex: 2, mt: 1 }}>
+              <Box
+                sx={{ position: "absolute", zIndex: 2, bottom: 60, left: 0 }}
+              >
                 <Box
                   sx={{
                     position: "fixed",
