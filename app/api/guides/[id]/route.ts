@@ -215,7 +215,7 @@ export async function PUT(req: NextRequest, { params }: any) {
     }
     // Se for uma nova imagem (upload), o frontend já faz upload e manda a URL
     // Só atualiza os dados
-    const { data: updatedGuide, error: updateError } = await supabase
+    const { error: updateError } = await supabase
       .from("guides")
       .update({
         title: body.title,

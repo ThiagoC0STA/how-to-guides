@@ -95,7 +95,7 @@ export default function Dashboard() {
     const fetchCategories = async () => {
       showLoading();
       try {
-        const { data } = await publicRequest.get("/categories");
+        await publicRequest.get("/categories");
         // A query precisa incluir os guias relacionados
         const { data: categoriesWithGuides } = await supabase.from("categories")
           .select(`
@@ -171,11 +171,9 @@ export default function Dashboard() {
   const handleEditCategory = (category: Category) => {
     console.log("Editing category:", category);
     const guides = Array.isArray(category.guide_categories)
-      ? category.guide_categories
-          .map((gc: any) => gc.guide?.id)
-          .filter(Boolean)
+      ? category.guide_categories.map((gc: any) => gc.guide?.id).filter(Boolean)
       : [];
-    
+
     setSelectedCategory({
       id: category.id,
       title: category.title,
@@ -362,6 +360,10 @@ export default function Dashboard() {
       setGuides((prev) => prev.filter((g) => g.id !== selectedGuide.id));
       setOpenDeleteGuideDialog(false);
       setSelectedGuide(null);
+
+      // Atualizar categorias após deletar o guia
+      const { data } = await publicRequest.get("/categories");
+      setCategories(data.categories);
     } catch (error: any) {
       showError(
         "Error deleting guide",

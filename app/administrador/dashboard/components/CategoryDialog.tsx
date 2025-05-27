@@ -26,12 +26,6 @@ import { useLoading } from "@/components/LoadingProvider";
 import { useSuccessStore } from "@/store/successStore";
 import Image from "next/image";
 
-interface Guide {
-  id: string;
-  title: string;
-  color: string;
-}
-
 interface CategoryDialogProps {
   open: boolean;
   onClose: () => void;
@@ -81,7 +75,6 @@ export default function CategoryDialog({
     { name: string; url: string }[]
   >([]);
   const [allGuides, setAllGuides] = useState<any[]>([]);
-  const [guideSearch, setGuideSearch] = useState("");
   const [selectedGuides, setSelectedGuides] = useState<any[]>([]);
 
   useEffect(() => {
@@ -132,7 +125,7 @@ export default function CategoryDialog({
   useEffect(() => {
     if (withGuides && open) {
       const fetchGuides = async () => {
-        let query = supabase.from("guides").select("id, title, color");
+        const query = supabase.from("guides").select("id, title, color");
         const { data, error } = await query;
         if (!error) {
           console.log("Fetched guides:", data);
@@ -233,7 +226,7 @@ export default function CategoryDialog({
         guides: selectedGuides.map((g) => g.id),
       };
 
-      console.log('CategoryDialog - Saving category data:', categoryData);
+      console.log("CategoryDialog - Saving category data:", categoryData);
       await onSave(categoryData);
 
       showSuccess(
@@ -585,7 +578,6 @@ export default function CategoryDialog({
                   newValue.map((g) => g.id)
                 );
               }}
-              onInputChange={(_, value) => setGuideSearch(value)}
               filterSelectedOptions
               renderInput={(params) => (
                 <TextField
