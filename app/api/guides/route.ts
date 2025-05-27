@@ -160,7 +160,40 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ guide: data });
+    // Buscar o guide criado com as categorias
+    const { data: finalGuide, error: fetchError } = await supabase
+      .from("guides")
+      .select(
+        `
+        *,
+        guide_categories (
+          category:categories (
+            id,
+            title,
+            color
+          )
+        )
+      `
+      )
+      .eq("id", data.id)
+      .single();
+
+    if (fetchError) {
+      console.error("❌ Error fetching created guide:", fetchError);
+      return NextResponse.json({ error: fetchError.message }, { status: 400 });
+    }
+
+    // Adaptar o formato da resposta
+    const guideWithCategories = {
+      ...finalGuide,
+      categories: Array.isArray(finalGuide.guide_categories)
+        ? finalGuide.guide_categories
+            .map((gc: any) => gc.category)
+            .filter(Boolean)
+        : [],
+    };
+
+    return NextResponse.json({ guide: guideWithCategories });
   } catch (error) {
     console.error("❌ Error creating guide:", error);
     return NextResponse.json(

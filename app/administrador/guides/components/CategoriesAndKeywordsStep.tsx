@@ -53,10 +53,18 @@ export default function CategoriesAndKeywordsStep({
       .get("/categories")
       .then((res) => {
         setCategories(res.data.categories || []);
+        const selectedObjs = res.data.categories
+          .filter((cat: Category) => selectedCategories.includes(cat.id))
+          .map((cat: Category) => ({
+            id: cat.id,
+            title: cat.title,
+            color: cat.color,
+          }));
+        onCategoryChange({ target: { value: selectedCategories } });
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [refreshKey]);
+  }, [refreshKey, selectedCategories]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 4, p: 2 }}>

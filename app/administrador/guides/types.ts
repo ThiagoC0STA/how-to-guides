@@ -11,6 +11,12 @@ export interface Question {
   correctAnswer: number;
 }
 
+export interface Category {
+  id: string;
+  title: string;
+  color?: string;
+}
+
 export interface Module {
   title: string;
   locked: boolean;
@@ -24,12 +30,12 @@ export interface Guide {
   id?: string;
   title: string;
   description: string;
-  image: File | string;
+  image: string | File;
   color: string;
-  is_popular?: boolean;
+  is_popular: boolean;
   showColorPicker?: boolean;
   modules: Module[];
-  categories: string[];
+  categories: Category[];
   metadata: {
     keywords: string[];
     overview: {
