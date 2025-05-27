@@ -30,6 +30,7 @@ import { useLoading } from "@/components/LoadingProvider";
 import Image from "next/image";
 import ModelDialog from "./components/ModelDialog";
 import { Model } from "../guides/types";
+import { useErrorStore } from "@/store/errorStore";
 
 interface Category {
   id: string;
@@ -65,6 +66,7 @@ function TabPanel(props: TabPanelProps) {
 
 export default function Dashboard() {
   const { show: showLoading, hide: hideLoading } = useLoading();
+  const { showError } = useErrorStore();
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
   const [openModelDialog, setOpenModelDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -87,8 +89,11 @@ export default function Dashboard() {
       try {
         const { data } = await publicRequest.get("/categories");
         setCategories(data.categories);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
+      } catch (error: any) {
+        showError(
+          "Error loading categories",
+          error.message || "Could not load categories. Please try again."
+        );
       } finally {
         hideLoading();
       }
@@ -104,8 +109,11 @@ export default function Dashboard() {
       try {
         const { data } = await publicRequest.get("/guides");
         setGuides(data.guides);
-      } catch (error) {
-        console.error("Error fetching guides:", error);
+      } catch (error: any) {
+        showError(
+          "Error loading guides",
+          error.message || "Could not load guides. Please try again."
+        );
       } finally {
         hideLoading();
       }
@@ -120,8 +128,11 @@ export default function Dashboard() {
       try {
         const { data } = await publicRequest.get("/ai-models");
         setModels(data.models || []);
-      } catch (error) {
-        console.error("Error fetching models:", error);
+      } catch (error: any) {
+        showError(
+          "Error loading models",
+          error.message || "Could not load AI models. Please try again."
+        );
       } finally {
         hideLoading();
       }
@@ -176,9 +187,11 @@ export default function Dashboard() {
       // Update local state
       setCategories((prev) => prev.filter((c) => c.id !== selectedCategory.id));
       setOpenDeleteDialog(false);
-    } catch (error) {
-      console.error("Error deleting category:", error);
-      alert("Erro ao excluir categoria. Por favor, tente novamente.");
+    } catch (error: any) {
+      showError(
+        "Error deleting category",
+        error.message || "Could not delete category. Please try again."
+      );
     } finally {
       hideLoading();
     }
@@ -205,7 +218,7 @@ export default function Dashboard() {
         // Create new category
         const response = await privateRequest.post("/categories", category);
         if (!response.data?.category) {
-          throw new Error("Invalid response from server");
+          throw new Error("Invalid server response");
         }
       }
 
@@ -216,9 +229,9 @@ export default function Dashboard() {
       setOpenCategoryDialog(false);
       setSelectedCategory(null);
     } catch (error: any) {
-      console.error("Error saving category:", error);
-      alert(
-        error.message || "Erro ao salvar categoria. Por favor, tente novamente."
+      showError(
+        "Error saving category",
+        error.message || "Could not save category. Please try again."
       );
     } finally {
       hideLoading();
@@ -253,23 +266,30 @@ export default function Dashboard() {
       }
       if (!response.data?.model) {
         throw new Error(
-          selectedModel ? "Erro ao atualizar modelo" : "Erro ao criar modelo"
+          selectedModel ? "Error updating model" : "Error creating model"
         );
       }
-      // Atualizar lista
+      // Update list
       const { data } = await publicRequest.get("/ai-models");
       setModels(data.models || []);
       setOpenModelDialog(false);
       setSelectedModel(null);
     } catch (error: any) {
-      alert(error.message || "Erro ao salvar modelo");
+      showError(
+        "Error saving model",
+        error.message || "Could not save model. Please try again."
+      );
     } finally {
       hideLoading();
     }
   };
 
   const handleDeleteModel = async (model: any) => {
-    if (!window.confirm(`Deseja realmente deletar o modelo "${model.name}"?`))
+    if (
+      !window.confirm(
+        `Are you sure you want to delete the model "${model.name}"?`
+      )
+    )
       return;
     showLoading();
     try {
@@ -278,11 +298,14 @@ export default function Dashboard() {
       } = await supabase.auth.getSession();
       if (!session) throw new Error("User not authenticated");
       await privateRequest.delete(`/ai-models/${model.id}`);
-      // Atualizar lista
+      // Update list
       const { data } = await publicRequest.get("/ai-models");
       setModels(data.models || []);
     } catch (error: any) {
-      alert(error.message || "Erro ao deletar modelo");
+      showError(
+        "Error deleting model",
+        error.message || "Could not delete model. Please try again."
+      );
     } finally {
       hideLoading();
     }
@@ -305,8 +328,11 @@ export default function Dashboard() {
       setGuides((prev) => prev.filter((g) => g.id !== selectedGuide.id));
       setOpenDeleteGuideDialog(false);
       setSelectedGuide(null);
-    } catch (error) {
-      alert("Erro ao deletar guide" + error);
+    } catch (error: any) {
+      showError(
+        "Error deleting guide",
+        error.message || "Could not delete guide. Please try again."
+      );
     } finally {
       hideLoading();
     }

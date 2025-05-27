@@ -1,22 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Typography, TextField, Button, Alert } from "@mui/material";
+import { Box, Typography, TextField, Button } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { FaRobot } from "react-icons/fa";
 import { useLoading } from "@/components/LoadingProvider";
 import { supabase } from "@/lib/supabaseClient";
+import { useErrorStore } from "@/store/errorStore";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const router = useRouter();
   const loading = useLoading();
+  const { showError } = useErrorStore();
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
     loading.show();
 
     // Login 100% pelo Supabase Client
@@ -26,7 +26,10 @@ export default function AdminLoginPage() {
     });
 
     if (error || !data.session) {
-      setError(error?.message || "Login failed");
+      showError(
+        "Login failed",
+        error?.message || "Invalid email or password. Please try again."
+      );
       loading.hide();
       return;
     }
@@ -95,7 +98,7 @@ export default function AdminLoginPage() {
           Admin Login
         </Typography>
         <Typography sx={{ color: "text.secondary", mb: 2, fontSize: 16 }}>
-          Área restrita para administradores do How-To Guides
+          Restricted area for How-To Guides administrators
         </Typography>
         <Box
           component="form"
@@ -130,11 +133,6 @@ export default function AdminLoginPage() {
             sx={{ fontSize: 18, borderRadius: 2 }}
             InputProps={{ sx: { fontSize: 18, borderRadius: 2, py: 1.2 } }}
           />
-          {error && (
-            <Alert severity="error" sx={{ width: "100%" }}>
-              {error}
-            </Alert>
-          )}
           <Button
             type="submit"
             variant="contained"
@@ -157,7 +155,7 @@ export default function AdminLoginPage() {
               },
             }}
           >
-            Entrar
+            Sign In
           </Button>
         </Box>
       </Box>

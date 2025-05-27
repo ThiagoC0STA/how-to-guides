@@ -23,6 +23,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { privateRequest, publicRequest } from "@/utils/apiClient";
 import CategoryDialog from "../../dashboard/components/CategoryDialog";
 import { useLoading } from "@/components/LoadingProvider";
+import { useErrorStore } from "@/store/errorStore";
 
 const steps = [
   "Basic Information",
@@ -39,6 +40,7 @@ interface GuideFormProps {
 export default function GuideForm({ guideId }: GuideFormProps) {
   const router = useRouter();
   const { show: showLoading, hide: hideLoading } = useLoading();
+  const { showError } = useErrorStore();
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState<Partial<Guide>>({
     title: "",
@@ -184,14 +186,22 @@ export default function GuideForm({ guideId }: GuideFormProps) {
   };
 
   const handleSubmit = async () => {
-    if (
-      !formData.title ||
-      !formData.description ||
-      !formData.image ||
-      !formData.categories?.length ||
-      !formData.metadata?.overview ||
-      !formData.modules?.length
-    ) {
+    const missingFields = [];
+
+    if (!formData.title) missingFields.push("Title");
+    if (!formData.description) missingFields.push("Description");
+    if (!formData.image) missingFields.push("Image");
+    if (!formData.categories?.length) missingFields.push("Categories");
+    if (!formData.metadata?.overview?.text) missingFields.push("Overview");
+    if (!formData.modules?.length) missingFields.push("Modules");
+
+    if (missingFields.length > 0) {
+      showError(
+        "Required fields",
+        `Please fill in the following fields before continuing:\n\n${missingFields.join(
+          "\n"
+        )}`
+      );
       return;
     }
 
@@ -204,7 +214,6 @@ export default function GuideForm({ guideId }: GuideFormProps) {
 
       let imageUrl = formData.image;
       if (formData.image && typeof formData.image !== "string") {
-        // Upload para o bucket 'images'
         const file = formData.image as File;
         const filePath = `guides/${Date.now()}-${file.name}`;
         const { error: uploadError } = await supabase.storage
@@ -214,7 +223,6 @@ export default function GuideForm({ guideId }: GuideFormProps) {
             upsert: false,
           });
         if (uploadError) throw new Error(uploadError.message);
-        // Pega a URL pública
         const { data: publicUrlData } = supabase.storage
           .from("images")
           .getPublicUrl(filePath);
@@ -241,13 +249,17 @@ export default function GuideForm({ guideId }: GuideFormProps) {
 
       if (!response.data?.guide) {
         throw new Error(
-          guideId ? "Erro ao atualizar guide" : "Erro ao criar guide"
+          guideId ? "Error updating guide" : "Error creating guide"
         );
       }
 
       router.push("/administrador/dashboard");
     } catch (error: any) {
-      alert(error.message || "Erro ao criar guide");
+      showError(
+        "Error",
+        error.message ||
+          (guideId ? "Error updating guide" : "Error creating guide")
+      );
     } finally {
       hideLoading();
     }
@@ -266,13 +278,13 @@ export default function GuideForm({ guideId }: GuideFormProps) {
       if (!session) throw new Error("User not authenticated");
       const response = await privateRequest.post("/categories", categoryData);
       if (!response.data?.category) {
-        throw new Error("Erro ao criar categoria");
+        throw new Error("Error creating category");
       }
       setOpenCategoryDialog(false);
       setCategoriesRefreshKey((k) => k + 1);
       setSelectedCategories((prev) => [...prev, response.data.category.id]);
     } catch (error: any) {
-      alert(error.message || "Erro ao criar categoria");
+      showError("Error", error.message || "Error creating category");
     } finally {
       hideLoading();
     }

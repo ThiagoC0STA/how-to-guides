@@ -17,7 +17,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setLoading(false);
 
-      // Protege todas as rotas /administrador/* exceto /administrador/login
       if (
         !session &&
         pathname.startsWith("/administrador") &&
@@ -25,7 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ) {
         router.replace("/administrador/login");
       }
-      // Se já está logado e está na página de login, redireciona para dashboard
+
       if (session && pathname === "/administrador/login") {
         router.replace("/administrador/dashboard");
       }

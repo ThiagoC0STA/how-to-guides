@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Box, TextField, Typography, Button, Popover, Switch, FormControlLabel } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Typography,
+  Button,
+  Popover,
+  Switch,
+  FormControlLabel,
+} from "@mui/material";
 import { ChromePicker } from "react-color";
 import { Guide } from "../types";
 
@@ -208,7 +216,7 @@ export default function BasicInfoStep({
         control={
           <Switch
             checked={!!formData.is_popular}
-            onChange={e => onFormDataChange("is_popular", e.target.checked)}
+            onChange={(e) => onFormDataChange("is_popular", e.target.checked)}
             color="primary"
           />
         }

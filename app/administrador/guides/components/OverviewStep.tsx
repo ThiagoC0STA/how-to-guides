@@ -17,7 +17,7 @@ export default function OverviewStep({
   onFormDataChange,
   onNewBulletChange,
   onAddBullet,
-  onRemoveBullet
+  onRemoveBullet,
 }: OverviewStepProps) {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -37,20 +37,20 @@ export default function OverviewStep({
         multiline
         rows={4}
         sx={{
-          '& .MuiOutlinedInput-root': {
+          "& .MuiOutlinedInput-root": {
             borderRadius: 2,
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'primary.main',
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "primary.main",
             },
           },
         }}
       />
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <Typography 
-          variant="subtitle1" 
-          sx={{ 
+        <Typography
+          variant="subtitle1"
+          sx={{
             fontWeight: 600,
-            color: 'text.primary'
+            color: "text.primary",
           }}
         >
           Bullet Points
@@ -62,10 +62,10 @@ export default function OverviewStep({
             value={newBullet}
             onChange={(e) => onNewBulletChange(e.target.value)}
             sx={{
-              '& .MuiOutlinedInput-root': {
+              "& .MuiOutlinedInput-root": {
                 borderRadius: 2,
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'primary.main',
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "primary.main",
                 },
               },
             }}
@@ -77,12 +77,12 @@ export default function OverviewStep({
             sx={{
               borderRadius: 2,
               px: 3,
-              textTransform: 'none',
+              textTransform: "none",
               fontWeight: 500,
-              boxShadow: 'none',
-              '&:hover': {
-                boxShadow: 'none'
-              }
+              boxShadow: "none",
+              "&:hover": {
+                boxShadow: "none",
+              },
             }}
           >
             Add
@@ -98,10 +98,10 @@ export default function OverviewStep({
                 gap: 1,
                 p: 1,
                 borderRadius: 1,
-                bgcolor: 'grey.50',
-                '&:hover': {
-                  bgcolor: 'grey.100'
-                }
+                bgcolor: "grey.50",
+                "&:hover": {
+                  bgcolor: "grey.100",
+                },
               }}
             >
               <Typography sx={{ flex: 1 }}>{bullet}</Typography>
@@ -109,10 +109,10 @@ export default function OverviewStep({
                 size="small"
                 onClick={() => onRemoveBullet(bullet)}
                 sx={{
-                  color: 'error.main',
-                  '&:hover': {
-                    bgcolor: 'error.50'
-                  }
+                  color: "error.main",
+                  "&:hover": {
+                    bgcolor: "error.50",
+                  },
                 }}
               >
                 <DeleteIcon />
@@ -123,4 +123,4 @@ export default function OverviewStep({
       </Box>
     </Box>
   );
-} 
+}

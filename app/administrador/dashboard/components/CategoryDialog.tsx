@@ -24,7 +24,6 @@ import ActionButton from "./ActionButton";
 import { supabase } from "@/lib/supabaseClient";
 import { useLoading } from "@/components/LoadingProvider";
 import Image from "next/image";
-import { api } from "@/utils/apiClient";
 
 interface CategoryDialogProps {
   open: boolean;
@@ -52,7 +51,6 @@ export default function CategoryDialog({
         color: category.color,
         featured: category.featured || false,
         comingSoon: category.comingSoon || false,
-        guides: category.guides || [],
       };
     }
     return {
@@ -72,9 +70,7 @@ export default function CategoryDialog({
   >([]);
   const [allGuides, setAllGuides] = useState<any[]>([]);
   const [guideSearch, setGuideSearch] = useState("");
-  const [selectedGuides, setSelectedGuides] = useState<any[]>(
-    formData.guides || []
-  );
+  const [selectedGuides, setSelectedGuides] = useState<any[]>([]);
 
   useEffect(() => {
     if (category) {
@@ -86,7 +82,6 @@ export default function CategoryDialog({
         color: category.color,
         featured: category.featured || false,
         comingSoon: category.comingSoon || false,
-        guides: category.guides || [],
       });
     } else {
       setFormData({
@@ -158,31 +153,7 @@ export default function CategoryDialog({
   const handleSubmit = async () => {
     showLoading();
     try {
-      // Validar campos obrigatórios
-      if (!formData.title || !formData.description) {
-        alert("Por favor, preencha todos os campos obrigatórios.");
-        return;
-      }
-
-      let iconUrl: any = formData.icon_url;
-      if (iconFile) {
-        iconUrl = await handleIconUpload(iconFile);
-        if (!iconUrl) return;
-      }
-
-      // Montar o objeto para enviar para a API
-      const categoryData: any = {
-        ...formData,
-        guides: selectedGuides.map((g) => ({ id: g.id, title: g.title })),
-        icon_url: iconUrl,
-        featured: formData.featured || false,
-        comingSoon: formData.comingSoon || false,
-      };
-
-      // Chamar a API Next.js usando o client já configurado
-      const result: any = await api.post("/categories", categoryData);
-
-      onSave(result.category);
+      onSave(formData);
       onClose();
     } catch (error: any) {
       console.error("Erro ao salvar categoria:", error?.message || error);
@@ -191,44 +162,6 @@ export default function CategoryDialog({
       hideLoading();
     }
   };
-
-  async function handleIconUpload(file: File) {
-    showLoading();
-    console.log("Iniciando upload do arquivo:", file);
-    try {
-      // Ensure the file path is correct
-      const filePath = `category-icons/${Date.now()}-${file.name}`;
-
-      // Upload the file
-      const { error: uploadError } = await supabase.storage
-        .from("icons")
-        .upload(filePath, file, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-
-      if (uploadError) {
-        console.error("Upload error:", uploadError);
-        throw new Error(uploadError.message);
-      }
-
-      // Get the public URL
-      const { data: publicUrlData } = supabase.storage
-        .from("icons")
-        .getPublicUrl(filePath);
-
-      return publicUrlData.publicUrl;
-    } catch (error) {
-      console.error("Error in handleIconUpload:", error);
-      alert(
-        "Erro ao fazer upload do ícone: " +
-          (error instanceof Error ? error.message : "Erro desconhecido")
-      );
-      return null;
-    } finally {
-      hideLoading();
-    }
-  }
 
   return (
     <Dialog

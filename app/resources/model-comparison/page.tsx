@@ -166,10 +166,10 @@ export default function ModelComparison() {
           }}
         >
           Different AI models excel at different tasks. This comparison helps
-          you choose the right tool for your specific needs. We&apos;ve organized
-          models by their primary function (text generation, image generation,
-          or multimodal capabilities) and provided detailed information about
-          their strengths, limitations, and use cases.
+          you choose the right tool for your specific needs. We&apos;ve
+          organized models by their primary function (text generation, image
+          generation, or multimodal capabilities) and provided detailed
+          information about their strengths, limitations, and use cases.
         </Typography>
         <Typography
           sx={{ color: "var(--footer-text)", fontSize: 16, lineHeight: 1.8 }}

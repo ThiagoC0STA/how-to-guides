@@ -1,5 +1,16 @@
 import { useEffect, useState } from "react";
-import { Box, TextField, Button, Typography, FormControl, InputLabel, Select, MenuItem, Chip, CircularProgress } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Chip,
+  CircularProgress,
+} from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import { Guide } from "../types";
 import { publicRequest } from "@/utils/apiClient";
@@ -38,10 +49,13 @@ export default function CategoriesAndKeywordsStep({
 
   useEffect(() => {
     setLoading(true);
-    publicRequest.get("/categories").then((res) => {
-      setCategories(res.data.categories || []);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    publicRequest
+      .get("/categories")
+      .then((res) => {
+        setCategories(res.data.categories || []);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, [refreshKey]);
 
   return (
@@ -78,12 +92,12 @@ export default function CategoriesAndKeywordsStep({
           sx={{
             borderRadius: 3,
             bgcolor: "background.paper",
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'divider',
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "divider",
               borderRadius: 3,
             },
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'primary.main',
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "primary.main",
             },
             minHeight: 56,
           }}
@@ -94,7 +108,11 @@ export default function CategoriesAndKeywordsStep({
             </MenuItem>
           ) : (
             categories.map((category) => (
-              <MenuItem key={category.id} value={category.id} sx={{ borderRadius: 2 }}>
+              <MenuItem
+                key={category.id}
+                value={category.id}
+                sx={{ borderRadius: 2 }}
+              >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <Chip
                     label={category.title}
@@ -115,19 +133,25 @@ export default function CategoriesAndKeywordsStep({
           variant="outlined"
           startIcon={<AddIcon />}
           onClick={onAddCategoryClick}
-          sx={{ mt: 2, alignSelf: "flex-end", textTransform: "none", borderRadius: 2, fontWeight: 600 }}
+          sx={{
+            mt: 2,
+            alignSelf: "flex-end",
+            textTransform: "none",
+            borderRadius: 2,
+            fontWeight: 600,
+          }}
         >
           New category
         </Button>
       </FormControl>
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <Typography 
-          variant="subtitle1" 
-          sx={{ 
+        <Typography
+          variant="subtitle1"
+          sx={{
             fontWeight: 700,
-            color: 'text.primary',
-            mb: 1
+            color: "text.primary",
+            mb: 1,
           }}
         >
           Keywords
@@ -140,11 +164,11 @@ export default function CategoriesAndKeywordsStep({
             onChange={(e) => onNewKeywordChange(e.target.value)}
             sx={{
               borderRadius: 2,
-              '& .MuiOutlinedInput-root': {
+              "& .MuiOutlinedInput-root": {
                 borderRadius: 2,
-                bgcolor: 'background.paper',
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'primary.main',
+                bgcolor: "background.paper",
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "primary.main",
                 },
               },
             }}
@@ -156,14 +180,14 @@ export default function CategoriesAndKeywordsStep({
             sx={{
               borderRadius: 2,
               px: 3,
-              textTransform: 'none',
+              textTransform: "none",
               fontWeight: 600,
-              boxShadow: 'none',
-              bgcolor: 'primary.main',
-              '&:hover': {
-                boxShadow: 'none',
-                bgcolor: 'primary.dark',
-              }
+              boxShadow: "none",
+              bgcolor: "primary.main",
+              "&:hover": {
+                boxShadow: "none",
+                bgcolor: "primary.dark",
+              },
             }}
           >
             Add
@@ -177,18 +201,18 @@ export default function CategoriesAndKeywordsStep({
               onDelete={() => onRemoveKeyword(keyword)}
               sx={{
                 borderRadius: 2,
-                bgcolor: 'grey.100',
-                color: 'primary.main',
+                bgcolor: "grey.100",
+                color: "primary.main",
                 fontWeight: 500,
-                '&:hover': {
-                  bgcolor: 'grey.200'
+                "&:hover": {
+                  bgcolor: "grey.200",
                 },
-                '& .MuiChip-deleteIcon': {
-                  color: 'grey.500',
-                  '&:hover': {
-                    color: 'error.main'
-                  }
-                }
+                "& .MuiChip-deleteIcon": {
+                  color: "grey.500",
+                  "&:hover": {
+                    color: "error.main",
+                  },
+                },
               }}
             />
           ))}
@@ -196,4 +220,4 @@ export default function CategoriesAndKeywordsStep({
       </Box>
     </Box>
   );
-} 
+}

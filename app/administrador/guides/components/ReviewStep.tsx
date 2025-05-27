@@ -46,7 +46,7 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
         lastUpdated={previewGuide.lastUpdated}
         image={formData.image || ""}
       />
-      
+
       {formData.metadata?.overview?.text && (
         <GuideOverview
           title="Guide Overview"
@@ -59,12 +59,12 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
 
       <LeadMagnetKit />
 
-      <Box 
-        display="flex" 
+      <Box
+        display="flex"
         flexDirection={{ xs: "column", md: "row" }}
-        gap={{ xs: 3, md: 4 }} 
-        alignItems={{ xs: "stretch", md: "flex-start" }} 
-        mx="auto" 
+        gap={{ xs: 3, md: 4 }}
+        alignItems={{ xs: "stretch", md: "flex-start" }}
+        mx="auto"
         my={{ xs: 4, md: 6 }}
       >
         <GuideSidebar

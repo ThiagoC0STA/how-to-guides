@@ -1,7 +1,17 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Container, Box, Typography, TextField, InputAdornment, Button, Paper, Tabs, Tab } from "@mui/material";
+import {
+  Container,
+  Box,
+  Typography,
+  TextField,
+  InputAdornment,
+  Button,
+  Paper,
+  Tabs,
+  Tab,
+} from "@mui/material";
 import { FaSearch } from "react-icons/fa";
 import { glossaryTerms, categories } from "@/data/glossary";
 import Link from "next/link";
@@ -11,18 +21,18 @@ export default function AIGlossary() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
 
-  // Filter terms based on search and category
   const filteredTerms = useMemo(() => {
-    return glossaryTerms.filter(item => {
-      const matchesSearch = item.term.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                           item.definition.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = activeFilter === "all" || item.category === activeFilter;
-      
+    return glossaryTerms.filter((item) => {
+      const matchesSearch =
+        item.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.definition.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        activeFilter === "all" || item.category === activeFilter;
+
       return matchesSearch && matchesCategory;
     });
   }, [searchTerm, activeFilter]);
 
-  // Group terms alphabetically
   const groupedTerms = useMemo(() => {
     return filteredTerms.reduce((acc, term) => {
       const firstLetter = term.term.charAt(0).toUpperCase();
@@ -49,7 +59,8 @@ export default function AIGlossary() {
             fontSize: { xs: 36, md: 48 },
             fontWeight: 800,
             mb: 2,
-            background: "linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-red) 100%)",
+            background:
+              "linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-red) 100%)",
             backgroundClip: "text",
             WebkitBackgroundClip: "text",
             color: "transparent",
@@ -67,7 +78,8 @@ export default function AIGlossary() {
             mb: 4,
           }}
         >
-          Comprehensive definitions of key terms and concepts in artificial intelligence
+          Comprehensive definitions of key terms and concepts in artificial
+          intelligence
         </Typography>
 
         <TextField
@@ -110,7 +122,8 @@ export default function AIGlossary() {
           scrollButtons="auto"
           sx={{
             "& .MuiTabs-indicator": {
-              background: "linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-red) 100%)",
+              background:
+                "linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-red) 100%)",
             },
             "& .MuiTabs-flexContainer": {
               justifyContent: "center",
@@ -155,7 +168,9 @@ export default function AIGlossary() {
             {sortedLetters.map((letter) => (
               <Button
                 key={letter}
-                onClick={() => setSelectedLetter(letter === selectedLetter ? null : letter)}
+                onClick={() =>
+                  setSelectedLetter(letter === selectedLetter ? null : letter)
+                }
                 variant={selectedLetter === letter ? "contained" : "outlined"}
                 size="small"
                 sx={{
@@ -164,11 +179,15 @@ export default function AIGlossary() {
                   borderRadius: 2,
                   borderColor: "divider",
                   color: selectedLetter === letter ? "white" : "text.secondary",
-                  bgcolor: selectedLetter === letter ? "primary.main" : "transparent",
+                  bgcolor:
+                    selectedLetter === letter ? "primary.main" : "transparent",
                   "&:hover": {
                     borderColor: "primary.main",
                     color: selectedLetter === letter ? "white" : "primary.main",
-                    bgcolor: selectedLetter === letter ? "primary.main" : "primary.main08",
+                    bgcolor:
+                      selectedLetter === letter
+                        ? "primary.main"
+                        : "primary.main08",
                   },
                 }}
               >
@@ -183,7 +202,11 @@ export default function AIGlossary() {
               key={letter}
               sx={{
                 mb: 6,
-                display: selectedLetter ? (selectedLetter === letter ? "block" : "none") : "block",
+                display: selectedLetter
+                  ? selectedLetter === letter
+                    ? "block"
+                    : "none"
+                  : "block",
               }}
             >
               <Typography
@@ -201,7 +224,8 @@ export default function AIGlossary() {
                     left: 0,
                     width: 60,
                     height: 4,
-                    background: "linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-red) 100%)",
+                    background:
+                      "linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-red) 100%)",
                     borderRadius: 2,
                   },
                 }}
@@ -264,14 +288,24 @@ export default function AIGlossary() {
                         px: 1.5,
                         py: 0.5,
                         borderRadius: 1,
-                        bgcolor: `${item.category === "general" ? "var(--primary-blue)" :
-                                 item.category === "technical" ? "var(--primary-purple)" :
-                                 item.category === "models" ? "var(--primary-green)" :
-                                 "var(--primary-red)"}15`,
-                        color: `${item.category === "general" ? "var(--primary-blue)" :
-                               item.category === "technical" ? "var(--primary-purple)" :
-                               item.category === "models" ? "var(--primary-green)" :
-                               "var(--primary-red)"}`,
+                        bgcolor: `${
+                          item.category === "general"
+                            ? "var(--primary-blue)"
+                            : item.category === "technical"
+                            ? "var(--primary-purple)"
+                            : item.category === "models"
+                            ? "var(--primary-green)"
+                            : "var(--primary-red)"
+                        }15`,
+                        color: `${
+                          item.category === "general"
+                            ? "var(--primary-blue)"
+                            : item.category === "technical"
+                            ? "var(--primary-purple)"
+                            : item.category === "models"
+                            ? "var(--primary-green)"
+                            : "var(--primary-red)"
+                        }`,
                         fontSize: "0.75rem",
                         fontWeight: 600,
                         textTransform: "capitalize",
@@ -298,7 +332,8 @@ export default function AIGlossary() {
             No terms found
           </Typography>
           <Typography sx={{ mb: 3, color: "var(--footer-text)" }}>
-            Try adjusting your search terms or filters to find what you&apos;re looking for.
+            Try adjusting your search terms or filters to find what you&apos;re
+            looking for.
           </Typography>
           <Button
             variant="outlined"
@@ -541,4 +576,4 @@ export default function AIGlossary() {
       </Box>
     </Container>
   );
-} 
+}

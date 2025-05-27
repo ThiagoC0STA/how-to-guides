@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "../components/Header";
 import Footer from "@/components/Footer";
 import { LoadingProvider } from "../components/LoadingProvider";
+import ErrorModal from '../components/ErrorModal';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -63,6 +64,7 @@ export default function RootLayout({
         <Header />
         {children}
         <Footer />
+        <ErrorModal />
         </LoadingProvider>
       </body>
     </html>
