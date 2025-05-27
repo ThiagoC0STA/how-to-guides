@@ -224,7 +224,6 @@ export async function PUT(req: NextRequest, { params }: any) {
         color: body.color,
         modules: body.modules,
         is_popular: body.is_popular,
-        categories: body.categories,
         metadata: body.metadata,
       })
       .eq("id", params.id)
@@ -234,41 +233,79 @@ export async function PUT(req: NextRequest, { params }: any) {
       console.error("❌ Error updating guide:", updateError);
       return NextResponse.json({ error: updateError.message }, { status: 400 });
     }
-    // Atualizar o campo guides das categorias envolvidas
+
+    // Atualizar as categorias através da tabela guide_categories
     if (body.categories && Array.isArray(body.categories)) {
-      // Buscar todas as categorias
-      const { data: allCategories } = await supabase
-        .from("categories")
-        .select("id,guides");
-      // Remover o id do guide de todas as categorias que não estão mais relacionadas
-      for (const cat of allCategories || []) {
-        if (!body.categories.find((c: any) => c.id === cat.id)) {
-          const newGuides = (cat.guides || []).filter(
-            (gid: string) => gid !== params.id
-          );
-          await supabase
-            .from("categories")
-            .update({ guides: newGuides })
-            .eq("id", cat.id);
-        }
+      // Primeiro, remover todas as relações existentes
+      const { error: deleteError } = await supabase
+        .from("guide_categories")
+        .delete()
+        .eq("guide_id", params.id);
+
+      if (deleteError) {
+        console.error("❌ Error deleting existing categories:", deleteError);
+        return NextResponse.json(
+          { error: deleteError.message },
+          { status: 400 }
+        );
       }
-      // Adicionar o id do guide nas categorias selecionadas
-      for (const cat of body.categories) {
-        const { data: catData } = await supabase
-          .from("categories")
-          .select("guides")
-          .eq("id", cat.id)
-          .single();
-        const guidesArr = catData?.guides || [];
-        if (!guidesArr.includes(params.id)) {
-          await supabase
-            .from("categories")
-            .update({ guides: [...guidesArr, params.id] })
-            .eq("id", cat.id);
-        }
+
+      // Depois, criar as novas relações
+      const categoryRelations = body.categories.map((cat: any) => ({
+        guide_id: params.id,
+        category_id: cat.id,
+      }));
+
+      const { error: insertError } = await supabase
+        .from("guide_categories")
+        .insert(categoryRelations);
+
+      if (insertError) {
+        console.error("❌ Error inserting new categories:", insertError);
+        return NextResponse.json(
+          { error: insertError.message },
+          { status: 400 }
+        );
       }
     }
-    return NextResponse.json({ guide: updatedGuide });
+
+    // Buscar o guide atualizado com as categorias
+    const { data: finalGuide, error: finalFetchError } = await supabase
+      .from("guides")
+      .select(
+        `
+        *,
+        guide_categories (
+          category:categories (
+            id,
+            title,
+            color
+          )
+        )
+      `
+      )
+      .eq("id", params.id)
+      .single();
+
+    if (finalFetchError) {
+      console.error("❌ Error fetching updated guide:", finalFetchError);
+      return NextResponse.json(
+        { error: finalFetchError.message },
+        { status: 400 }
+      );
+    }
+
+    // Adaptar o formato da resposta
+    const guideWithCategories = {
+      ...finalGuide,
+      categories: Array.isArray(finalGuide.guide_categories)
+        ? finalGuide.guide_categories
+            .map((gc: any) => gc.category)
+            .filter(Boolean)
+        : [],
+    };
+
+    return NextResponse.json({ guide: guideWithCategories });
   } catch (error) {
     console.error("❌ Error in update operation:", error);
     return NextResponse.json(
