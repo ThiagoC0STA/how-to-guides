@@ -5,6 +5,7 @@ import Header from "../components/Header";
 import Footer from "@/components/Footer";
 import { LoadingProvider } from "../components/LoadingProvider";
 import ErrorModal from '../components/ErrorModal';
+import SuccessModal from '../components/SuccessModal';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -61,10 +62,11 @@ export default function RootLayout({
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
         <LoadingProvider>
-        <Header />
-        {children}
-        <Footer />
-        <ErrorModal />
+          <Header />
+          {children}
+          <Footer />
+          <ErrorModal />
+          <SuccessModal />
         </LoadingProvider>
       </body>
     </html>

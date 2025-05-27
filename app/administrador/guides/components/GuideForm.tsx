@@ -24,6 +24,7 @@ import { privateRequest, publicRequest } from "@/utils/apiClient";
 import CategoryDialog from "../../dashboard/components/CategoryDialog";
 import { useLoading } from "@/components/LoadingProvider";
 import { useErrorStore } from "@/store/errorStore";
+import { useSuccessStore } from "@/store/successStore";
 
 const steps = [
   "Basic Information",
@@ -41,6 +42,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
   const router = useRouter();
   const { show: showLoading, hide: hideLoading } = useLoading();
   const { showError } = useErrorStore();
+  const { showSuccess } = useSuccessStore();
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState<Partial<Guide>>({
     title: "",
@@ -283,6 +285,11 @@ export default function GuideForm({ guideId }: GuideFormProps) {
       setOpenCategoryDialog(false);
       setCategoriesRefreshKey((k) => k + 1);
       setSelectedCategories((prev) => [...prev, response.data.category.id]);
+
+      showSuccess("Category created successfully!", {
+        text: "OK",
+        onClick: () => {},
+      });
     } catch (error: any) {
       showError("Error", error.message || "Error creating category");
     } finally {
@@ -300,6 +307,16 @@ export default function GuideForm({ guideId }: GuideFormProps) {
     };
     fetchCategories();
   }, []);
+
+  // Handler to keep the modal open and reset the form
+  const handleAddAnotherCategory = () => {
+    console.log('[GuideForm] Add Another Category button clicked');
+    setOpenCategoryDialog(true);
+  };
+
+  useEffect(() => {
+    console.log('[GuideForm] openCategoryDialog changed:', openCategoryDialog);
+  }, [openCategoryDialog]);
 
   const renderStepContent = (step: number) => {
     switch (step) {
@@ -488,6 +505,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
         open={openCategoryDialog}
         onClose={() => setOpenCategoryDialog(false)}
         onSave={handleCategoryDialogSave}
+        onAddAnotherCategory={handleAddAnotherCategory}
       />
     </Container>
   );

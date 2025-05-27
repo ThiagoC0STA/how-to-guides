@@ -27,6 +27,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { publicRequest, privateRequest } from "@/utils/apiClient";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useLoading } from "@/components/LoadingProvider";
+import { useSuccessStore } from "@/store/successStore";
 import Image from "next/image";
 import ModelDialog from "./components/ModelDialog";
 import { Model } from "../guides/types";
@@ -67,6 +68,7 @@ function TabPanel(props: TabPanelProps) {
 export default function Dashboard() {
   const { show: showLoading, hide: hideLoading } = useLoading();
   const { showError } = useErrorStore();
+  const { showSuccess } = useSuccessStore();
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
   const [openModelDialog, setOpenModelDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -187,6 +189,14 @@ export default function Dashboard() {
       // Update local state
       setCategories((prev) => prev.filter((c) => c.id !== selectedCategory.id));
       setOpenDeleteDialog(false);
+      
+      showSuccess(
+        "Category deleted successfully!",
+        {
+          text: "OK",
+          onClick: () => setSelectedCategory(null)
+        }
+      );
     } catch (error: any) {
       showError(
         "Error deleting category",
@@ -336,6 +346,11 @@ export default function Dashboard() {
     } finally {
       hideLoading();
     }
+  };
+
+  const handleAddAnotherCategory = () => {
+    setSelectedCategory(null);
+    setOpenCategoryDialog(true);
   };
 
   const renderStats = () => {
@@ -967,6 +982,7 @@ export default function Dashboard() {
         onSave={handleSaveCategory}
         category={selectedCategory || undefined}
         withGuides={true}
+        onAddAnotherCategory={handleAddAnotherCategory}
       />
 
       <ModelDialog

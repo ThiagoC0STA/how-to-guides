@@ -23,6 +23,7 @@ import {
 import ActionButton from "./ActionButton";
 import { supabase } from "@/lib/supabaseClient";
 import { useLoading } from "@/components/LoadingProvider";
+import { useSuccessStore } from "@/store/successStore";
 import Image from "next/image";
 
 interface CategoryDialogProps {
@@ -31,6 +32,7 @@ interface CategoryDialogProps {
   onSave: (category: Partial<Category>) => void;
   category?: Category;
   withGuides?: boolean;
+  onAddAnotherCategory?: () => void;
 }
 
 export default function CategoryDialog({
@@ -39,8 +41,10 @@ export default function CategoryDialog({
   onSave,
   category,
   withGuides,
+  onAddAnotherCategory,
 }: CategoryDialogProps) {
   const { show: showLoading, hide: hideLoading } = useLoading();
+  const { showSuccess } = useSuccessStore();
   const [formData, setFormData] = useState<Partial<Category>>(() => {
     if (category) {
       return {
@@ -60,7 +64,6 @@ export default function CategoryDialog({
       color: "#74aa9c",
       featured: false,
       comingSoon: false,
-      guides: [],
     };
   });
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -91,7 +94,6 @@ export default function CategoryDialog({
         color: "#74aa9c",
         featured: false,
         comingSoon: false,
-        guides: [],
       });
     }
   }, [category]);
@@ -114,6 +116,12 @@ export default function CategoryDialog({
       fetchGuides();
     }
   }, [guideSearch, withGuides]);
+
+  useEffect(() => {
+    if (open) {
+      console.log('[CategoryDialog] Dialog opened. formData:', formData);
+    }
+  }, [open]);
 
   const fetchAllIcons = async () => {
     try {
@@ -150,14 +158,71 @@ export default function CategoryDialog({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleAddAnother = () => {
+    console.log('[CategoryDialog] Add Another Category button clicked');
+    if (onAddAnotherCategory) onAddAnotherCategory();
+    setFormData({
+      title: "",
+      description: "",
+      icon_url: "",
+      color: "#74aa9c",
+      featured: false,
+      comingSoon: false,
+    });
+    setIconFile(null);
+  };
+
   const handleSubmit = async () => {
+    if (
+      !formData.title ||
+      !formData.description ||
+      !(formData.icon_url || iconFile)
+    ) {
+      return;
+    }
+
     showLoading();
     try {
-      onSave(formData);
-      onClose();
+      let iconUrl = formData.icon_url;
+
+      if (iconFile) {
+        const fileExt = iconFile.name.split(".").pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `category-icons/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("icons")
+          .upload(filePath, iconFile);
+
+        if (uploadError) throw uploadError;
+
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("icons").getPublicUrl(filePath);
+
+        iconUrl = publicUrl;
+      }
+
+      const categoryData = {
+        ...formData,
+        icon_url: iconUrl,
+      };
+
+      await onSave(categoryData);
+
+      showSuccess(
+        `Category ${category ? "updated" : "created"} successfully!`,
+        {
+          text: "OK",
+          onClick: () => onClose(),
+        },
+        {
+          text: "Add Another Category",
+          onClick: handleAddAnother,
+        }
+      );
     } catch (error: any) {
-      console.error("Erro ao salvar categoria:", error?.message || error);
-      alert("Erro ao salvar categoria. Por favor, tente novamente mais tarde.");
+      console.error("Error saving category:", error);
     } finally {
       hideLoading();
     }
@@ -167,7 +232,7 @@ export default function CategoryDialog({
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
+      maxWidth="md"
       fullWidth
       PaperProps={{
         sx: {
@@ -178,7 +243,7 @@ export default function CategoryDialog({
     >
       <DialogTitle
         sx={{
-          p: 2,
+          p: 3,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -186,7 +251,7 @@ export default function CategoryDialog({
           borderColor: "divider",
         }}
       >
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+        <Typography variant="h5" sx={{ fontWeight: 600 }}>
           {category ? "Edit Category" : "Add New Category"}
         </Typography>
         <IconButton
@@ -203,8 +268,8 @@ export default function CategoryDialog({
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{ p: 2 }}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 2 }}>
+      <DialogContent sx={{ p: 3 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 4, mt: 2 }}>
           <TextField
             label="Title"
             fullWidth
@@ -215,6 +280,10 @@ export default function CategoryDialog({
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: 2,
+                fontSize: "1.1rem",
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: "1.1rem",
               },
             }}
           />
@@ -222,7 +291,7 @@ export default function CategoryDialog({
             label="Description"
             fullWidth
             multiline
-            rows={3}
+            rows={4}
             value={formData.description}
             onChange={(e) => handleChange("description", e.target.value)}
             required
@@ -230,6 +299,10 @@ export default function CategoryDialog({
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: 2,
+                fontSize: "1.1rem",
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: "1.1rem",
               },
             }}
           />
@@ -493,7 +566,7 @@ export default function CategoryDialog({
       </DialogContent>
       <DialogActions
         sx={{
-          p: 2,
+          p: 3,
           borderTop: "1px solid",
           borderColor: "divider",
         }}
