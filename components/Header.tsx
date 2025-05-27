@@ -113,7 +113,7 @@ export default function Header() {
           }}
         >
           {/* Logo */}
-          <Link href={isAdminRoute ? "/administrador/dashboard" : "/"} passHref>
+          <Link href="/" passHref>
             <Box
               component="img"
               src="/images/logo/guides-logo.svg"
