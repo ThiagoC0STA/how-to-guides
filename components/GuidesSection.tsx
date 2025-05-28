@@ -73,6 +73,9 @@ export default function GuidesSection({
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [guides, setGuides] = useState<Guide[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const rowsPerPage = 9;
   const { show: showLoading, hide: hideLoading } = useLoading();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -86,11 +89,18 @@ export default function GuidesSection({
       try {
         const [catRes, guidesRes] = await Promise.all([
           publicRequest.get("/categories"),
-          publicRequest.get(`/guides${isPopular ? "?popular=true" : ""}`),
+          publicRequest.get(
+            `/guides?page=${page}&limit=${rowsPerPage}${
+              isPopular ? "&popular=true" : ""
+            }`
+          ),
         ]);
         if (isMounted) {
           if (catRes.data.categories) setCategories(catRes.data.categories);
-          if (guidesRes.data.guides) setGuides(guidesRes.data.guides);
+          if (guidesRes.data.guides) {
+            setGuides(guidesRes.data.guides);
+            setTotalCount(guidesRes.data.totalCount || 0);
+          }
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -104,7 +114,7 @@ export default function GuidesSection({
     return () => {
       isMounted = false;
     };
-  }, [isPopular]);
+  }, [isPopular, page]);
 
   const filteredGuides = React.useMemo(() => {
     return guides.filter((guide) => {
@@ -125,6 +135,10 @@ export default function GuidesSection({
   }, [guides]);
 
   const categoryOptions = ["all", ...categories.map((cat) => cat.id)];
+
+  const handlePageChange = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
 
   return (
     <Box
@@ -445,6 +459,81 @@ export default function GuidesSection({
           </Card>
         ))}
       </Box>
+
+      {/* Pagination controls */}
+      {totalCount > rowsPerPage && (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 6, mb: 4 }}>
+          <Stack
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            sx={{
+              bgcolor: "var(--card-bg, #fff)",
+              borderRadius: 3,
+              px: 3,
+              py: 1.5,
+              boxShadow: "0 2px 16px 0 rgba(37,99,235,0.06)",
+            }}
+          >
+            <Button
+              onClick={() => handlePageChange(null, page - 1)}
+              disabled={page === 0}
+              sx={{
+                color: "var(--foreground)",
+                fontWeight: 600,
+                minWidth: 100,
+                borderRadius: 2,
+                textTransform: "none",
+                transition: "all 0.2s",
+                "&:hover": {
+                  bgcolor: "var(--primary-blue)15",
+                  color: "var(--primary-blue)",
+                },
+                "&:disabled": {
+                  color: "var(--footer-text)",
+                  bgcolor: "transparent",
+                },
+              }}
+            >
+              Previous
+            </Button>
+            <Box
+              sx={{
+                px: 3,
+                py: 1,
+                borderRadius: 2,
+                bgcolor: "var(--primary-blue)15",
+                color: "var(--primary-blue)",
+                fontWeight: 600,
+              }}
+            >
+              {page + 1} / {Math.ceil(totalCount / rowsPerPage)}
+            </Box>
+            <Button
+              onClick={() => handlePageChange(null, page + 1)}
+              disabled={page >= Math.ceil(totalCount / rowsPerPage) - 1}
+              sx={{
+                color: "var(--foreground)",
+                fontWeight: 600,
+                minWidth: 100,
+                borderRadius: 2,
+                textTransform: "none",
+                transition: "all 0.2s",
+                "&:hover": {
+                  bgcolor: "var(--primary-blue)15",
+                  color: "var(--primary-blue)",
+                },
+                "&:disabled": {
+                  color: "var(--footer-text)",
+                  bgcolor: "transparent",
+                },
+              }}
+            >
+              Next
+            </Button>
+          </Stack>
+        </Box>
+      )}
     </Box>
   );
 }
