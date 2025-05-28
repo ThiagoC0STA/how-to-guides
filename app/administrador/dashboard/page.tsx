@@ -98,24 +98,27 @@ export default function Dashboard() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
+  // Pagination state
+  const [guidesPage, setGuidesPage] = useState(0);
+  const [guidesRowsPerPage, setGuidesRowsPerPage] = useState(10);
+  const [guidesTotalCount, setGuidesTotalCount] = useState(0);
+  const [categoriesPage, setCategoriesPage] = useState(0);
+  const [categoriesRowsPerPage, setCategoriesRowsPerPage] = useState(10);
+  const [categoriesTotalCount, setCategoriesTotalCount] = useState(0);
+  const [modelsPage, setModelsPage] = useState(0);
+  const [modelsRowsPerPage, setModelsRowsPerPage] = useState(10);
+  const [modelsTotalCount, setModelsTotalCount] = useState(0);
+
   // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       showLoading();
       try {
-        await publicRequest.get("/categories");
-        // A query precisa incluir os guias relacionados
-        const { data: categoriesWithGuides } = await supabase.from("categories")
-          .select(`
-            *,
-            guide_categories (
-              guide:guides (
-                id,
-                title
-              )
-            )
-          `);
-        setCategories(categoriesWithGuides || []);
+        const { data } = await publicRequest.get(
+          `/categories?page=${categoriesPage}&limit=${categoriesRowsPerPage}`
+        );
+        setCategories(data.categories || []);
+        setCategoriesTotalCount(data.totalCount || 0);
       } catch (error: any) {
         showError(
           "Error loading categories",
@@ -127,15 +130,18 @@ export default function Dashboard() {
     };
 
     fetchCategories();
-  }, []);
+  }, [categoriesPage, categoriesRowsPerPage]);
 
   // Fetch guides
   useEffect(() => {
     const fetchGuides = async () => {
       showLoading();
       try {
-        const { data } = await publicRequest.get("/guides");
-        setGuides(data.guides);
+        const { data } = await publicRequest.get(
+          `/guides?page=${guidesPage}&limit=${guidesRowsPerPage}`
+        );
+        setGuides(data.guides || []);
+        setGuidesTotalCount(data.totalCount || 0);
       } catch (error: any) {
         showError(
           "Error loading guides",
@@ -146,7 +152,7 @@ export default function Dashboard() {
       }
     };
     fetchGuides();
-  }, []);
+  }, [guidesPage, guidesRowsPerPage]);
 
   // Fetch AI models
   useEffect(() => {
@@ -155,6 +161,7 @@ export default function Dashboard() {
       try {
         const { data } = await publicRequest.get("/ai-models");
         setModels(data.models || []);
+        setModelsTotalCount(data.models?.length || 0);
       } catch (error: any) {
         showError(
           "Error loading models",
@@ -763,8 +770,8 @@ export default function Dashboard() {
             open={open}
             onClose={handleClose}
             onClick={handleClose}
-            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            transformOrigin={{ horizontal: "right", vertical: "top" }}
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           >
             <MenuItem onClick={handleAddManually}>
               <ListItemIcon>
@@ -780,7 +787,16 @@ export default function Dashboard() {
             </MenuItem>
           </Menu>
         </Box>
-        <DataTable title="" data={guides} columns={columns} />
+        <DataTable
+          title=""
+          data={guides}
+          columns={columns}
+          totalCount={guidesTotalCount}
+          page={guidesPage}
+          rowsPerPage={guidesRowsPerPage}
+          onPageChange={setGuidesPage}
+          onRowsPerPageChange={setGuidesRowsPerPage}
+        />
       </Paper>
     );
   };
@@ -907,7 +923,16 @@ export default function Dashboard() {
             Add New Category
           </ActionButton>
         </Box>
-        <DataTable title="" data={categories} columns={columns} />
+        <DataTable
+          title=""
+          data={categories}
+          columns={columns}
+          totalCount={categoriesTotalCount}
+          page={categoriesPage}
+          rowsPerPage={categoriesRowsPerPage}
+          onPageChange={setCategoriesPage}
+          onRowsPerPageChange={setCategoriesRowsPerPage}
+        />
       </Paper>
     );
   };
@@ -973,7 +998,16 @@ export default function Dashboard() {
             New Model
           </ActionButton>
         </Box>
-        <DataTable title="" data={models} columns={columns} />
+        <DataTable
+          title=""
+          data={models}
+          columns={columns}
+          totalCount={modelsTotalCount}
+          page={modelsPage}
+          rowsPerPage={modelsRowsPerPage}
+          onPageChange={setModelsPage}
+          onRowsPerPageChange={setModelsRowsPerPage}
+        />
       </Paper>
     );
   };

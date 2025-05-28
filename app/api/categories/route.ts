@@ -6,6 +6,12 @@ export async function GET(req: NextRequest) {
   console.log("📚 Fetching categories");
   const res = NextResponse.json({ success: true });
 
+  // Get pagination parameters
+  const { searchParams } = new URL(req.url);
+  const page = parseInt(searchParams.get("page") || "0");
+  const limit = parseInt(searchParams.get("limit") || "10");
+  const offset = page * limit;
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -33,6 +39,17 @@ export async function GET(req: NextRequest) {
   );
 
   try {
+    // First get total count
+    const { count, error: countError } = await supabase
+      .from("categories")
+      .select("*", { count: "exact", head: true });
+
+    if (countError) {
+      console.error("❌ Error getting total count:", countError);
+      return NextResponse.json({ error: countError.message }, { status: 400 });
+    }
+
+    // Then get paginated data
     const { data: categories, error } = await supabase
       .from("categories")
       .select(
@@ -47,7 +64,8 @@ export async function GET(req: NextRequest) {
         )
       `
       )
-      .order("title", { ascending: true });
+      .order("title", { ascending: true })
+      .range(offset, offset + limit - 1);
 
     if (error) {
       console.error("❌ Error fetching categories:", error);
@@ -55,7 +73,12 @@ export async function GET(req: NextRequest) {
     }
 
     console.log("✅ Categories fetched successfully");
-    return NextResponse.json({ categories });
+    return NextResponse.json({
+      categories,
+      totalCount: count || 0,
+      page,
+      limit,
+    });
   } catch (error) {
     console.error("❌ Error fetching categories:", error);
     return NextResponse.json(

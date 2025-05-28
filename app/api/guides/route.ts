@@ -10,6 +10,9 @@ export async function GET(req: NextRequest) {
   // Get the popular parameter from the URL
   const { searchParams } = new URL(req.url);
   const popular = searchParams.get("popular") === "true";
+  const page = parseInt(searchParams.get("page") || "0");
+  const limit = parseInt(searchParams.get("limit") || "10");
+  const offset = page * limit;
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -38,6 +41,23 @@ export async function GET(req: NextRequest) {
   );
 
   try {
+    // First get total count
+    let countQuery = supabase
+      .from("guides")
+      .select("*", { count: "exact", head: true });
+
+    if (popular) {
+      countQuery = countQuery.eq("is_popular", true);
+    }
+
+    const { count, error: countError } = await countQuery;
+
+    if (countError) {
+      console.error("❌ Error getting total count:", countError);
+      return NextResponse.json({ error: countError.message }, { status: 400 });
+    }
+
+    // Then get paginated data
     let query = supabase
       .from("guides")
       .select(
@@ -52,7 +72,8 @@ export async function GET(req: NextRequest) {
         )
       `
       )
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1);
 
     // If popular is true, only get popular guides
     if (popular) {
@@ -75,7 +96,12 @@ export async function GET(req: NextRequest) {
     }));
 
     console.log("✅ Guides fetched successfully");
-    return NextResponse.json({ guides: guidesWithCategories });
+    return NextResponse.json({
+      guides: guidesWithCategories,
+      totalCount: count || 0,
+      page,
+      limit,
+    });
   } catch (error) {
     console.error("❌ Error fetching guides:", error);
     return NextResponse.json(

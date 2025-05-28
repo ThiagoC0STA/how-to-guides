@@ -3,31 +3,74 @@ import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/ai-models
-export async function GET() {
+export async function GET(req: NextRequest) {
+  console.log("🤖 Fetching AI models");
+  const res = NextResponse.json({ success: true });
+
+  // Get pagination parameters
+  const { searchParams } = new URL(req.url);
+  const page = parseInt(searchParams.get("page") || "0");
+  const limit = parseInt(searchParams.get("limit") || "10");
+  const offset = page * limit;
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get() {
-          return undefined;
+        get(name: string) {
+          return req.cookies.get(name)?.value;
         },
-        set() {},
-        remove() {},
+        set(name: string, value: string, options: any) {
+          res.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+        },
+        remove(name: string, options: any) {
+          res.cookies.set({
+            name,
+            value: "",
+            ...options,
+          });
+        },
       },
     }
   );
+
   try {
-    const { data, error } = await supabase
+    // First get total count
+    const { count, error: countError } = await supabase
+      .from("models")
+      .select("*", { count: "exact", head: true });
+
+    if (countError) {
+      console.error("❌ Error getting total count:", countError);
+      return NextResponse.json({ error: countError.message }, { status: 400 });
+    }
+
+    // Then get paginated data
+    const { data: models, error } = await supabase
       .from("models")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1);
+
     if (error) {
+      console.error("❌ Error fetching models:", error);
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
-    return NextResponse.json({ models: data });
+
+    console.log("✅ Models fetched successfully");
+    return NextResponse.json({
+      models,
+      totalCount: count || 0,
+      page,
+      limit,
+    });
   } catch (error) {
-    console.error("[AI MODELS][GET] Error fetching models:", error);
+    console.error("❌ Error fetching models:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
