@@ -16,7 +16,6 @@ export default function GuideHero({
 }: GuideHeroProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <Box
@@ -26,7 +25,7 @@ export default function GuideHero({
         height: { xs: 200, sm: 250, md: 300 },
         overflow: "hidden",
         borderRadius: { xs: 2, sm: 2 },
-        mb: { xs: '-30px', sm: 3, md: 4 },
+        mb: { xs: "-30px", sm: 3, md: 4 },
         mt: { xs: 2, sm: 3, md: 4 },
       }}
     >
