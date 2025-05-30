@@ -109,14 +109,38 @@ export default function Dashboard() {
   const [modelsRowsPerPage, setModelsRowsPerPage] = useState(10);
   const [modelsTotalCount, setModelsTotalCount] = useState(0);
 
+  // Remove filters state and simplify search
+  const [guidesSearchTerm, setGuidesSearchTerm] = useState("");
+  const [guidesSortField, setGuidesSortField] = useState("");
+  const [guidesSortDirection, setGuidesSortDirection] = useState<"asc" | "desc">("asc");
+
+  // Categories search/sort state
+  const [categoriesSearchTerm, setCategoriesSearchTerm] = useState("");
+  const [categoriesSortField, setCategoriesSortField] = useState("");
+  const [categoriesSortDirection, setCategoriesSortDirection] = useState<"asc" | "desc">("asc");
+
+  // Models search/sort state
+  const [modelsSearchTerm, setModelsSearchTerm] = useState("");
+  const [modelsSortField, setModelsSortField] = useState("");
+  const [modelsSortDirection, setModelsSortDirection] = useState<"asc" | "desc">("asc");
+
   // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       showLoading();
       try {
-        const { data } = await publicRequest.get(
-          `/categories?page=${categoriesPage}&limit=${categoriesRowsPerPage}`
-        );
+        const queryParams = new URLSearchParams({
+          page: categoriesPage.toString(),
+          limit: categoriesRowsPerPage.toString(),
+        });
+        if (categoriesSearchTerm) {
+          queryParams.append("search", categoriesSearchTerm);
+        }
+        if (categoriesSortField) {
+          queryParams.append("sortBy", categoriesSortField);
+          queryParams.append("sortDirection", categoriesSortDirection);
+        }
+        const { data } = await publicRequest.get(`/categories?${queryParams.toString()}`);
         setCategories(data.categories || []);
         setCategoriesTotalCount(data.totalCount || 0);
       } catch (error: any) {
@@ -128,18 +152,29 @@ export default function Dashboard() {
         hideLoading();
       }
     };
-
     fetchCategories();
-  }, [categoriesPage, categoriesRowsPerPage]);
+  }, [categoriesPage, categoriesRowsPerPage, categoriesSearchTerm, categoriesSortField, categoriesSortDirection]);
 
-  // Fetch guides
+  // Update fetchGuides to handle simplified search
   useEffect(() => {
     const fetchGuides = async () => {
       showLoading();
       try {
-        const { data } = await publicRequest.get(
-          `/guides?page=${guidesPage}&limit=${guidesRowsPerPage}`
-        );
+        const queryParams = new URLSearchParams({
+          page: guidesPage.toString(),
+          limit: guidesRowsPerPage.toString(),
+        });
+
+        if (guidesSearchTerm) {
+          queryParams.append("search", guidesSearchTerm);
+        }
+
+        if (guidesSortField) {
+          queryParams.append("sortBy", guidesSortField);
+          queryParams.append("sortDirection", guidesSortDirection);
+        }
+
+        const { data } = await publicRequest.get(`/guides?${queryParams.toString()}`);
         setGuides(data.guides || []);
         setGuidesTotalCount(data.totalCount || 0);
       } catch (error: any) {
@@ -152,16 +187,27 @@ export default function Dashboard() {
       }
     };
     fetchGuides();
-  }, [guidesPage, guidesRowsPerPage]);
+  }, [guidesPage, guidesRowsPerPage, guidesSearchTerm, guidesSortField, guidesSortDirection]);
 
   // Fetch AI models
   useEffect(() => {
     const fetchModels = async () => {
       showLoading();
       try {
-        const { data } = await publicRequest.get("/ai-models");
+        const queryParams = new URLSearchParams({
+          page: modelsPage.toString(),
+          limit: modelsRowsPerPage.toString(),
+        });
+        if (modelsSearchTerm) {
+          queryParams.append("search", modelsSearchTerm);
+        }
+        if (modelsSortField) {
+          queryParams.append("sortBy", modelsSortField);
+          queryParams.append("sortDirection", modelsSortDirection);
+        }
+        const { data } = await publicRequest.get(`/ai-models?${queryParams.toString()}`);
         setModels(data.models || []);
-        setModelsTotalCount(data.models?.length || 0);
+        setModelsTotalCount(data.totalCount || 0);
       } catch (error: any) {
         showError(
           "Error loading models",
@@ -172,7 +218,7 @@ export default function Dashboard() {
       }
     };
     fetchModels();
-  }, []);
+  }, [modelsPage, modelsRowsPerPage, modelsSearchTerm, modelsSortField, modelsSortDirection]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -412,6 +458,40 @@ export default function Dashboard() {
     router.push("/administrador/guides/json");
   };
 
+  // Simplify search handler
+  const handleGuidesSearch = (searchTerm: string) => {
+    setGuidesSearchTerm(searchTerm);
+    setGuidesPage(0); // Reset to first page when searching
+  };
+
+  const handleGuidesSort = (field: string, direction: "asc" | "desc") => {
+    setGuidesSortField(field);
+    setGuidesSortDirection(direction);
+    setGuidesPage(0); // Reset to first page when sorting
+  };
+
+  // Handlers for categories
+  const handleCategoriesSearch = (searchTerm: string) => {
+    setCategoriesSearchTerm(searchTerm);
+    setCategoriesPage(0);
+  };
+  const handleCategoriesSort = (field: string, direction: "asc" | "desc") => {
+    setCategoriesSortField(field);
+    setCategoriesSortDirection(direction);
+    setCategoriesPage(0);
+  };
+
+  // Handlers for models
+  const handleModelsSearch = (searchTerm: string) => {
+    setModelsSearchTerm(searchTerm);
+    setModelsPage(0);
+  };
+  const handleModelsSort = (field: string, direction: "asc" | "desc") => {
+    setModelsSortField(field);
+    setModelsSortDirection(direction);
+    setModelsPage(0);
+  };
+
   const renderStats = () => {
     return (
       <Box sx={{ display: "flex", gap: 3, mb: 4, flexWrap: "wrap" }}>
@@ -547,6 +627,7 @@ export default function Dashboard() {
         field: "image",
         headerName: "Image",
         width: 100,
+        sortable: false,
         renderCell: (row: any) => (
           <Box
             sx={{
@@ -591,6 +672,7 @@ export default function Dashboard() {
         field: "title",
         headerName: "Title",
         width: 200,
+        sortable: true,
         renderCell: (row: any) => (
           <Box>
             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
@@ -606,6 +688,7 @@ export default function Dashboard() {
         field: "categories",
         headerName: "Categories",
         width: 250,
+        sortable: false,
         renderCell: (row: any) => {
           const categories = row.categories || [];
           return (
@@ -663,6 +746,7 @@ export default function Dashboard() {
         field: "modules",
         headerName: "Modules",
         width: 100,
+        sortable: true,
         renderCell: (row: any) => (
           <Chip
             label={`${row.modules?.length || 0} modules`}
@@ -679,6 +763,7 @@ export default function Dashboard() {
         field: "featured",
         headerName: "Featured",
         width: 100,
+        sortable: true,
         renderCell: (row: any) => (
           <Chip
             label={row.featured ? "Yes" : "No"}
@@ -694,6 +779,7 @@ export default function Dashboard() {
         field: "created_at",
         headerName: "Created At",
         width: 150,
+        sortable: true,
         renderCell: (row: any) => (
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
             {new Date(row.created_at).toLocaleDateString()}
@@ -704,6 +790,7 @@ export default function Dashboard() {
         field: "is_popular",
         headerName: "Popular",
         width: 100,
+        sortable: true,
         renderCell: (row: any) =>
           row.is_popular ? (
             <Chip label="Yes" color="success" size="small" />
@@ -715,6 +802,7 @@ export default function Dashboard() {
         field: "actions",
         headerName: "Actions",
         width: 100,
+        sortable: false,
         renderCell: (row: any) => (
           <Box sx={{ display: "flex", gap: 1 }}>
             <IconButton
@@ -736,69 +824,7 @@ export default function Dashboard() {
       },
     ];
 
-    return (
-      <Paper
-        elevation={0}
-        sx={{
-          p: 0,
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-            px: 1.5,
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <BookIcon sx={{ color: "var(--primary-blue)" }} />
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>
-              Guides
-            </Typography>
-          </Box>
-          <ActionButton
-            icon={<AddCircleOutlineIcon />}
-            color="blue"
-            onClick={handleClick}
-          >
-            New Guide
-          </ActionButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            onClick={handleClose}
-            transformOrigin={{ horizontal: "right", vertical: "top" }}
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-          >
-            <MenuItem onClick={handleAddManually}>
-              <ListItemIcon>
-                <CreateIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Add Manually</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={handleAddByJson}>
-              <ListItemIcon>
-                <CodeIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Add by JSON</ListItemText>
-            </MenuItem>
-          </Menu>
-        </Box>
-        <DataTable
-          title=""
-          data={guides}
-          columns={columns}
-          totalCount={guidesTotalCount}
-          page={guidesPage}
-          rowsPerPage={guidesRowsPerPage}
-          onPageChange={setGuidesPage}
-          onRowsPerPageChange={setGuidesRowsPerPage}
-        />
-      </Paper>
-    );
+    return columns;
   };
 
   const renderCategories = () => {
@@ -893,48 +919,7 @@ export default function Dashboard() {
       },
     ];
 
-    return (
-      <Paper
-        elevation={0}
-        sx={{
-          p: 0,
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-            px: 1.5,
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <CategoryIcon sx={{ color: "var(--primary-purple)" }} />
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>
-              Categories
-            </Typography>
-          </Box>
-          <ActionButton
-            icon={<AddCircleOutlineIcon />}
-            color="purple"
-            onClick={handleAddCategory}
-          >
-            Add New Category
-          </ActionButton>
-        </Box>
-        <DataTable
-          title=""
-          data={categories}
-          columns={columns}
-          totalCount={categoriesTotalCount}
-          page={categoriesPage}
-          rowsPerPage={categoriesRowsPerPage}
-          onPageChange={setCategoriesPage}
-          onRowsPerPageChange={setCategoriesRowsPerPage}
-        />
-      </Paper>
-    );
+    return columns;
   };
 
   const renderModels = () => {
@@ -967,49 +952,7 @@ export default function Dashboard() {
       },
     ];
 
-    return (
-      <Paper
-        elevation={0}
-        sx={{
-          bgcolor: "#fff",
-          height: "100%",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-            px: 1.5,
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <ModelIcon sx={{ color: "var(--primary-red)" }} />
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>
-              AI Models
-            </Typography>
-          </Box>
-          <ActionButton
-            icon={<AddCircleOutlineIcon />}
-            color="red"
-            onClick={handleAddModel}
-          >
-            New Model
-          </ActionButton>
-        </Box>
-        <DataTable
-          title=""
-          data={models}
-          columns={columns}
-          totalCount={modelsTotalCount}
-          page={modelsPage}
-          rowsPerPage={modelsRowsPerPage}
-          onPageChange={setModelsPage}
-          onRowsPerPageChange={setModelsRowsPerPage}
-        />
-      </Paper>
-    );
+    return columns;
   };
 
   return (
@@ -1072,13 +1015,52 @@ export default function Dashboard() {
         </Tabs>
 
         <TabPanel value={activeTab} index={0}>
-          {renderGuides()}
+          <DataTable
+            title="Guides"
+            data={guides}
+            columns={renderGuides()}
+            totalCount={guidesTotalCount}
+            page={guidesPage}
+            rowsPerPage={guidesRowsPerPage}
+            onPageChange={setGuidesPage}
+            onRowsPerPageChange={setGuidesRowsPerPage}
+            onSearch={handleGuidesSearch}
+            onSort={handleGuidesSort}
+            showSearch={true}
+            searchPlaceholder="Search guides..."
+          />
         </TabPanel>
         <TabPanel value={activeTab} index={1}>
-          {renderCategories()}
+          <DataTable
+            title="Categories"
+            data={categories}
+            columns={renderCategories()}
+            totalCount={categoriesTotalCount}
+            page={categoriesPage}
+            rowsPerPage={categoriesRowsPerPage}
+            onPageChange={setCategoriesPage}
+            onRowsPerPageChange={setCategoriesRowsPerPage}
+            onSearch={handleCategoriesSearch}
+            onSort={handleCategoriesSort}
+            showSearch={true}
+            searchPlaceholder="Search categories..."
+          />
         </TabPanel>
         <TabPanel value={activeTab} index={2}>
-          {renderModels()}
+          <DataTable
+            title="AI Models"
+            data={models}
+            columns={renderModels()}
+            totalCount={modelsTotalCount}
+            page={modelsPage}
+            rowsPerPage={modelsRowsPerPage}
+            onPageChange={setModelsPage}
+            onRowsPerPageChange={setModelsRowsPerPage}
+            onSearch={handleModelsSearch}
+            onSort={handleModelsSort}
+            showSearch={true}
+            searchPlaceholder="Search AI models..."
+          />
         </TabPanel>
       </Paper>
 

@@ -7,11 +7,14 @@ export async function GET(req: NextRequest) {
   console.log("🤖 Fetching AI models");
   const res = NextResponse.json({ success: true });
 
-  // Get pagination parameters
+  // Get pagination and search parameters
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get("page") || "0");
   const limit = parseInt(searchParams.get("limit") || "10");
   const offset = page * limit;
+  const search = searchParams.get("search") || "";
+  const sortBy = searchParams.get("sortBy") || "created_at";
+  const sortDirection = searchParams.get("sortDirection") || "desc";
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -41,9 +44,15 @@ export async function GET(req: NextRequest) {
 
   try {
     // First get total count
-    const { count, error: countError } = await supabase
+    let countQuery = supabase
       .from("models")
       .select("*", { count: "exact", head: true });
+    if (search) {
+      countQuery = countQuery.or(
+        `name.ilike.%${search}%,description.ilike.%${search}%,company.ilike.%${search}%`
+      );
+    }
+    const { count, error: countError } = await countQuery;
 
     if (countError) {
       console.error("❌ Error getting total count:", countError);
@@ -51,11 +60,17 @@ export async function GET(req: NextRequest) {
     }
 
     // Then get paginated data
-    const { data: models, error } = await supabase
+    let query = supabase
       .from("models")
       .select("*")
-      .order("created_at", { ascending: false })
+      .order(sortBy, { ascending: sortDirection === "asc" })
       .range(offset, offset + limit - 1);
+    if (search) {
+      query = query.or(
+        `name.ilike.%${search}%,description.ilike.%${search}%,company.ilike.%${search}%`
+      );
+    }
+    const { data: models, error } = await query;
 
     if (error) {
       console.error("❌ Error fetching models:", error);

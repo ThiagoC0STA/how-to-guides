@@ -6,11 +6,14 @@ export async function GET(req: NextRequest) {
   console.log("📚 Fetching categories");
   const res = NextResponse.json({ success: true });
 
-  // Get pagination parameters
+  // Get pagination and search parameters
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get("page") || "0");
   const limit = parseInt(searchParams.get("limit") || "10");
   const offset = page * limit;
+  const search = searchParams.get("search") || "";
+  const sortBy = searchParams.get("sortBy") || "title";
+  const sortDirection = searchParams.get("sortDirection") || "asc";
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -40,9 +43,15 @@ export async function GET(req: NextRequest) {
 
   try {
     // First get total count
-    const { count, error: countError } = await supabase
+    let countQuery = supabase
       .from("categories")
       .select("*", { count: "exact", head: true });
+    if (search) {
+      countQuery = countQuery.or(
+        `title.ilike.%${search}%,description.ilike.%${search}%`
+      );
+    }
+    const { count, error: countError } = await countQuery;
 
     if (countError) {
       console.error("❌ Error getting total count:", countError);
@@ -50,7 +59,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Then get paginated data
-    const { data: categories, error } = await supabase
+    let query = supabase
       .from("categories")
       .select(
         `
@@ -64,8 +73,12 @@ export async function GET(req: NextRequest) {
         )
       `
       )
-      .order("title", { ascending: true })
+      .order(sortBy, { ascending: sortDirection === "asc" })
       .range(offset, offset + limit - 1);
+    if (search) {
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+    }
+    const { data: categories, error } = await query;
 
     if (error) {
       console.error("❌ Error fetching categories:", error);

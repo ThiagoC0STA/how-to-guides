@@ -103,3 +103,7 @@ pre, code {
 .MuiInputBase-input {
   margin-top: 3px !important;
 }
+
+.MuiInputAdornment-root {
+  margin-top: 8px !important;
+}

@@ -7,11 +7,14 @@ export async function GET(req: NextRequest) {
   console.log("📚 Fetching guides");
   const res = NextResponse.json({ success: true });
 
-  // Get the popular parameter from the URL
+  // Get parameters from the URL
   const { searchParams } = new URL(req.url);
   const popular = searchParams.get("popular") === "true";
   const page = parseInt(searchParams.get("page") || "0");
   const limit = parseInt(searchParams.get("limit") || "10");
+  const search = searchParams.get("search") || "";
+  const sortBy = searchParams.get("sortBy") || "created_at";
+  const sortDirection = searchParams.get("sortDirection") || "desc";
   const offset = page * limit;
 
   const supabase = createServerClient(
@@ -50,6 +53,12 @@ export async function GET(req: NextRequest) {
       countQuery = countQuery.eq("is_popular", true);
     }
 
+    if (search) {
+      countQuery = countQuery.or(
+        `title.ilike.%${search}%,description.ilike.%${search}%`
+      );
+    }
+
     const { count, error: countError } = await countQuery;
 
     if (countError) {
@@ -72,12 +81,17 @@ export async function GET(req: NextRequest) {
         )
       `
       )
-      .order("created_at", { ascending: false })
+      .order(sortBy, { ascending: sortDirection === "asc" })
       .range(offset, offset + limit - 1);
 
     // If popular is true, only get popular guides
     if (popular) {
       query = query.eq("is_popular", true);
+    }
+
+    // Add search condition
+    if (search) {
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
     }
 
     const { data: guides, error } = await query;
