@@ -10,10 +10,6 @@ import {
   Tab,
   IconButton,
   Container,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
 } from "@mui/material";
 import {
   Edit as EditIcon,
@@ -21,14 +17,10 @@ import {
   Book as BookIcon,
   Category as CategoryIcon,
   SmartToy as ModelIcon,
-  AddCircleOutline as AddCircleOutlineIcon,
-  Code as CodeIcon,
-  Create as CreateIcon,
 } from "@mui/icons-material";
 import DataTable from "./components/DataTable";
 import { useRouter } from "next/navigation";
 import CategoryDialog from "./components/CategoryDialog";
-import ActionButton from "./components/ActionButton";
 import { supabase } from "@/lib/supabaseClient";
 import { publicRequest, privateRequest } from "@/utils/apiClient";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
@@ -95,8 +87,6 @@ export default function Dashboard() {
   const [guides, setGuides] = useState<any[]>([]);
   const [models, setModels] = useState<any[]>([]);
   const router = useRouter();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
 
   // Pagination state
   const [guidesPage, setGuidesPage] = useState(0);
@@ -112,17 +102,23 @@ export default function Dashboard() {
   // Remove filters state and simplify search
   const [guidesSearchTerm, setGuidesSearchTerm] = useState("");
   const [guidesSortField, setGuidesSortField] = useState("");
-  const [guidesSortDirection, setGuidesSortDirection] = useState<"asc" | "desc">("asc");
+  const [guidesSortDirection, setGuidesSortDirection] = useState<
+    "asc" | "desc"
+  >("asc");
 
   // Categories search/sort state
   const [categoriesSearchTerm, setCategoriesSearchTerm] = useState("");
   const [categoriesSortField, setCategoriesSortField] = useState("");
-  const [categoriesSortDirection, setCategoriesSortDirection] = useState<"asc" | "desc">("asc");
+  const [categoriesSortDirection, setCategoriesSortDirection] = useState<
+    "asc" | "desc"
+  >("asc");
 
   // Models search/sort state
   const [modelsSearchTerm, setModelsSearchTerm] = useState("");
   const [modelsSortField, setModelsSortField] = useState("");
-  const [modelsSortDirection, setModelsSortDirection] = useState<"asc" | "desc">("asc");
+  const [modelsSortDirection, setModelsSortDirection] = useState<
+    "asc" | "desc"
+  >("asc");
 
   // Fetch categories
   useEffect(() => {
@@ -140,7 +136,9 @@ export default function Dashboard() {
           queryParams.append("sortBy", categoriesSortField);
           queryParams.append("sortDirection", categoriesSortDirection);
         }
-        const { data } = await publicRequest.get(`/categories?${queryParams.toString()}`);
+        const { data } = await publicRequest.get(
+          `/categories?${queryParams.toString()}`
+        );
         setCategories(data.categories || []);
         setCategoriesTotalCount(data.totalCount || 0);
       } catch (error: any) {
@@ -153,7 +151,13 @@ export default function Dashboard() {
       }
     };
     fetchCategories();
-  }, [categoriesPage, categoriesRowsPerPage, categoriesSearchTerm, categoriesSortField, categoriesSortDirection]);
+  }, [
+    categoriesPage,
+    categoriesRowsPerPage,
+    categoriesSearchTerm,
+    categoriesSortField,
+    categoriesSortDirection,
+  ]);
 
   // Update fetchGuides to handle simplified search
   useEffect(() => {
@@ -174,7 +178,9 @@ export default function Dashboard() {
           queryParams.append("sortDirection", guidesSortDirection);
         }
 
-        const { data } = await publicRequest.get(`/guides?${queryParams.toString()}`);
+        const { data } = await publicRequest.get(
+          `/guides?${queryParams.toString()}`
+        );
         setGuides(data.guides || []);
         setGuidesTotalCount(data.totalCount || 0);
       } catch (error: any) {
@@ -187,7 +193,13 @@ export default function Dashboard() {
       }
     };
     fetchGuides();
-  }, [guidesPage, guidesRowsPerPage, guidesSearchTerm, guidesSortField, guidesSortDirection]);
+  }, [
+    guidesPage,
+    guidesRowsPerPage,
+    guidesSearchTerm,
+    guidesSortField,
+    guidesSortDirection,
+  ]);
 
   // Fetch AI models
   useEffect(() => {
@@ -205,7 +217,9 @@ export default function Dashboard() {
           queryParams.append("sortBy", modelsSortField);
           queryParams.append("sortDirection", modelsSortDirection);
         }
-        const { data } = await publicRequest.get(`/ai-models?${queryParams.toString()}`);
+        const { data } = await publicRequest.get(
+          `/ai-models?${queryParams.toString()}`
+        );
         setModels(data.models || []);
         setModelsTotalCount(data.totalCount || 0);
       } catch (error: any) {
@@ -218,15 +232,16 @@ export default function Dashboard() {
       }
     };
     fetchModels();
-  }, [modelsPage, modelsRowsPerPage, modelsSearchTerm, modelsSortField, modelsSortDirection]);
+  }, [
+    modelsPage,
+    modelsRowsPerPage,
+    modelsSearchTerm,
+    modelsSortField,
+    modelsSortDirection,
+  ]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
-  };
-
-  const handleAddCategory = () => {
-    setSelectedCategory(null);
-    setOpenCategoryDialog(true);
   };
 
   const handleEditCategory = (category: Category) => {
@@ -331,11 +346,6 @@ export default function Dashboard() {
     }
   };
 
-  const handleAddModel = () => {
-    setSelectedModel(null);
-    setOpenModelDialog(true);
-  };
-
   const handleEditModel = (model: any) => {
     setSelectedModel(model);
     setOpenModelDialog(true);
@@ -438,24 +448,6 @@ export default function Dashboard() {
   const handleAddAnotherCategory = () => {
     setSelectedCategory(null);
     setOpenCategoryDialog(true);
-  };
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleAddManually = () => {
-    handleClose();
-    router.push("/administrador/guides/new");
-  };
-
-  const handleAddByJson = () => {
-    handleClose();
-    router.push("/administrador/guides/json");
   };
 
   // Simplify search handler

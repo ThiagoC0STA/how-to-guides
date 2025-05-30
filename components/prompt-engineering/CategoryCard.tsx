@@ -36,6 +36,7 @@ export default function CategoryCard({
 }: CategoryCardProps) {
   const Icon = iconMap[iconName as IconName] || FaQuestionCircle;
   const safeGuides = Array.isArray(guides) ? guides : [];
+  const displayedGuides = safeGuides.slice(0, 3);
 
   return (
     <Paper
@@ -208,7 +209,7 @@ export default function CategoryCard({
                 },
               }}
             >
-              {guides.map((guide) => (
+              {displayedGuides.map((guide) => (
                 <ListItem key={guide.id}>
                   <Link
                     href={`/guides/${guide.id}`}

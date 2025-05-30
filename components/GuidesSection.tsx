@@ -11,7 +11,6 @@ import {
   Chip,
   TextField,
   InputAdornment,
-  Autocomplete,
   Paper,
   Stack,
   Select,
@@ -68,6 +67,7 @@ const FallbackIcon = ({ color }: { color: string }) => (
 export default function GuidesSection({
   isPopular = false,
 }: GuidesSectionProps) {
+  const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
@@ -90,9 +90,12 @@ export default function GuidesSection({
         const [catRes, guidesRes] = await Promise.all([
           publicRequest.get("/categories"),
           publicRequest.get(
-            `/guides?page=${page}&limit=${rowsPerPage}${
-              isPopular ? "&popular=true" : ""
-            }`
+            `/guides?page=${page}&limit=${rowsPerPage}` +
+              (isPopular ? "&popular=true" : "") +
+              (searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : "") +
+              (selectedCategory !== "all"
+                ? `&category=${encodeURIComponent(selectedCategory)}`
+                : "")
           ),
         ]);
         if (isMounted) {
@@ -114,25 +117,9 @@ export default function GuidesSection({
     return () => {
       isMounted = false;
     };
-  }, [isPopular, page]);
+  }, [isPopular, page, searchTerm, selectedCategory]);
 
-  const filteredGuides = React.useMemo(() => {
-    return guides.filter((guide) => {
-      const matchesSearch =
-        guide.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        guide.description.toLowerCase().includes(searchTerm.toLowerCase());
-
-      const matchesCategory =
-        selectedCategory === "all" ||
-        guide.categories.some((cat) => cat.id === selectedCategory);
-
-      return matchesSearch && matchesCategory;
-    });
-  }, [guides, searchTerm, selectedCategory]);
-
-  const searchOptions = React.useMemo(() => {
-    return guides.map((guide) => guide.title);
-  }, [guides]);
+  const filteredGuides = guides;
 
   const categoryOptions = ["all", ...categories.map((cat) => cat.id)];
 
@@ -165,32 +152,49 @@ export default function GuidesSection({
 
       {!isPopular && (
         <Stack spacing={3}>
-          <Autocomplete
-            freeSolo
-            options={searchOptions}
-            value={searchTerm}
-            onChange={(_, newValue) => setSearchTerm(newValue || "")}
-            onInputChange={(_, newInputValue) => setSearchTerm(newInputValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                placeholder="Search guides..."
-                InputProps={{
-                  ...params.InputProps,
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FaSearch color="#666" />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 2,
-                  },
-                }}
-              />
-            )}
-          />
+          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+            <TextField
+              fullWidth
+              placeholder="Search guides..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  setSearchTerm(searchInput);
+                  setPage(0);
+                }
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <FaSearch color="#666" />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                },
+              }}
+            />
+            <Button
+              variant="contained"
+              sx={{
+                height: "52px !important",
+                borderRadius: 2,
+                textTransform: "none",
+                fontWeight: 600,
+                px: 3,
+                marginTop: "8px",
+              }}
+              onClick={() => {
+                setSearchTerm(searchInput);
+                setPage(0);
+              }}
+            >
+              Search
+            </Button>
+          </Box>
 
           {isMobile ? (
             <FormControl fullWidth>

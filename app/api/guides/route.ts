@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
   const sortBy = searchParams.get("sortBy") || "created_at";
   const sortDirection = searchParams.get("sortDirection") || "desc";
   const offset = page * limit;
+  const category = searchParams.get("category");
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -92,6 +93,33 @@ export async function GET(req: NextRequest) {
     // Add search condition
     if (search) {
       query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+    }
+
+    // Add category filter
+    if (category && category !== "all") {
+      // Buscar guides que têm relação com a categoria informada
+      // 1. Buscar os ids dos guides relacionados à categoria
+      const { data: guideCategoryLinks, error: guideCatError } = await supabase
+        .from("guide_categories")
+        .select("guide_id")
+        .eq("category_id", category);
+      if (guideCatError) {
+        console.error(
+          "❌ Error fetching guide_categories for category filter:",
+          guideCatError
+        );
+        return NextResponse.json(
+          { error: guideCatError.message },
+          { status: 400 }
+        );
+      }
+      const guideIds = (guideCategoryLinks || []).map((g: any) => g.guide_id);
+      if (guideIds.length > 0) {
+        query = query.in("id", guideIds);
+      } else {
+        // Nenhum guide para essa categoria
+        return NextResponse.json({ guides: [], totalCount: 0, page, limit });
+      }
     }
 
     const { data: guides, error } = await query;
