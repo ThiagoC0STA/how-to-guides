@@ -225,6 +225,7 @@ export async function PUT(req: NextRequest, { params }: any) {
         modules: body.modules,
         is_popular: body.is_popular,
         metadata: body.metadata,
+        created_at: body.created_at,
       })
       .eq("id", params.id)
       .select()

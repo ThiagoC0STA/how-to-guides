@@ -36,6 +36,7 @@ export interface Guide {
   showColorPicker?: boolean;
   modules: Module[];
   categories: Category[];
+  created_at?: string;
   metadata: {
     keywords: string[];
     overview: {

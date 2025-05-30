@@ -12,6 +12,9 @@ import {
   StepLabel,
   Container,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import ModuleContentDialog from "./ModuleContentDialog";
 import BasicInfoStep from "./BasicInfoStep";
 import CategoriesAndKeywordsStep from "./CategoriesAndKeywordsStep";
@@ -52,6 +55,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
     modules: [],
     is_popular: false,
     categories: [],
+    created_at: new Date().toISOString(),
     metadata: {
       keywords: [],
       overview: {
@@ -79,6 +83,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
         if (!data?.guide) throw new Error("Guide not found");
 
         const guide = data.guide;
+        console.log("Fetched guide data:", guide);
 
         // Fill form data
         setFormData({
@@ -89,6 +94,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
           modules: guide.modules,
           is_popular: guide.is_popular,
           categories: guide.categories || [],
+          created_at: guide.created_at || new Date().toISOString(),
           metadata: guide.metadata,
         });
 
@@ -154,23 +160,26 @@ export default function GuideForm({ guideId }: GuideFormProps) {
   };
 
   const handleCategoryChange = (event: any) => {
-    console.log('handleCategoryChange - event.target.value:', event.target.value);
+    console.log(
+      "handleCategoryChange - event.target.value:",
+      event.target.value
+    );
     setSelectedCategories(event.target.value);
   };
 
   // Sincronizar formData.categories com selectedCategories
   useEffect(() => {
-    console.log('Syncing categories - selectedCategories:', selectedCategories);
-    console.log('Syncing categories - categoriesList:', categoriesList);
+    console.log("Syncing categories - selectedCategories:", selectedCategories);
+    console.log("Syncing categories - categoriesList:", categoriesList);
     const selectedObjs = categoriesList
       .filter((cat) => selectedCategories.includes(cat.id))
       .map((cat) => ({ id: cat.id, title: cat.title, color: cat.color }));
-    console.log('Syncing categories - selectedObjs:', selectedObjs);
-    
+    console.log("Syncing categories - selectedObjs:", selectedObjs);
+
     // Só atualiza se houver mudança real
     if (JSON.stringify(selectedObjs) !== JSON.stringify(formData.categories)) {
-      console.log('Updating formData.categories with:', selectedObjs);
-    handleFormDataChange("categories", selectedObjs);
+      console.log("Updating formData.categories with:", selectedObjs);
+      handleFormDataChange("categories", selectedObjs);
     }
   }, [selectedCategories, categoriesList]);
 
@@ -232,24 +241,29 @@ export default function GuideForm({ guideId }: GuideFormProps) {
   };
 
   const handleSubmit = async () => {
-    console.log('Submit - Initial formData:', formData);
-    console.log('Submit - Current selectedCategories:', selectedCategories);
-    console.log('Submit - Current categoriesList:', categoriesList);
-    
+    console.log("Submit - Initial formData:", formData);
+    console.log("Submit - Current selectedCategories:", selectedCategories);
+    console.log("Submit - Current categoriesList:", categoriesList);
+
     const missingFields = [];
 
+    // Validação detalhada de campos obrigatórios
     if (!formData.title) missingFields.push("Title");
     if (!formData.description) missingFields.push("Description");
     if (!formData.image) missingFields.push("Image");
-    if (!formData.metadata?.overview?.text) missingFields.push("Overview");
-    if (!formData.modules?.length) missingFields.push("Modules");
+    if (!formData.metadata?.overview?.text) missingFields.push("Overview Text");
+    if (!formData.modules?.length) missingFields.push("At least one Module");
+    if (!formData.metadata?.keywords?.length)
+      missingFields.push("At least one Keyword");
+    if (!formData.categories?.length)
+      missingFields.push("At least one Category");
 
     if (missingFields.length > 0) {
       showError(
-        "Required fields",
-        `Please fill in the following fields before continuing:\n\n${missingFields.join(
-          "\n"
-        )}`
+        "Required Fields Missing",
+        `Please fill in the following required fields before continuing:\n\n${missingFields
+          .map((field) => `• ${field}`)
+          .join("\n")}`
       );
       return;
     }
@@ -271,7 +285,8 @@ export default function GuideForm({ guideId }: GuideFormProps) {
             cacheControl: "3600",
             upsert: false,
           });
-        if (uploadError) throw new Error(uploadError.message);
+        if (uploadError)
+          throw new Error(`Error uploading image: ${uploadError.message}`);
         const { data: publicUrlData } = supabase.storage
           .from("images")
           .getPublicUrl(filePath);
@@ -283,7 +298,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
         .filter((cat) => selectedCategories.includes(cat.id))
         .map((cat) => ({ id: cat.id, title: cat.title, color: cat.color }));
 
-      console.log('Submit - Final categories:', finalCategories);
+      console.log("Submit - Final categories:", finalCategories);
 
       const guideData = {
         title: formData.title,
@@ -293,29 +308,32 @@ export default function GuideForm({ guideId }: GuideFormProps) {
         modules: formData.modules,
         is_popular: formData.is_popular,
         categories: finalCategories,
+        created_at: formData.created_at,
         metadata: {
           ...formData.metadata,
         },
       };
 
-      console.log('Submit - Final guideData:', guideData);
+      console.log("Submit - Final guideData:", guideData);
 
       const isEdit = guideId && guideId !== "new";
       const response = isEdit
         ? await privateRequest.put(`/guides/${guideId}`, guideData)
         : await privateRequest.post("/guides", guideData);
 
-      console.log('Submit - Response:', response.data);
+      console.log("Submit - Response:", response.data);
 
       if (!response.data?.guide) {
         throw new Error(
-          guideId ? "Error updating guide" : "Error creating guide"
+          guideId
+            ? "Error updating guide: No guide data returned"
+            : "Error creating guide: No guide data returned"
         );
       }
 
       router.push("/administrador/dashboard");
     } catch (error: any) {
-      console.error('Submit - Error:', error);
+      console.error("Submit - Error:", error);
       showError(
         "Error",
         error.message ||
@@ -333,14 +351,14 @@ export default function GuideForm({ guideId }: GuideFormProps) {
   const handleCategoryDialogSave = async (categoryData: any) => {
     showLoading();
     try {
-      console.log('CategoryDialog Save - Input:', categoryData);
+      console.log("CategoryDialog Save - Input:", categoryData);
       const {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) throw new Error("User not authenticated");
       const response = await privateRequest.post("/categories", categoryData);
-      console.log('CategoryDialog Save - Response:', response.data);
-      
+      console.log("CategoryDialog Save - Response:", response.data);
+
       if (!response.data?.category) {
         throw new Error("Error creating category");
       }
@@ -350,7 +368,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
       // Atualizar selectedCategories com o novo ID
       setSelectedCategories((prev) => {
         const newSelected = [...prev, response.data.category.id];
-        console.log('Updated selectedCategories:', newSelected);
+        console.log("Updated selectedCategories:", newSelected);
         return newSelected;
       });
 
@@ -364,7 +382,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
             color: response.data.category.color,
           },
         ];
-        console.log('Updated formData.categories:', newCategories);
+        console.log("Updated formData.categories:", newCategories);
         return {
           ...prev,
           categories: newCategories,
@@ -385,7 +403,7 @@ export default function GuideForm({ guideId }: GuideFormProps) {
         onClick: () => {},
       });
     } catch (error: any) {
-      console.error('CategoryDialog Save - Error:', error);
+      console.error("CategoryDialog Save - Error:", error);
       showError("Error", error.message || "Error creating category");
     } finally {
       hideLoading();
@@ -397,10 +415,10 @@ export default function GuideForm({ guideId }: GuideFormProps) {
     const fetchCategories = async () => {
       try {
         const { data } = await publicRequest.get("/categories");
-        console.log('Fetched categories:', data.categories);
+        console.log("Fetched categories:", data.categories);
         setCategoriesList(data.categories || []);
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error("Error fetching categories:", error);
       }
     };
     fetchCategories();
@@ -470,16 +488,67 @@ export default function GuideForm({ guideId }: GuideFormProps) {
           gap: 4,
         }}
       >
-        <Typography
-          variant="h4"
+        <Box
           sx={{
-            fontWeight: 700,
-            color: "text.primary",
-            letterSpacing: "-0.5px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          {guideId ? "Edit Guide" : "Create New Guide"}
-        </Typography>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 700,
+              color: "text.primary",
+              letterSpacing: "-0.5px",
+            }}
+          >
+            {guideId ? "Edit Guide" : "Create New Guide"}
+          </Typography>
+
+          {guideId && guideId !== "new" && (
+            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DatePicker
+                  label="Created Date"
+                  value={
+                    formData.created_at ? new Date(formData.created_at) : null
+                  }
+                  onChange={(newValue: any) => {
+                    if (newValue) {
+                      handleFormDataChange(
+                        "created_at",
+                        newValue.toISOString()
+                      );
+                    }
+                  }}
+                  slotProps={{
+                    textField: {
+                      size: "small",
+                      sx: { width: 200 },
+                    },
+                  }}
+                />
+              </LocalizationProvider>
+              <Button
+                variant="contained"
+                onClick={handleSubmit}
+                sx={{
+                  borderRadius: 2,
+                  px: 4,
+                  textTransform: "none",
+                  fontWeight: 500,
+                  boxShadow: "none",
+                  "&:hover": {
+                    boxShadow: "none",
+                  },
+                }}
+              >
+                Save Changes
+              </Button>
+            </Box>
+          )}
+        </Box>
 
         <Paper
           elevation={0}

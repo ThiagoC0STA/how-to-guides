@@ -42,6 +42,7 @@ export default function AddGuideByJson() {
   const [categories, setCategories] = useState<any[]>([]);
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
   const [image, setImage] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [previewData, setPreviewData] = useState<Partial<Guide> | null>(null);
   const [showPreview, setShowPreview] = useState(false);
 
@@ -67,7 +68,11 @@ export default function AddGuideByJson() {
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      setImage(event.target.files[0]);
+      const file = event.target.files[0];
+      setImage(file);
+      // Criar URL temporária para preview
+      const imageUrl = URL.createObjectURL(file);
+      setImagePreviewUrl(imageUrl);
     }
   };
 
@@ -97,32 +102,90 @@ export default function AddGuideByJson() {
 
   const handlePreview = () => {
     try {
+      if (!jsonInput.trim()) {
+        showError("Invalid Input", "Please paste your JSON data first");
+        return;
+      }
+
       const jsonData = JSON.parse(jsonInput);
-      setPreviewData(jsonData);
+      
+      // Validar campos obrigatórios do JSON
+      const missingFields = [];
+      if (!jsonData.title) missingFields.push("Title");
+      if (!jsonData.description) missingFields.push("Description");
+      if (!jsonData.modules?.length) missingFields.push("At least one Module");
+      if (!jsonData.metadata?.keywords?.length) missingFields.push("At least one Keyword");
+      if (!jsonData.metadata?.overview?.text) missingFields.push("Overview Text");
+      if (!jsonData.metadata?.overview?.bullets?.length) missingFields.push("At least one Overview Bullet");
+
+      if (missingFields.length > 0) {
+        showError(
+          "Invalid JSON Structure",
+          `Your JSON is missing the following required fields:\n\n${missingFields.map(field => `• ${field}`).join('\n')}`
+        );
+        return;
+      }
+
+      // Adicionar a URL da imagem ao preview se existir
+      const previewDataWithImage = {
+        ...jsonData,
+        image: imagePreviewUrl || jsonData.image,
+      };
+
+      setPreviewData(previewDataWithImage);
       setShowPreview(true);
     } catch (error) {
-      showError("Invalid JSON", "Please check your JSON format");
+      showError(
+        "Invalid JSON Format",
+        "Please check your JSON format. Make sure it's valid JSON and follows the required structure."
+      );
       console.error(error);
     }
   };
 
+  // Limpar URL temporária quando o componente for desmontado
+  useEffect(() => {
+    return () => {
+      if (imagePreviewUrl) {
+        URL.revokeObjectURL(imagePreviewUrl);
+      }
+    };
+  }, [imagePreviewUrl]);
+
   const handleSubmit = async () => {
-    if (!previewData || !image) {
-      showError("Error", "Please provide all required fields");
+    const missingFields = [];
+
+    if (!previewData) missingFields.push("JSON data");
+    if (!image) missingFields.push("Guide image");
+    if (!selectedCategories.length) missingFields.push("At least one category");
+
+    if (missingFields.length > 0) {
+      showError(
+        "Required Fields Missing",
+        `Please provide the following required fields:\n\n${missingFields.map(field => `• ${field}`).join('\n')}`
+      );
       return;
     }
 
     showLoading();
     try {
       // 1. Upload image
-      const filePath = `guides/${Date.now()}-${image.name}`;
+      if (!image) throw new Error("No image selected");
+      
+      // Limpar o nome do arquivo
+      const sanitizedFileName = image.name
+        .replace(/\s+/g, '_') // Substituir espaços por underscore
+        .replace(/[^a-zA-Z0-9._-]/g, '') // Remover caracteres especiais
+        .toLowerCase(); // Converter para minúsculas
+      
+      const filePath = `guides/${Date.now()}-${sanitizedFileName}`;
       const { error: uploadError } = await supabase.storage
         .from("images")
         .upload(filePath, image, {
           cacheControl: "3600",
           upsert: false,
         });
-      if (uploadError) throw new Error(uploadError.message);
+      if (uploadError) throw new Error(`Error uploading image: ${uploadError.message}`);
 
       const { data: publicUrlData } = supabase.storage
         .from("images")
@@ -144,15 +207,15 @@ export default function AddGuideByJson() {
       // 3. Create guide
       const response = await privateRequest.post("/guides", guideData);
       if (!response.data?.guide) {
-        throw new Error("Error creating guide");
+        throw new Error("Error creating guide: No guide data returned");
       }
 
       showSuccess("Guide created successfully!");
       router.push("/administrador/dashboard");
     } catch (error: any) {
       showError(
-        "Error creating guide",
-        error.message || "Could not create guide"
+        "Error Creating Guide",
+        error.message || "Could not create guide. Please check all required fields and try again."
       );
     } finally {
       hideLoading();
