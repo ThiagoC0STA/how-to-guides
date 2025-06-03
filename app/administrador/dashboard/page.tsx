@@ -10,6 +10,9 @@ import {
   Tab,
   IconButton,
   Container,
+  Button,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import {
   Edit as EditIcon,
@@ -17,6 +20,8 @@ import {
   Book as BookIcon,
   Category as CategoryIcon,
   SmartToy as ModelIcon,
+  Add as AddIcon,
+  ArrowDropDown as ArrowDropDownIcon,
 } from "@mui/icons-material";
 import DataTable from "./components/DataTable";
 import { useRouter } from "next/navigation";
@@ -66,6 +71,61 @@ function TabPanel(props: TabPanelProps) {
     >
       {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
     </div>
+  );
+}
+
+// Botão de menu para adicionar Guides
+function AddGuideMenuButton() {
+  const router = useRouter();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleAddJson = () => {
+    router.push("/administrador/guides/json");
+    handleClose();
+  };
+  const handleAddManual = () => {
+    router.push("/administrador/guides/new");
+    handleClose();
+  };
+
+  return (
+    <>
+      <Button
+        variant="outlined"
+        startIcon={<AddIcon />}
+        onClick={handleClick}
+        sx={{ borderRadius: 2, height: 40, whiteSpace: "nowrap", px: 2 }}
+      >
+        Add Guide
+      </Button>
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <MenuItem onClick={handleAddJson}>Add by JSON</MenuItem>
+        <MenuItem onClick={handleAddManual}>Add manually</MenuItem>
+      </Menu>
+    </>
+  );
+}
+
+type AddCategoryButtonProps = {
+  onClick: () => void;
+};
+function AddCategoryButton({ onClick }: AddCategoryButtonProps) {
+  return (
+    <Button
+      variant="outlined"
+      startIcon={<AddIcon />}
+      onClick={onClick}
+      sx={{ borderRadius: 2, height: 40, whiteSpace: "nowrap" }}
+    >
+      Add Category
+    </Button>
   );
 }
 
@@ -1020,6 +1080,7 @@ export default function Dashboard() {
             onSort={handleGuidesSort}
             showSearch={true}
             searchPlaceholder="Search guides..."
+            extraAction={<AddGuideMenuButton />}
           />
         </TabPanel>
         <TabPanel value={activeTab} index={1}>
@@ -1036,6 +1097,7 @@ export default function Dashboard() {
             onSort={handleCategoriesSort}
             showSearch={true}
             searchPlaceholder="Search categories..."
+            extraAction={<AddCategoryButton onClick={() => setOpenCategoryDialog(true)} />}
           />
         </TabPanel>
         <TabPanel value={activeTab} index={2}>

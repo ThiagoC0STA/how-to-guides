@@ -57,9 +57,10 @@ interface DataTableProps<T> {
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (newRowsPerPage: number) => void;
   onSearch?: (searchTerm: string) => void;
-  onSort?: (field: string, direction: 'asc' | 'desc') => void;
+  onSort?: (field: string, direction: "asc" | "desc") => void;
   showSearch?: boolean;
   searchPlaceholder?: string;
+  extraAction?: React.ReactNode;
 }
 
 export default function DataTable<T>({
@@ -74,6 +75,7 @@ export default function DataTable<T>({
   onSort,
   showSearch = false,
   searchPlaceholder = "Search...",
+  extraAction,
 }: DataTableProps<T>) {
   const [selectedRow, setSelectedRow] = useState<T | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -83,7 +85,7 @@ export default function DataTable<T>({
   const [filters, setFilters] = useState<Filter[]>([]);
   const [tempFilter, setTempFilter] = useState<Filter>({
     field: "",
-      operator: "contains",
+    operator: "contains",
     value: "",
   });
 
@@ -91,7 +93,9 @@ export default function DataTable<T>({
     onPageChange(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     onRowsPerPageChange(parseInt(event.target.value, 10));
     onPageChange(0);
   };
@@ -151,7 +155,12 @@ export default function DataTable<T>({
   };
 
   const renderFilterDialog = () => (
-    <Dialog open={openFilters} onClose={() => setOpenFilters(false)} maxWidth="sm" fullWidth>
+    <Dialog
+      open={openFilters}
+      onClose={() => setOpenFilters(false)}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>Advanced Filters</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 2 }}>
@@ -160,12 +169,17 @@ export default function DataTable<T>({
             <Select
               value={tempFilter.field}
               label="Field"
-              onChange={(e) => setTempFilter({ ...tempFilter, field: e.target.value })}
+              onChange={(e) =>
+                setTempFilter({ ...tempFilter, field: e.target.value })
+              }
             >
               {columns
                 .filter((col) => col.sortable !== false)
                 .map((col) => (
-                  <MenuItem key={col.field.toString()} value={col.field.toString()}>
+                  <MenuItem
+                    key={col.field.toString()}
+                    value={col.field.toString()}
+                  >
                     {col.headerName}
                   </MenuItem>
                 ))}
@@ -177,7 +191,9 @@ export default function DataTable<T>({
             <Select
               value={tempFilter.operator}
               label="Operator"
-              onChange={(e) => setTempFilter({ ...tempFilter, operator: e.target.value })}
+              onChange={(e) =>
+                setTempFilter({ ...tempFilter, operator: e.target.value })
+              }
             >
               <MenuItem value="contains">Contains</MenuItem>
               <MenuItem value="equals">Equals</MenuItem>
@@ -193,14 +209,21 @@ export default function DataTable<T>({
               <DatePicker
                 label="Date"
                 value={tempFilter.value ? new Date(tempFilter.value) : null}
-                onChange={(date) => setTempFilter({ ...tempFilter, value: date?.toISOString() || "" })}
+                onChange={(date) =>
+                  setTempFilter({
+                    ...tempFilter,
+                    value: date?.toISOString() || "",
+                  })
+                }
               />
             </LocalizationProvider>
           ) : (
             <TextField
               label="Value"
               value={tempFilter.value}
-              onChange={(e) => setTempFilter({ ...tempFilter, value: e.target.value })}
+              onChange={(e) =>
+                setTempFilter({ ...tempFilter, value: e.target.value })
+              }
               fullWidth
             />
           )}
@@ -239,22 +262,30 @@ export default function DataTable<T>({
 
   return (
     <Paper elevation={0} sx={{ p: 0 }}>
-      <Box 
-        sx={{ 
-          p: 2, 
-          display: "flex", 
-          justifyContent: "space-between", 
+      <Box
+        sx={{
+          p: 2,
+          display: "flex",
+          justifyContent: "space-between",
           alignItems: "center",
           borderBottom: "1px solid",
           borderColor: "divider",
-          bgcolor: "background.paper"
+          bgcolor: "background.paper",
         }}
       >
         {showSearch && (
-          <Box sx={{ display: "flex", gap: 2, alignItems: "center", flex: 1, maxWidth: 700 }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              alignItems: "center",
+              flex: 1,
+              maxWidth: 700,
+            }}
+          >
             <TextField
               fullWidth
-              size="small" 
+              size="small"
               placeholder={searchPlaceholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -267,14 +298,14 @@ export default function DataTable<T>({
                 ),
                 endAdornment: searchTerm && (
                   <InputAdornment position="end">
-                    <IconButton 
-                      size="small" 
+                    <IconButton
+                      size="small"
                       onClick={handleClearSearch}
-                      sx={{ 
+                      sx={{
                         color: "text.secondary",
                         "&:hover": {
-                          color: "primary.main"
-                        }
+                          color: "primary.main",
+                        },
                       }}
                     >
                       <ClearIcon />
@@ -299,8 +330,8 @@ export default function DataTable<T>({
                 borderRadius: 2,
                 textTransform: "none",
                 fontWeight: 500,
-                mt: '7px',
-                height: '100%',
+                mt: "7px",
+                height: "100%",
                 boxShadow: "none",
                 "&:hover": {
                   boxShadow: "none",
@@ -311,6 +342,7 @@ export default function DataTable<T>({
             </Button>
           </Box>
         )}
+        {extraAction}
       </Box>
 
       {renderFilterDialog()}
@@ -341,12 +373,16 @@ export default function DataTable<T>({
                     <TableCell
                       key={column.field.toString()}
                       sx={{ width: column.width, fontWeight: 600 }}
-                      sortDirection={orderBy === column.field.toString() ? order : false}
+                      sortDirection={
+                        orderBy === column.field.toString() ? order : false
+                      }
                     >
                       {column.sortable ? (
                         <TableSortLabel
                           active={orderBy === column.field.toString()}
-                          direction={orderBy === column.field.toString() ? order : "asc"}
+                          direction={
+                            orderBy === column.field.toString() ? order : "asc"
+                          }
                           onClick={() => handleSort(column.field.toString())}
                         >
                           {column.headerName}
