@@ -21,7 +21,6 @@ import {
   Category as CategoryIcon,
   SmartToy as ModelIcon,
   Add as AddIcon,
-  ArrowDropDown as ArrowDropDownIcon,
 } from "@mui/icons-material";
 import DataTable from "./components/DataTable";
 import { useRouter } from "next/navigation";
