@@ -100,7 +100,7 @@ export async function generateMetadata({
   return metadata;
 }
 
-export default async function GuidePage({ params }: { params: { id: string } }) {
+export default async function GuidePage({ params }: any) {
   const id = await Promise.resolve(params.id);
   const guide = await getGuideById(id);
 
