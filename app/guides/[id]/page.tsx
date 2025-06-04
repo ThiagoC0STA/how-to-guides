@@ -55,11 +55,7 @@ async function getGuideById(id: string) {
   }
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { id: string };
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: any): Promise<Metadata> {
   const id = await Promise.resolve(params.id);
   const guide = await getGuideById(id);
 
