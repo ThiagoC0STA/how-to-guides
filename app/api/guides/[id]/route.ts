@@ -4,9 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/guides/[id]
 export async function GET(req: NextRequest, { params }: any) {
-  console.log("🔍 [GET /api/guides/[id]] Iniciando requisição");
-  console.log("📝 [GET /api/guides/[id]] Params:", params);
-  console.log("🔑 [GET /api/guides/[id]] ID do guia:", params.id);
+  console.log("📚 Fetching guide:", params.id);
+  const res = NextResponse.json({ success: true });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,77 +13,65 @@ export async function GET(req: NextRequest, { params }: any) {
     {
       cookies: {
         get(name: string) {
-          console.log("🍪 [GET /api/guides/[id]] Obtendo cookie:", name);
           return req.cookies.get(name)?.value;
         },
-        set(name: string, value: string, options: any) {},
-        remove(name: string, options: any) {},
+        set(name: string, value: string, options: any) {
+          res.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+        },
+        remove(name: string, options: any) {
+          res.cookies.set({
+            name,
+            value: "",
+            ...options,
+          });
+        },
       },
     }
   );
 
   try {
-    console.log("🔍 [GET /api/guides/[id]] Buscando guia no Supabase");
     const { data: guide, error } = await supabase
       .from("guides")
-      .select("*")
+      .select(
+        `
+        *,
+        guide_categories (
+          category:categories (
+            id,
+            title,
+            color
+          )
+        )
+      `
+      )
       .eq("id", params.id)
       .single();
 
     if (error) {
-      console.error("❌ [GET /api/guides/[id]] Erro ao buscar guia:", error);
+      console.error("❌ Error fetching guide:", error);
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
     if (!guide) {
-      console.log("⚠️ [GET /api/guides/[id]] Guia não encontrado");
       return NextResponse.json({ error: "Guide not found" }, { status: 404 });
     }
 
-    console.log("✅ [GET /api/guides/[id]] Guia encontrado:", guide);
-
-    // Se o guia existe, agora buscamos as categorias
-    console.log("🔍 [GET /api/guides/[id]] Buscando categorias do guia");
-    const { data: categories, error: categoriesError } = await supabase
-      .from("guide_categories")
-      .select(
-        `
-        category:categories (
-          id,
-          title,
-          color
-        )
-      `
-      )
-      .eq("guide_id", params.id);
-
-    if (categoriesError) {
-      console.error(
-        "❌ [GET /api/guides/[id]] Erro ao buscar categorias:",
-        categoriesError
-      );
-      // Mesmo com erro nas categorias, retornamos o guia
-    }
-
-    console.log(
-      "📝 [GET /api/guides/[id]] Categorias encontradas:",
-      categories
-    );
-
+    // Adapta guide_categories para categories (garante array)
     const guideWithCategories = {
       ...guide,
-      categories: Array.isArray(categories)
-        ? categories.map((gc: any) => gc.category).filter(Boolean)
+      categories: Array.isArray(guide.guide_categories)
+        ? guide.guide_categories.map((gc: any) => gc.category).filter(Boolean)
         : [],
     };
 
-    console.log(
-      "✅ [GET /api/guides/[id]] Retornando guia com categorias:",
-      guideWithCategories
-    );
+    console.log("✅ Guide fetched successfully");
     return NextResponse.json({ guide: guideWithCategories });
   } catch (error) {
-    console.error("❌ [GET /api/guides/[id]] Erro inesperado:", error);
+    console.error("❌ Error fetching guide:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
