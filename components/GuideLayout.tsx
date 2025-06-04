@@ -67,7 +67,7 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
     }
   }, [allQuestionsCorrect, currentModule, completedModules]);
 
-  const overview = guide?.overview;
+  const overview = guide?.metadata?.overview;
 
   return (
     <Container
