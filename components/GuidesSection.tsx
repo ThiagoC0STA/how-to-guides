@@ -42,7 +42,7 @@ interface Guide {
   description: string;
   image: string;
   color: string;
-  updated_at: string;
+  created_at: string;
   is_popular: boolean;
   categories: Category[];
 }
@@ -350,7 +350,7 @@ export default function GuidesSection({
             />
             {/* Last updated chip */}
             <Chip
-              label={new Date(guide.updated_at).toLocaleDateString()}
+              label={new Date(guide.created_at).toLocaleDateString()}
               size="small"
               sx={{
                 position: "absolute",
