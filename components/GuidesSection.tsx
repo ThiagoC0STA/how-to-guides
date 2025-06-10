@@ -64,6 +64,11 @@ const FallbackIcon = ({ color }: { color: string }) => (
   </Box>
 );
 
+// Helper function to convert title to slug
+const titleToSlug = (title: string): string => {
+  return title.toLowerCase().replace(/\s+/g, '-');
+};
+
 export default function GuidesSection({
   isPopular = false,
 }: GuidesSectionProps) {
@@ -434,7 +439,7 @@ export default function GuidesSection({
                 {guide.description}
               </Typography>
               <Box sx={{ flexGrow: 1 }} />
-              <Link href={`/guides/${guide.id}`} passHref>
+              <Link href={`/guide/${titleToSlug(guide.title)}`} passHref>
                 <Button
                   variant="contained"
                   size="medium"

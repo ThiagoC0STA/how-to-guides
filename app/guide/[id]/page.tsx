@@ -40,8 +40,8 @@ const defaultMetadata: Metadata = {
   },
 };
 
-async function getGuideById(id: string) {
-  console.log("🔍 Buscando guia com ID:", id);
+async function getGuideBySlug(slug: string) {
+  console.log("🔍 Buscando guia com slug:", slug);
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -51,11 +51,11 @@ async function getGuideById(id: string) {
   console.log("📡 URL do Supabase:", process.env.NEXT_PUBLIC_SUPABASE_URL);
 
   try {
-    // Primeiro, buscar o guia
+    // Primeiro, buscar o guia pelo título (convertendo o slug de volta para título)
     const { data: guide, error: guideError } = await supabase
       .from("guides")
       .select("*")
-      .eq("id", id)
+      .ilike("title", slug.split("-").join(" "))
       .single();
 
     if (guideError) {
@@ -80,7 +80,7 @@ async function getGuideById(id: string) {
         )
       `
       )
-      .eq("guide_id", id);
+      .eq("guide_id", guide.id);
 
     if (categoriesError) {
       console.error("❌ Erro ao buscar categorias:", categoriesError);
@@ -103,7 +103,7 @@ export async function generateMetadata({
 }: {
   params: any;
 }): Promise<Metadata> {
-  const guide = await getGuideById(params.id);
+  const guide = await getGuideBySlug(params.id);
 
   if (!guide) {
     console.log("⚠️ Guia não encontrado para metadata");
@@ -120,7 +120,7 @@ export async function generateMetadata({
     openGraph: {
       title: guide.title,
       description: guide.description,
-      url: `https://how-to-guides-kappa.vercel.app/guides/${guide.id}`,
+      url: `https://how-to-guides-kappa.vercel.app/guide/${params.id}`,
       type: "article",
       images: [
         {
@@ -145,7 +145,7 @@ export async function generateMetadata({
 export default async function GuidePage({ params }: any) {
   console.log("📄 Renderizando página do guia:", params.id);
 
-  const guide = await getGuideById(params.id);
+  const guide = await getGuideBySlug(params.id);
 
   if (!guide) {
     console.log("⚠️ Guia não encontrado, redirecionando para 404");
