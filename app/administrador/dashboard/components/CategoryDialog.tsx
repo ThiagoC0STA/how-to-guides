@@ -110,12 +110,9 @@ export default function CategoryDialog({
 
   useEffect(() => {
     if (withGuides && formData.guides && allGuides.length > 0) {
-      console.log("formData.guides:", formData.guides);
-      console.log("allGuides:", allGuides);
       const selected = formData.guides
         .map((id: string) => allGuides.find((g) => g.id === id))
         .filter(Boolean);
-      console.log("selected:", selected);
       setSelectedGuides(selected);
     } else if (!category) {
       setSelectedGuides([]);
@@ -128,7 +125,6 @@ export default function CategoryDialog({
         const query = supabase.from("guides").select("id, title, color");
         const { data, error } = await query;
         if (!error) {
-          console.log("Fetched guides:", data);
           setAllGuides(data || []);
         }
       };
@@ -172,9 +168,7 @@ export default function CategoryDialog({
   };
 
   const handleAddAnother = () => {
-    console.log("[CategoryDialog] Add Another Category button clicked");
     if (onAddAnotherCategory) {
-      console.log("[CategoryDialog] Calling onAddAnotherCategory");
       onAddAnotherCategory();
     }
     setFormData({
@@ -226,7 +220,6 @@ export default function CategoryDialog({
         guides: selectedGuides.map((g) => g.id),
       };
 
-      console.log("CategoryDialog - Saving category data:", categoryData);
       await onSave(categoryData);
 
       showSuccess(
@@ -571,7 +564,6 @@ export default function CategoryDialog({
               getOptionLabel={(option) => option.title}
               value={selectedGuides}
               onChange={(_, newValue) => {
-                console.log("New selected guides:", newValue);
                 setSelectedGuides(newValue);
                 handleChange(
                   "guides",

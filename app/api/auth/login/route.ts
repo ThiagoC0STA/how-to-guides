@@ -2,9 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  console.log("🔐 Login API called");
   const { email, password } = await req.json();
-  console.log("📧 Attempting login for:", email);
 
   const res = NextResponse.json({ success: true });
 
@@ -40,13 +38,11 @@ export async function POST(req: NextRequest) {
   });
 
   if (error || !data.session) {
-    console.log("❌ Login failed:", error?.message);
     return NextResponse.json(
       { error: error?.message || "Invalid credentials" },
       { status: 401 }
     );
   }
 
-  console.log("✅ Login successful");
   return res;
 }

@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/guides/[id]
 export async function GET(req: NextRequest, { params }: any) {
-  console.log("📚 Fetching guide:", params.id);
   const res = NextResponse.json({ success: true });
 
   const supabase = createServerClient(
@@ -68,7 +67,6 @@ export async function GET(req: NextRequest, { params }: any) {
         : [],
     };
 
-    console.log("✅ Guide fetched successfully");
     return NextResponse.json({ guide: guideWithCategories });
   } catch (error) {
     console.error("❌ Error fetching guide:", error);
@@ -81,7 +79,6 @@ export async function GET(req: NextRequest, { params }: any) {
 
 // DELETE /api/guides/[id]
 export async function DELETE(req: NextRequest, { params }: any) {
-  console.log("🗑️ Deleting guide:", params.id);
 
   // Get the authorization token
   const authHeader = req.headers.get("Authorization");
@@ -135,7 +132,6 @@ export async function DELETE(req: NextRequest, { params }: any) {
       );
     }
 
-    console.log("✅ Guide and references deleted successfully");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("❌ Error in delete operation:", error);
@@ -148,8 +144,6 @@ export async function DELETE(req: NextRequest, { params }: any) {
 
 // PUT /api/guides/[id]
 export async function PUT(req: NextRequest, { params }: any) {
-  console.log("✏️ Updating guide:", params.id);
-
   // Get the authorization token
   const authHeader = req.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {

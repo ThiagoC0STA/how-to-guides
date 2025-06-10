@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/guides
 export async function GET(req: NextRequest) {
-  console.log("📚 Fetching guides");
   const res = NextResponse.json({ success: true });
 
   // Get parameters from the URL
@@ -161,7 +160,6 @@ export async function GET(req: NextRequest) {
         : [],
     }));
 
-    console.log("✅ Guides fetched successfully");
     return NextResponse.json({
       guides: guidesWithCategories,
       totalCount: count || 0,

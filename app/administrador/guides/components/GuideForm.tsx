@@ -83,7 +83,6 @@ export default function GuideForm({ guideId }: GuideFormProps) {
         if (!data?.guide) throw new Error("Guide not found");
 
         const guide = data.guide;
-        console.log("Fetched guide data:", guide);
 
         // Fill form data
         setFormData({
@@ -160,25 +159,17 @@ export default function GuideForm({ guideId }: GuideFormProps) {
   };
 
   const handleCategoryChange = (event: any) => {
-    console.log(
-      "handleCategoryChange - event.target.value:",
-      event.target.value
-    );
     setSelectedCategories(event.target.value);
   };
 
   // Sincronizar formData.categories com selectedCategories
   useEffect(() => {
-    console.log("Syncing categories - selectedCategories:", selectedCategories);
-    console.log("Syncing categories - categoriesList:", categoriesList);
     const selectedObjs = categoriesList
       .filter((cat) => selectedCategories.includes(cat.id))
       .map((cat) => ({ id: cat.id, title: cat.title, color: cat.color }));
-    console.log("Syncing categories - selectedObjs:", selectedObjs);
 
     // Só atualiza se houver mudança real
     if (JSON.stringify(selectedObjs) !== JSON.stringify(formData.categories)) {
-      console.log("Updating formData.categories with:", selectedObjs);
       handleFormDataChange("categories", selectedObjs);
     }
   }, [selectedCategories, categoriesList]);
@@ -241,10 +232,6 @@ export default function GuideForm({ guideId }: GuideFormProps) {
   };
 
   const handleSubmit = async () => {
-    console.log("Submit - Initial formData:", formData);
-    console.log("Submit - Current selectedCategories:", selectedCategories);
-    console.log("Submit - Current categoriesList:", categoriesList);
-
     const missingFields = [];
 
     // Validação detalhada de campos obrigatórios
@@ -298,8 +285,6 @@ export default function GuideForm({ guideId }: GuideFormProps) {
         .filter((cat) => selectedCategories.includes(cat.id))
         .map((cat) => ({ id: cat.id, title: cat.title, color: cat.color }));
 
-      console.log("Submit - Final categories:", finalCategories);
-
       const guideData = {
         title: formData.title,
         description: formData.description,
@@ -314,14 +299,10 @@ export default function GuideForm({ guideId }: GuideFormProps) {
         },
       };
 
-      console.log("Submit - Final guideData:", guideData);
-
       const isEdit = guideId && guideId !== "new";
       const response = isEdit
         ? await privateRequest.put(`/guides/${guideId}`, guideData)
         : await privateRequest.post("/guides", guideData);
-
-      console.log("Submit - Response:", response.data);
 
       if (!response.data?.guide) {
         throw new Error(
@@ -351,13 +332,11 @@ export default function GuideForm({ guideId }: GuideFormProps) {
   const handleCategoryDialogSave = async (categoryData: any) => {
     showLoading();
     try {
-      console.log("CategoryDialog Save - Input:", categoryData);
       const {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) throw new Error("User not authenticated");
       const response = await privateRequest.post("/categories", categoryData);
-      console.log("CategoryDialog Save - Response:", response.data);
 
       if (!response.data?.category) {
         throw new Error("Error creating category");
@@ -368,7 +347,6 @@ export default function GuideForm({ guideId }: GuideFormProps) {
       // Atualizar selectedCategories com o novo ID
       setSelectedCategories((prev) => {
         const newSelected = [...prev, response.data.category.id];
-        console.log("Updated selectedCategories:", newSelected);
         return newSelected;
       });
 
@@ -382,7 +360,6 @@ export default function GuideForm({ guideId }: GuideFormProps) {
             color: response.data.category.color,
           },
         ];
-        console.log("Updated formData.categories:", newCategories);
         return {
           ...prev,
           categories: newCategories,
@@ -415,7 +392,6 @@ export default function GuideForm({ guideId }: GuideFormProps) {
     const fetchCategories = async () => {
       try {
         const { data } = await publicRequest.get("/categories");
-        console.log("Fetched categories:", data.categories);
         setCategoriesList(data.categories || []);
       } catch (error) {
         console.error("Error fetching categories:", error);

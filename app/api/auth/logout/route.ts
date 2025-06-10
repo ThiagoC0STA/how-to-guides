@@ -2,7 +2,6 @@ import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  console.log("🚪 Logout API called");
   const res = NextResponse.json({ success: true });
 
   const supabase = createServerClient(
@@ -35,7 +34,6 @@ export async function POST(req: NextRequest) {
     // Fazer logout no Supabase
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.error("❌ Logout error:", error);
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
@@ -65,8 +63,6 @@ export async function POST(req: NextRequest) {
       value: "",
       ...cookieOptions,
     });
-
-    console.log("✅ Logout successful");
     return res;
   } catch (error) {
     console.error("❌ Logout error:", error);

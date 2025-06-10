@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/categories/[id]
 export async function GET(req: NextRequest, { params }: any) {
-  console.log("📚 Fetching category by ID");
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,7 +21,6 @@ export async function GET(req: NextRequest, { params }: any) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    console.log("✅ Category fetched successfully");
     return NextResponse.json({ category: data });
   } catch (error) {
     console.error("❌ Error fetching category:", error);
@@ -61,11 +59,6 @@ export async function PUT(request: Request, { params }: any) {
     const body = await request.json();
     const { id } = await Promise.resolve(params);
 
-    console.log("id:", id);
-
-    console.log("📝 Updating category with ID:", id);
-    console.log("[PUT] Request body:", body);
-
     const objToUpdate = {
       title: body.title,
       description: body.description,
@@ -75,8 +68,6 @@ export async function PUT(request: Request, { params }: any) {
       comingSoon: body.comingSoon,
       updated_at: new Date().toISOString(),
     };
-
-    console.log("objToUpdate:", objToUpdate);
 
     const { error } = await supabase
       .from("categories")
@@ -142,7 +133,6 @@ export async function PUT(request: Request, { params }: any) {
 // DELETE /api/categories/[id]
 export async function DELETE(req: NextRequest, context: any) {
   const { id } = context.params;
-  console.log("🗑️ Deleting category");
 
   // Get the authorization token
   const authHeader = req.headers.get("Authorization");
@@ -196,7 +186,6 @@ export async function DELETE(req: NextRequest, context: any) {
       );
     }
 
-    console.log("✅ Category and references deleted successfully");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("❌ Error in delete operation:", error);

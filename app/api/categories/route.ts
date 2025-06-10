@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/categories
 export async function GET(req: NextRequest) {
-  console.log("📚 Fetching categories");
   const res = NextResponse.json({ success: true });
 
   // Get pagination and search parameters
@@ -85,7 +84,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    console.log("✅ Categories fetched successfully");
     return NextResponse.json({
       categories,
       totalCount: count || 0,
@@ -103,7 +101,6 @@ export async function GET(req: NextRequest) {
 
 // POST /api/categories
 export async function POST(req: NextRequest) {
-  console.log("📝 Creating new category");
   const res = NextResponse.json({ success: true });
 
   // Pegar o token do header
@@ -210,7 +207,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    console.log("✅ Category created successfully");
     return NextResponse.json({ category: data });
   } catch (error) {
     console.error("❌ Error creating category:", error);

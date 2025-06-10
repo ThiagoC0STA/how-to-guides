@@ -41,14 +41,11 @@ const defaultMetadata: Metadata = {
 };
 
 async function getGuideBySlug(slug: string) {
-  console.log("🔍 Buscando guia com slug:", slug);
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
-
-  console.log("📡 URL do Supabase:", process.env.NEXT_PUBLIC_SUPABASE_URL);
 
   try {
     // Primeiro, buscar o guia pelo título (convertendo o slug de volta para título)
@@ -64,7 +61,6 @@ async function getGuideBySlug(slug: string) {
     }
 
     if (!guide) {
-      console.log("⚠️ Guia não encontrado");
       return null;
     }
 
@@ -106,7 +102,6 @@ export async function generateMetadata({
   const guide = await getGuideBySlug(params.id);
 
   if (!guide) {
-    console.log("⚠️ Guia não encontrado para metadata");
     return {
       title: "Guide Not Found",
     };
@@ -143,19 +138,11 @@ export async function generateMetadata({
 }
 
 export default async function GuidePage({ params }: any) {
-  console.log("📄 Renderizando página do guia:", params.id);
-
   const guide = await getGuideBySlug(params.id);
 
   if (!guide) {
-    console.log("⚠️ Guia não encontrado, redirecionando para 404");
     return notFound();
   }
-
-  console.log("✅ Renderizando guia:", {
-    id: guide.id,
-    title: guide.title,
-  });
 
   return <GuideLayout guide={guide} />;
 }

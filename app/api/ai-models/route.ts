@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/ai-models
 export async function GET(req: NextRequest) {
-  console.log("🤖 Fetching AI models");
   const res = NextResponse.json({ success: true });
 
   // Get pagination and search parameters
@@ -77,7 +76,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    console.log("✅ Models fetched successfully");
     return NextResponse.json({
       models,
       totalCount: count || 0,
@@ -96,11 +94,9 @@ export async function GET(req: NextRequest) {
 // POST /api/ai-models
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("Authorization");
-  console.log("[AI MODELS][POST] Authorization header:", authHeader);
   let body: any = {};
   try {
     body = await req.json();
-    console.log("[AI MODELS][POST] Request body:", body);
   } catch (e) {
     console.error("[AI MODELS][POST] Error parsing JSON body:", e);
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });

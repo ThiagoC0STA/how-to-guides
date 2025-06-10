@@ -304,7 +304,6 @@ export default function Dashboard() {
   };
 
   const handleEditCategory = (category: Category) => {
-    console.log("Editing category:", category);
     const guides = Array.isArray(category.guide_categories)
       ? category.guide_categories.map((gc: any) => gc.guide?.id).filter(Boolean)
       : [];
