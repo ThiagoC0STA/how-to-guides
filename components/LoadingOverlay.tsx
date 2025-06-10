@@ -23,16 +23,6 @@ export default function LoadingOverlay() {
       }}
     >
       <RiseLoader color="#134CCD" size={15} />
-      {/* <Typography
-        variant="body2"
-        sx={{
-          color: "text.secondary",
-          fontWeight: 500,
-          mt: 2,
-        }}
-      >
-        {text}
-      </Typography> */}
     </Box>
   );
 }

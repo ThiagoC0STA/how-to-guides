@@ -1,5 +1,7 @@
 import { Box, Typography } from "@mui/material";
+import { Suspense } from "react";
 import GuidesSection from "@/components/GuidesSection";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 export default function GuidesPage() {
   return (
@@ -41,7 +43,9 @@ export default function GuidesPage() {
         </Typography>
       </Box>
 
-      <GuidesSection isPopular={false} />
+      <Suspense fallback={<LoadingOverlay />}>
+        <GuidesSection isPopular={false} />
+      </Suspense>
     </div>
   );
 }
