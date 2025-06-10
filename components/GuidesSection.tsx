@@ -86,7 +86,7 @@ export default function GuidesSection({
   const [categories, setCategories] = useState<Category[]>([]);
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
-  const rowsPerPage = 9;
+  const rowsPerPage = isPopular ? 6 : 9;
   const { show: showLoading, hide: hideLoading } = useLoading();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -97,17 +97,24 @@ export default function GuidesSection({
 
     const fetchAll = async () => {
       try {
-        const [catRes, guidesRes] = await Promise.all([
-          publicRequest.get("/categories"),
-          publicRequest.get(
-            `/guides?page=${page}&limit=${rowsPerPage}` +
-              (isPopular ? "&popular=true" : "") +
-              (searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : "") +
-              (selectedCategory !== "all"
-                ? `&category=${encodeURIComponent(selectedCategory)}`
-                : "")
-          ),
-        ]);
+        let catRes: { data: { categories: Category[] } } = { data: { categories: [] } };
+        let guidesRes;
+        if (isPopular) {
+          guidesRes = await publicRequest.get(
+            `/guides?page=${page}&limit=6&popular=true`
+          );
+        } else {
+          [catRes, guidesRes] = await Promise.all([
+            publicRequest.get("/categories"),
+            publicRequest.get(
+              `/guides?page=${page}&limit=${rowsPerPage}` +
+                (searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : "") +
+                (selectedCategory !== "all"
+                  ? `&category=${encodeURIComponent(selectedCategory)}`
+                  : "")
+            ),
+          ]);
+        }
         if (isMounted) {
           if (catRes.data.categories) setCategories(catRes.data.categories);
           if (guidesRes.data.guides) {
@@ -115,20 +122,22 @@ export default function GuidesSection({
             setTotalCount(guidesRes.data.totalCount || 0);
           }
         }
-        // Sincronizar categoria da URL só na primeira montagem
-        const categoryParam = searchParams.get("category");
-        if (
-          !didSyncCategoryFromUrl &&
-          categoryParam &&
-          catRes.data.categories
-        ) {
-          const category = catRes.data.categories.find(
-            (cat: Category) => titleToSlug(cat.title) === categoryParam
-          );
-          if (category) {
-            setSelectedCategory(category.id);
+        // Only sync category from URL if not popular
+        if (!isPopular) {
+          const categoryParam = searchParams.get("category");
+          if (
+            !didSyncCategoryFromUrl &&
+            categoryParam &&
+            catRes.data.categories
+          ) {
+            const category = catRes.data.categories.find(
+              (cat: Category) => titleToSlug(cat.title) === categoryParam
+            );
+            if (category) {
+              setSelectedCategory(category.id);
+            }
+            didSyncCategoryFromUrl = true;
           }
-          didSyncCategoryFromUrl = true;
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -147,7 +156,7 @@ export default function GuidesSection({
   }, [isPopular, page, searchTerm, selectedCategory]);
 
   useEffect(() => {
-    setPage(0);
+    if (!isPopular) setPage(0);
   }, [selectedCategory]);
 
   const filteredGuides = guides;
@@ -158,7 +167,7 @@ export default function GuidesSection({
     setPage(newPage);
   };
 
-  // Sincronizar Zustand e state local ao trocar de categoria
+  // Only sync Zustand and local state for category if not popular
   const handleCategoryChange = (catId: string) => {
     setSelectedCategory(catId);
     setCategory(catId);
@@ -187,6 +196,7 @@ export default function GuidesSection({
         </Typography>
       )}
 
+      {/* Only show filters/search if not popular */}
       {!isPopular && (
         <Stack spacing={3}>
           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
