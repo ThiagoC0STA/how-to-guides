@@ -70,6 +70,8 @@ const titleToSlug = (title: string): string => {
   return title.toLowerCase().replace(/\s+/g, "-");
 };
 
+let didSyncCategoryFromUrl = false;
+
 export default function GuidesSection({
   isPopular = false,
 }: GuidesSectionProps) {
@@ -111,15 +113,20 @@ export default function GuidesSection({
             setTotalCount(guidesRes.data.totalCount || 0);
           }
         }
-        // Após carregar categorias, resolver categoria pelo slug se necessário
+        // Sincronizar categoria da URL só na primeira montagem
         const categoryParam = searchParams.get("category");
-        if (categoryParam && catRes.data.categories) {
+        if (
+          !didSyncCategoryFromUrl &&
+          categoryParam &&
+          catRes.data.categories
+        ) {
           const category = catRes.data.categories.find(
             (cat: Category) => titleToSlug(cat.title) === categoryParam
           );
           if (category) {
             setSelectedCategory(category.id);
           }
+          didSyncCategoryFromUrl = true;
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -136,6 +143,10 @@ export default function GuidesSection({
       isMounted = false;
     };
   }, [isPopular, page, searchTerm, selectedCategory]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [selectedCategory]);
 
   const filteredGuides = guides;
 

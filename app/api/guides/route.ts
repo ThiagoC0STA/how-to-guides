@@ -60,6 +60,30 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    if (category && category !== "all") {
+      const { data: guideCategoryLinks, error: guideCatError } = await supabase
+        .from("guide_categories")
+        .select("guide_id")
+        .eq("category_id", category);
+      if (guideCatError) {
+        console.error(
+          "❌ Error fetching guide_categories for category filter:",
+          guideCatError
+        );
+        return NextResponse.json(
+          { error: guideCatError.message },
+          { status: 400 }
+        );
+      }
+      const guideIds = (guideCategoryLinks || []).map((g: any) => g.guide_id);
+      if (guideIds.length > 0) {
+        countQuery = countQuery.in("id", guideIds);
+      } else {
+        // Nenhum guide para essa categoria
+        return NextResponse.json({ guides: [], totalCount: 0, page, limit });
+      }
+    }
+
     const { count, error: countError } = await countQuery;
 
     if (countError) {
