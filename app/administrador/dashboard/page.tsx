@@ -34,12 +34,6 @@ import Image from "next/image";
 import ModelDialog from "./components/ModelDialog";
 import { Model } from "../guides/types";
 import { useErrorStore } from "@/store/errorStore";
-import Link from "next/link";
-
-// Helper function to convert title to slug
-const titleToSlug = (title: string): string => {
-  return title.toLowerCase().replace(/\s+/g, '-');
-};
 
 interface Category {
   id: string;
@@ -862,20 +856,13 @@ export default function Dashboard() {
         sortable: false,
         renderCell: (row: any) => (
           <Box sx={{ display: "flex", gap: 1 }}>
-            <Link href={`/guide/${titleToSlug(row.title)}?from=dashboard`} passHref>
-              <Button
-                variant="outlined"
-                size="small"
-                sx={{
-                  borderRadius: 2,
-                  height: 40,
-                  whiteSpace: "nowrap",
-                  px: 2,
-                }}
-              >
-                View Guide
-              </Button>
-            </Link>
+            <IconButton
+              size="small"
+              color="primary"
+              onClick={() => router.push(`/administrador/guides/${row.id}`)}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
             <IconButton
               size="small"
               color="error"

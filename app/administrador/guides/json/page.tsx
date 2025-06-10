@@ -45,6 +45,7 @@ export default function AddGuideByJson() {
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [previewData, setPreviewData] = useState<Partial<Guide> | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [numModules, setNumModules] = useState(8);
 
   // Fetch categories
   const fetchCategories = async () => {
@@ -243,10 +244,18 @@ export default function AddGuideByJson() {
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="e.g., Machine Learning Basics, Neural Networks, Deep Learning, Computer Vision, NLP, etc."
             />
+            <TextField
+              type="number"
+              label="Number of Modules"
+              value={numModules}
+              onChange={e => setNumModules(Math.max(1, Number(e.target.value)))}
+              inputProps={{ min: 1, style: { width: 60 } }}
+              sx={{ width: 140 }}
+            />
             <Button
               variant="contained"
               onClick={() => {
-                const exampleText = `Generate a comprehensive guide JSON object for a guide about ${prompt}. The guide should be in English and follow this structure. Make sure to create at least 4 detailed modules with multiple sections each:
+                const exampleText = `Generate a comprehensive guide JSON object for a guide about ${prompt}. The guide should be in English and follow this structure. Make sure to create at least ${numModules} detailed modules with multiple sections each:
 
 {
   "title": "Guide Title (be specific and engaging)",
@@ -355,18 +364,7 @@ export default function AddGuideByJson() {
   }
 }
 
-Make sure to:
-1. Create at least 4 detailed modules
-2. Each module should have 2-3 sections
-3. Include relevant questions for each module
-4. Use clear and concise English
-5. Include all required fields
-6. Generate realistic and helpful content
-7. Use appropriate color codes that match the topic
-8. Structure modules and steps logically
-9. Add comprehensive metadata and keywords
-10. Set locked to false for all modules
-11. Return ONLY the JSON object, no additional text`;
+Make sure to:\n1. Create at least ${numModules} detailed modules\n2. Each module should have 2-3 sections\n3. Include relevant questions for each module\n4. Use clear and concise English\n5. Include all required fields\n6. Generate realistic and helpful content\n7. Use appropriate color codes that match the topic\n8. Structure modules and steps logically\n9. Add comprehensive metadata and keywords\n10. Set locked to false for all modules\n11. Return ONLY the JSON object, no additional text`;
                 navigator.clipboard.writeText(exampleText);
                 showSuccess("Example prompt copied to clipboard!");
               }}
@@ -383,7 +381,7 @@ Make sure to:
             label="Example prompt (read-only)"
             value={`Generate a comprehensive guide JSON object for a guide about ${
               prompt || "[YOUR AI TOPIC]"
-            }. The guide should be in English and follow this structure. Make sure to create at least 4 detailed modules with multiple sections each. Focus on practical applications, current state of the art, and real-world use cases:
+            }. The guide should be in English and follow this structure. Make sure to create at least ${numModules} detailed modules with multiple sections each. Focus on practical applications, current state of the art, and real-world use cases:
 
 {
   "title": "Create an engaging and specific title",
@@ -449,7 +447,7 @@ Make sure to:
 }
 
 Make sure to:
-1. Create at least 4 detailed modules
+1. Create at least ${numModules} detailed modules
 2. Each module should have 2-3 sections
 3. Include relevant questions for each module
 4. Use clear and concise English
