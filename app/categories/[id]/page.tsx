@@ -287,7 +287,7 @@ export default function CategoryPage({ params }: any) {
                     )}
                   </Typography>
                 )}
-                <Link href={`/guides/${guide.id}`} passHref>
+                <Link href={`/guide/${guide.id}?from=categories&categoryId=${id}&returnCategory=${id}`} passHref>
                   <MuiLink
                     sx={{
                       color: category.color,

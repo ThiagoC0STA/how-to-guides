@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Box, Paper, Container } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Container,
+  Breadcrumbs,
+  Link,
+  Typography,
+} from "@mui/material";
 import GuideSidebar from "@/components/GuideSidebar";
 import ModuleContent from "@/components/ModuleContent";
 import ModuleNavigation from "@/components/ModuleNavigation";
@@ -9,6 +16,8 @@ import LockedModuleOverlay from "@/components/LockedModuleOverlay";
 import GuideHero from "@/components/GuideHero";
 import GuideOverview from "@/components/GuideOverview";
 import LeadMagnetKit from "./LeadMagnetKit";
+import NextLink from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 
 function hexToRgb(hex: string) {
   hex = hex.replace("#", "");
@@ -27,6 +36,8 @@ interface GuideLayoutProps {
 }
 
 export default function GuideLayout({ guide }: GuideLayoutProps) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [currentModule, setCurrentModule] = useState(0);
   const [unlocked, setUnlocked] = useState(false);
   const [completedModules, setCompletedModules] = useState<number[]>([]);
@@ -56,7 +67,10 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
   const allQuestionsCorrect = useMemo(() => {
     if (!current?.questions || current.questions.length === 0) return true;
     const moduleQuestions = completedQuestions[currentModule] || [];
-    return moduleQuestions.length === current.questions.length && moduleQuestions.every(Boolean);
+    return (
+      moduleQuestions.length === current.questions.length &&
+      moduleQuestions.every(Boolean)
+    );
   }, [completedQuestions, current?.questions, currentModule]);
 
   useMemo(() => {
@@ -69,11 +83,101 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
 
   const overview = guide?.metadata?.overview;
 
+  // Função para gerar os breadcrumbs baseado no pathname e searchParams
+  const getBreadcrumbs = () => {
+    const breadcrumbs = [];
+    const from = searchParams.get("from");
+
+    // Sempre adiciona Home como primeiro item
+    breadcrumbs.push({
+      label: "Home",
+      href: "/",
+    });
+
+    // Adiciona o caminho baseado no parâmetro 'from'
+    if (from === "dashboard") {
+      breadcrumbs.push({
+        label: "Dashboard",
+        href: "/administrador",
+      });
+      breadcrumbs.push({
+        label: "Guides",
+        href: "/administrador/guides",
+      });
+    } else if (from === "categories") {
+      const categoryId = searchParams.get("categoryId");
+      breadcrumbs.push({
+        label: "Categories",
+        href: "/categories",
+      });
+      if (categoryId) {
+        breadcrumbs.push({
+          label: "Category",
+          href: `/categories/${categoryId}`,
+        });
+      }
+    } else if (from === "guides") {
+      const returnCategory = searchParams.get("returnCategory");
+      breadcrumbs.push({
+        label: "Guides",
+        href: `/guides${returnCategory ? `?category=${returnCategory}` : ""}`,
+      });
+    }
+
+    // Adiciona o título do guia atual
+    breadcrumbs.push({
+      label: guide.title,
+      href: pathname,
+      isCurrent: true,
+    });
+
+    return breadcrumbs;
+  };
+
+  const breadcrumbs = getBreadcrumbs();
+
   return (
     <Container
       maxWidth="lg"
       sx={{ backgroundColor: "var(--background)", px: { xs: 2, md: 4 } }}
     >
+      <Breadcrumbs
+        sx={{
+          mt: 4,
+          mb: 2,
+          "& .MuiBreadcrumbs-separator": {
+            color: "var(--footer-text)",
+          },
+        }}
+      >
+        {breadcrumbs.map((crumb, index) =>
+          crumb.isCurrent ? (
+            <Typography
+              key={index}
+              color="var(--foreground)"
+              sx={{ fontWeight: 500 }}
+            >
+              {crumb.label}
+            </Typography>
+          ) : (
+            <Link
+              key={index}
+              component={NextLink}
+              href={crumb.href}
+              underline="hover"
+              sx={{
+                color: "var(--footer-text)",
+                "&:hover": {
+                  color: "var(--primary-blue)",
+                },
+              }}
+            >
+              {crumb.label}
+            </Link>
+          )
+        )}
+      </Breadcrumbs>
+
       <GuideHero
         title={guide.title}
         description={guide.description}
@@ -90,12 +194,12 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
         />
       )}
       <LeadMagnetKit />
-      <Box 
-        display="flex" 
+      <Box
+        display="flex"
         flexDirection={{ xs: "column", md: "row" }}
-        gap={{ xs: 3, md: 4 }} 
-        alignItems={{ xs: "stretch", md: "flex-start" }} 
-        mx="auto" 
+        gap={{ xs: 3, md: 4 }}
+        alignItems={{ xs: "stretch", md: "flex-start" }}
+        mx="auto"
         my={{ xs: 4, md: 6 }}
       >
         <GuideSidebar

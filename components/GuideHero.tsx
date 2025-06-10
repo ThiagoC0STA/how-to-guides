@@ -20,58 +20,66 @@ export default function GuideHero({
   return (
     <Box
       sx={{
-        position: "relative",
         width: "100%",
-        height: { xs: 200, sm: 250, md: 300 },
-        overflow: "hidden",
-        borderRadius: { xs: 2, sm: 2 },
-        mb: { xs: "-30px", sm: 3, md: 4 },
-        mt: { xs: 2, sm: 3, md: 4 },
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
       }}
     >
-      <Image
-        src={typeof image === "string" ? image : URL.createObjectURL(image)}
-        alt={title}
-        fill
-        style={{ objectFit: "cover" }}
-        priority
-      />
+      {/* Image container */}
       <Box
         sx={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          p: { xs: 2, sm: 3, md: 4 },
-          background:
-            "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.18) 60%, rgba(0,0,0,0) 100%)",
+          width: { xs: 400, md: 500 },
+          height: { xs: 200, md: 320 },
+          borderRadius: 3,
+          overflow: "hidden",
+          mb: 2,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Image
+          src={typeof image === "string" ? image : URL.createObjectURL(image)}
+          alt={title}
+          width={200}
+          height={200}
+          quality={100}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+          }}
+          priority
+        />
+      </Box>
+
+      {/* Text content */}
+      <Box
+        sx={{
+          textAlign: "center",
+          maxWidth: 800,
+          mx: "auto",
         }}
       >
         <Typography
           variant={isMobile ? "h4" : "h3"}
-          color="white"
           sx={{
-            mb: 1,
-            fontSize: { xs: "1.3rem", sm: "2rem", md: "2.5rem" },
+            mb: 2,
+            fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem" },
             fontWeight: 700,
-            textShadow: "0 2px 4px rgba(0,0,0,0.3)",
+            color: "var(--foreground)",
           }}
         >
           {title}
         </Typography>
         <Typography
           variant="body1"
-          color="white"
           sx={{
             mb: 2,
-            fontSize: { xs: "0.85rem", sm: "1rem" },
-            textShadow: "0 1px 2px rgba(0,0,0,0.3)",
-            display: "-webkit-box",
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            maxWidth: { xs: "95%", sm: "100%" },
+            fontSize: { xs: "1rem", sm: "1.1rem" },
+            color: "var(--footer-text)",
+            lineHeight: 1.6,
           }}
         >
           {description}
@@ -79,11 +87,10 @@ export default function GuideHero({
         {lastUpdated && (
           <Typography
             variant="caption"
-            color="white"
             sx={{
-              opacity: 0.9,
+              color: "var(--footer-text)",
+              opacity: 0.8,
               fontSize: { xs: "0.75rem", sm: "0.875rem" },
-              textShadow: "0 1px 2px rgba(0,0,0,0.3)",
             }}
           >
             Last updated: {lastUpdated}

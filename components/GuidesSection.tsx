@@ -25,6 +25,7 @@ import { FaSearch } from "react-icons/fa";
 import { FaRobot } from "react-icons/fa";
 import { useLoading } from "./LoadingProvider";
 import { publicRequest } from "@/utils/apiClient";
+import { useSearchParams } from "next/navigation";
 
 interface GuidesSectionProps {
   isPopular?: boolean;
@@ -66,12 +67,13 @@ const FallbackIcon = ({ color }: { color: string }) => (
 
 // Helper function to convert title to slug
 const titleToSlug = (title: string): string => {
-  return title.toLowerCase().replace(/\s+/g, '-');
+  return title.toLowerCase().replace(/\s+/g, "-");
 };
 
 export default function GuidesSection({
   isPopular = false,
 }: GuidesSectionProps) {
+  const searchParams = useSearchParams();
   const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -85,7 +87,6 @@ export default function GuidesSection({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Fetch categories and guides
   useEffect(() => {
     let isMounted = true;
     showLoading();
@@ -110,10 +111,22 @@ export default function GuidesSection({
             setTotalCount(guidesRes.data.totalCount || 0);
           }
         }
+        // Após carregar categorias, resolver categoria pelo slug se necessário
+        const categoryParam = searchParams.get("category");
+        if (categoryParam && catRes.data.categories) {
+          const category = catRes.data.categories.find(
+            (cat: Category) => titleToSlug(cat.title) === categoryParam
+          );
+          if (category) {
+            setSelectedCategory(category.id);
+          }
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
-        if (isMounted) hideLoading();
+        if (isMounted) {
+          hideLoading();
+        }
       }
     };
 
@@ -439,7 +452,17 @@ export default function GuidesSection({
                 {guide.description}
               </Typography>
               <Box sx={{ flexGrow: 1 }} />
-              <Link href={`/guide/${titleToSlug(guide.title)}`} passHref>
+              <Link
+                href={`/guide/${titleToSlug(guide.title)}?from=guides${
+                  selectedCategory !== "all"
+                    ? `&returnCategory=${titleToSlug(
+                        categories.find((cat) => cat.id === selectedCategory)
+                          ?.title || ""
+                      )}`
+                    : ""
+                }`}
+                passHref
+              >
                 <Button
                   variant="contained"
                   size="medium"
