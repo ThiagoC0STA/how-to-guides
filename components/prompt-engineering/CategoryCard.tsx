@@ -4,6 +4,8 @@ import { Box, Typography, Paper, List, ListItem, Button } from "@mui/material";
 import Link from "next/link";
 import { FaArrowRight, FaLock, FaQuestionCircle } from "react-icons/fa";
 import iconMap from "../../data/iconMap";
+import { useRouter } from "next/navigation";
+import { useGlobalStore } from "@/store/globalStore";
 
 interface Guide {
   id: string;
@@ -26,6 +28,7 @@ interface CategoryCardProps {
 type IconName = keyof typeof iconMap;
 
 export default function CategoryCard({
+  id,
   title,
   description,
   iconName,
@@ -34,6 +37,8 @@ export default function CategoryCard({
   comingSoon,
   guides = [],
 }: CategoryCardProps) {
+  const router = useRouter();
+  const { setCategory } = useGlobalStore();
   const Icon = iconMap[iconName as IconName] || FaQuestionCircle;
   const safeGuides = Array.isArray(guides) ? guides : [];
   const displayedGuides = safeGuides.slice(0, 3);
@@ -66,6 +71,10 @@ export default function CategoryCard({
             color: "white",
           },
         },
+      }}
+      onClick={() => {
+        setCategory(id);
+        router.push("/guides");
       }}
     >
       {featured && (

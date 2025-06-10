@@ -18,6 +18,7 @@ import GuideOverview from "@/components/GuideOverview";
 import LeadMagnetKit from "./LeadMagnetKit";
 import NextLink from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useGlobalStore } from "@/store/globalStore";
 
 function hexToRgb(hex: string) {
   hex = hex.replace("#", "");
@@ -38,6 +39,7 @@ interface GuideLayoutProps {
 export default function GuideLayout({ guide }: GuideLayoutProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { category } = useGlobalStore();
   const [currentModule, setCurrentModule] = useState(0);
   const [unlocked, setUnlocked] = useState(false);
   const [completedModules, setCompletedModules] = useState<number[]>([]);
@@ -116,12 +118,19 @@ export default function GuideLayout({ guide }: GuideLayoutProps) {
           href: `/categories/${categoryId}`,
         });
       }
-    } else if (from === "guides") {
-      const returnCategory = searchParams.get("returnCategory");
-      breadcrumbs.push({
-        label: "Guides",
-        href: `/guides${returnCategory ? `?category=${returnCategory}` : ""}`,
-      });
+    } else {
+      // Default: Guides
+      if (guide.is_popular) {
+        breadcrumbs.push({
+          label: "Guides",
+          href: "/guides?popular=true",
+        });
+      } else {
+        breadcrumbs.push({
+          label: "Guides",
+          href: `/guides${category && category !== 'all' ? `?category=${category}` : ''}`,
+        });
+      }
     }
 
     // Adiciona o título do guia atual

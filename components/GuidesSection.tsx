@@ -26,6 +26,7 @@ import { FaRobot } from "react-icons/fa";
 import { useLoading } from "./LoadingProvider";
 import { publicRequest } from "@/utils/apiClient";
 import { useSearchParams } from "next/navigation";
+import { useGlobalStore } from "@/store/globalStore";
 
 interface GuidesSectionProps {
   isPopular?: boolean;
@@ -76,9 +77,10 @@ export default function GuidesSection({
   isPopular = false,
 }: GuidesSectionProps) {
   const searchParams = useSearchParams();
+  const { category, setCategory } = useGlobalStore();
   const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string>(category);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [guides, setGuides] = useState<Guide[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -154,6 +156,12 @@ export default function GuidesSection({
 
   const handlePageChange = (event: unknown, newPage: number) => {
     setPage(newPage);
+  };
+
+  // Sincronizar Zustand e state local ao trocar de categoria
+  const handleCategoryChange = (catId: string) => {
+    setSelectedCategory(catId);
+    setCategory(catId);
   };
 
   return (
@@ -232,7 +240,7 @@ export default function GuidesSection({
                 labelId="category-select-label"
                 value={selectedCategory}
                 label="Category"
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                onChange={(e) => handleCategoryChange(e.target.value as string)}
                 sx={{
                   borderRadius: 2,
                   boxShadow: "0 2px 8px 0 rgba(37,99,235,0.06)",
@@ -286,7 +294,7 @@ export default function GuidesSection({
                   return (
                     <Paper
                       key={categoryId}
-                      onClick={() => setSelectedCategory(categoryId)}
+                      onClick={() => handleCategoryChange(categoryId)}
                       sx={{
                         px: 3,
                         py: 1.5,
@@ -464,14 +472,7 @@ export default function GuidesSection({
               </Typography>
               <Box sx={{ flexGrow: 1 }} />
               <Link
-                href={`/guide/${titleToSlug(guide.title)}?from=guides${
-                  selectedCategory !== "all"
-                    ? `&returnCategory=${titleToSlug(
-                        categories.find((cat) => cat.id === selectedCategory)
-                          ?.title || ""
-                      )}`
-                    : ""
-                }`}
+                href={`/guide/${titleToSlug(guide.title)}`}
                 passHref
               >
                 <Button
