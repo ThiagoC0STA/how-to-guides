@@ -23,7 +23,7 @@ import {
 import Link from "next/link";
 import { FaSearch } from "react-icons/fa";
 import { FaRobot } from "react-icons/fa";
-import { useLoading } from "./LoadingProvider";
+import LoadingOverlay from "@/components/LoadingOverlay";
 import { publicRequest } from "@/utils/apiClient";
 import { useSearchParams } from "next/navigation";
 import { useGlobalStore } from "@/store/globalStore";
@@ -86,18 +86,19 @@ export default function GuidesSection({
   const [categories, setCategories] = useState<Category[]>([]);
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const rowsPerPage = isPopular ? 6 : 9;
-  const { show: showLoading, hide: hideLoading } = useLoading();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     let isMounted = true;
-    showLoading();
-
     const fetchAll = async () => {
+      setIsLoading(true);
       try {
-        let catRes: { data: { categories: Category[] } } = { data: { categories: [] } };
+        let catRes: { data: { categories: Category[] } } = {
+          data: { categories: [] },
+        };
         let guidesRes;
         if (isPopular) {
           guidesRes = await publicRequest.get(
@@ -108,7 +109,9 @@ export default function GuidesSection({
             publicRequest.get("/categories"),
             publicRequest.get(
               `/guides?page=${page}&limit=${rowsPerPage}` +
-                (searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : "") +
+                (searchTerm
+                  ? `&search=${encodeURIComponent(searchTerm)}`
+                  : "") +
                 (selectedCategory !== "all"
                   ? `&category=${encodeURIComponent(selectedCategory)}`
                   : "")
@@ -143,7 +146,7 @@ export default function GuidesSection({
         console.error("Error fetching data:", error);
       } finally {
         if (isMounted) {
-          hideLoading();
+          setIsLoading(false);
         }
       }
     };
@@ -153,7 +156,14 @@ export default function GuidesSection({
     return () => {
       isMounted = false;
     };
-  }, [isPopular, page, searchTerm, selectedCategory]);
+  }, [
+    isPopular,
+    page,
+    searchTerm,
+    selectedCategory,
+    rowsPerPage,
+    searchParams,
+  ]);
 
   useEffect(() => {
     if (!isPopular) setPage(0);
@@ -181,8 +191,11 @@ export default function GuidesSection({
         mx: "auto",
         mt: { xs: isPopular ? 6 : 2, md: isPopular ? 12 : 1 },
         px: { xs: 2, md: 2 },
+        position: "relative",
       }}
     >
+      {isLoading && <LoadingOverlay />}
+
       {isPopular && (
         <Typography
           sx={{
@@ -481,10 +494,7 @@ export default function GuidesSection({
                 {guide.description}
               </Typography>
               <Box sx={{ flexGrow: 1 }} />
-              <Link
-                href={`/guide/${titleToSlug(guide.title)}`}
-                passHref
-              >
+              <Link href={`/guide/${titleToSlug(guide.title)}`} passHref>
                 <Button
                   variant="contained"
                   size="medium"
