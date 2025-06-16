@@ -41,6 +41,7 @@ const defaultMetadata: Metadata = {
 };
 
 async function getGuideBySlug(slug: string) {
+  console.log("🔍 Buscando guia com slug:", slug);
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -48,12 +49,31 @@ async function getGuideBySlug(slug: string) {
   );
 
   try {
+    // Mapeamento específico de slugs para títulos
+    const slugToTitleMap: { [key: string]: string } = {
+      "how-to-use-dall-e": "How to use DALL-E",
+      "how-to-write-better-dall-e-prompts":
+        "How to Write Better DALL-E Prompts",
+    };
+
+    // Se temos um mapeamento específico, use-o
+    let searchTitle = slugToTitleMap[slug];
+
+    // Se não temos um mapeamento, use a conversão padrão
+    if (!searchTitle) {
+      searchTitle = slug.split("-").join(" ");
+    }
+
+    console.log("🔍 Título convertido para busca:", searchTitle);
+
     // Primeiro, buscar o guia pelo título (convertendo o slug de volta para título)
     const { data: guide, error: guideError } = await supabase
       .from("guides")
       .select("*")
-      .ilike("title", slug.split("-").join(" "))
+      .ilike("title", searchTitle)
       .single();
+
+    console.log("📊 Resultado da busca:", { guide, guideError });
 
     if (guideError) {
       console.error("❌ Erro ao buscar guia:", guideError);
@@ -61,6 +81,7 @@ async function getGuideBySlug(slug: string) {
     }
 
     if (!guide) {
+      console.log("⚠️ Nenhum guia encontrado para o título:", searchTitle);
       return null;
     }
 
@@ -78,6 +99,8 @@ async function getGuideBySlug(slug: string) {
       )
       .eq("guide_id", guide.id);
 
+    console.log("📊 Categorias encontradas:", { categories, categoriesError });
+
     if (categoriesError) {
       console.error("❌ Erro ao buscar categorias:", categoriesError);
     }
@@ -87,6 +110,7 @@ async function getGuideBySlug(slug: string) {
       categories: categories?.map((c) => c.categories) || [],
     };
 
+    console.log("✅ Guia final com categorias:", guideWithCategories);
     return guideWithCategories;
   } catch (error) {
     console.error("❌ Erro inesperado:", error);

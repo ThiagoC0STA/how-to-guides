@@ -11,16 +11,8 @@ import {
   Stack,
   Divider,
 } from "@mui/material";
-
-const popularGuides = [
-  { label: "How to Use ChatGPT", href: "/guides/how-to-use-chatgpt" },
-  { label: "How to Use Midjourney", href: "/guides/how-to-use-midjourney" },
-  {
-    label: "How to Write Effective AI Prompts",
-    href: "/guides/how-to-write-effective-ai-prompts",
-  },
-  { label: "How to Use Gemini AI", href: "/guides/how-to-use-gemini-ai" },
-];
+import { useEffect, useState } from "react";
+import { publicRequest } from "@/utils/apiClient";
 
 const resources = [
   { label: "AI Terminology Glossary", href: "/resources/ai-glossary" },
@@ -33,9 +25,33 @@ const resources = [
 
 export default function Footer() {
   const pathname = usePathname();
+  const [popularGuides, setPopularGuides] = useState<
+    Array<{ label: string; href: string }>
+  >([]);
   const isAdminRoute =
     pathname?.startsWith("/administrador") &&
     pathname !== "/administrador/login";
+
+  useEffect(() => {
+    async function fetchPopularGuides() {
+      try {
+        const response = await publicRequest.get("/guides?popular=true&limit=4");
+        
+        if (response.data.guides) {
+          const formattedGuides = response.data.guides.map((guide: any) => ({
+            label: guide.title,
+            href: `/guide/${guide.slug}`,
+          }));
+
+          setPopularGuides(formattedGuides);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar guias populares:", error);
+      }
+    }
+
+    fetchPopularGuides();
+  }, []);
 
   // Não exibe o footer nas rotas administrativas
   if (isAdminRoute) {
