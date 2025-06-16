@@ -8,32 +8,36 @@ import "swiper/css";
 
 const partners = [
   {
-    name: "OpenAI",
-    logo: "https://logo.clearbit.com/openai.com",
+    name: "Claude",
+    logo: "/images/partners/claude.svg",
   },
   {
-    name: "Anthropic",
-    logo: "https://logo.clearbit.com/anthropic.com",
+    name: "Gemini",
+    logo: "/images/partners/gemini.svg",
   },
   {
-    name: "Stability AI",
-    logo: "https://logo.clearbit.com/stability.ai",
+    name: "Cursor",
+    logo: "/images/partners/cursor.svg",
   },
   {
-    name: "Hugging Face",
-    logo: "https://logo.clearbit.com/huggingface.co",
+    name: "Perplexity",
+    logo: "/images/partners/perplexity.svg",
   },
   {
-    name: "Cohere",
-    logo: "https://logo.clearbit.com/cohere.com",
+    name: "DeepSeek",
+    logo: "/images/partners/deepseek.svg",
   },
   {
-    name: "Google DeepMind",
-    logo: "https://logo.clearbit.com/deepmind.com",
+    name: "Manus",
+    logo: "/images/partners/manus.svg",
   },
   {
-    name: "Meta AI",
-    logo: "https://logo.clearbit.com/facebook.com",
+    name: "Midjourney",
+    logo: "/images/partners/mid.svg",
+  },
+  {
+    name: "n8n",
+    logo: "/images/partners/n8n.svg",
   },
 ];
 
@@ -58,7 +62,11 @@ export default function PartnersSection() {
           slidesPerView={2}
           spaceBetween={20}
           loop
-          autoplay={{ delay: 0, disableOnInteraction: false, pauseOnMouseEnter: true }}
+          autoplay={{
+            delay: 0,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }}
           speed={3500}
           grabCursor
           allowTouchMove={false}
@@ -79,9 +87,7 @@ export default function PartnersSection() {
                   alignItems: "center",
                   justifyContent: "center",
                   width: "100%",
-                  height: { xs: 40, sm: 50, md: 60 },
-                  filter: "grayscale(100%)",
-                  opacity: 0.6,
+                  height: { xs: 40, sm: 50, md: 150 },
                   transition: "all 0.2s ease-in-out",
                   "&:hover": {
                     filter: "grayscale(0%)",
@@ -93,12 +99,9 @@ export default function PartnersSection() {
                   src={partner.logo}
                   alt={partner.name}
                   style={{
-                    maxWidth: 110,
-                    minWidth: 60,
-                    maxHeight: 36,
-                    minHeight: 24,
-                    objectFit: "contain",
+                    objectFit: "cover",
                     width: "100%",
+                    height: "100%",
                   }}
                 />
               </Box>
@@ -108,4 +111,4 @@ export default function PartnersSection() {
       </Paper>
     </Box>
   );
-} 
+}
