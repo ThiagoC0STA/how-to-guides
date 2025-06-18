@@ -14,6 +14,17 @@ import {
 import { useEffect, useState } from "react";
 import { publicRequest } from "@/utils/apiClient";
 
+// Helper function to convert title to slug
+const titleToSlug = (title: string): string => {
+  return title
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/--+/g, "-");
+};
+
 const resources = [
   { label: "AI Terminology Glossary", href: "/resources/ai-glossary" },
   {
@@ -35,12 +46,14 @@ export default function Footer() {
   useEffect(() => {
     async function fetchPopularGuides() {
       try {
-        const response = await publicRequest.get("/guides?popular=true&limit=4");
-        
+        const response = await publicRequest.get(
+          "/guides?popular=true&limit=4"
+        );
+
         if (response.data.guides) {
           const formattedGuides = response.data.guides.map((guide: any) => ({
             label: guide.title,
-            href: `/guide/${guide.slug}`,
+            href: `/guide/${titleToSlug(guide.title)}`,
           }));
 
           setPopularGuides(formattedGuides);
