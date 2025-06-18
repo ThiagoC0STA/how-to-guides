@@ -13,15 +13,15 @@ const partners = [
   },
   {
     name: "Gemini",
-    logo: "/images/partners/gemini.svg",
+    logo: "/images/partners/gemini.png",
   },
   {
     name: "Cursor",
-    logo: "/images/partners/cursor.svg",
+    logo: "/images/partners/cursor.png",
   },
   {
     name: "Perplexity",
-    logo: "/images/partners/perplexity.svg",
+    logo: "/images/partners/perplexity.png",
   },
   {
     name: "DeepSeek",
@@ -29,15 +29,15 @@ const partners = [
   },
   {
     name: "Manus",
-    logo: "/images/partners/manus.svg",
+    logo: "/images/partners/manus.png",
   },
   {
     name: "Midjourney",
-    logo: "/images/partners/mid.svg",
+    logo: "/images/partners/midjourney.png",
   },
   {
     name: "n8n",
-    logo: "/images/partners/n8n.svg",
+    logo: "/images/partners/n8n.png",
   },
 ];
 
@@ -87,7 +87,7 @@ export default function PartnersSection() {
                   alignItems: "center",
                   justifyContent: "center",
                   width: "100%",
-                  height: { xs: 40, sm: 50, md: 150 },
+                  height: { xs: 80, md: 128 },
                   transition: "all 0.2s ease-in-out",
                   "&:hover": {
                     filter: "grayscale(0%)",
