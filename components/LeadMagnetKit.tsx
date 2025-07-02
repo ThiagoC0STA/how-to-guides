@@ -16,6 +16,7 @@ import {
 } from "react-icons/fa";
 import { useState } from "react";
 import { useErrorStore } from "@/store/errorStore";
+import emailjs from '@emailjs/browser';
 
 const bonuses = [
   { icon: <FaFilePdf color="#e74c3c" size={19} />, text: "Full PDF Guide" },
@@ -43,7 +44,7 @@ export default function LeadMagnetKit() {
   const [submitted, setSubmitted] = useState(false);
   const { showError } = useErrorStore();
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     
     if (!email) {
@@ -63,10 +64,50 @@ export default function LeadMagnetKit() {
     }
 
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    
+    try {
+      // Opção 1: Usar a API route (Resend)
+      const response = await fetch('/api/send-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send email');
+      }
+
       setSubmitted(true);
-    }, 1200);
+    } catch (error) {
+      console.error('Error sending email:', error);
+      
+      // Opção 2: Fallback para EmailJS (se a API falhar)
+      try {
+        await emailjs.send(
+          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!, // Service ID do EmailJS
+          process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!, // Template ID do EmailJS
+          {
+            to_email: email,
+            attachment_url: 'https://how-to-guides.vercel.app/chat.pdf',
+          },
+          process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+        );
+        
+        setSubmitted(true);
+      } catch (emailjsError) {
+        console.error('EmailJS error:', emailjsError);
+        showError(
+          "Error",
+          "Failed to send the kit. Please try again later."
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -193,9 +234,8 @@ export default function LeadMagnetKit() {
                 inputProps={{
                   style: {
                     fontSize: 15,
-                    height: 44,
+                    height: 36,
                     padding: "0 12px",
-                    marginTop: "-1px !important",
                   },
                 }}
               />
