@@ -19,7 +19,7 @@ export default function Page() {
       <HowItWorksSection />
       <PartnersSection />
       <TestimonialsSection />
-      <NewsletterSection />
+      {/* <NewsletterSection /> */}
     </>
   );
 }
