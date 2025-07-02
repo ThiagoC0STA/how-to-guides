@@ -1,6 +1,5 @@
 import GuidesSection from "@/components/GuidesSection";
 import HeroSection from "../components/HeroSection";
-import NewsletterSection from "../components/NewsletterSection";
 import BenefitsSection from "../components/BenefitsSection";
 import TestimonialsSection from "../components/TestimonialsSection";
 import HowItWorksSection from "../components/HowItWorksSection";

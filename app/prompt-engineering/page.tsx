@@ -3,7 +3,6 @@ import { Container } from "@mui/material";
 import HeroSection from "@/components/prompt-engineering/HeroSection";
 import IntroSection from "@/components/prompt-engineering/IntroSection";
 import CategoriesSection from "@/components/prompt-engineering/CategoriesSection";
-import ResourcesSection from "@/components/prompt-engineering/ResourcesSection";
 
 export const metadata: Metadata = {
   title: "Prompt Engineering Guides - How-ToGuides.com",
@@ -19,7 +18,7 @@ export default function PromptEngineeringPage() {
       <HeroSection />
       <IntroSection />
       <CategoriesSection />
-      <ResourcesSection />
+      {/* <ResourcesSection /> */}
     </Container>
   );
 }
