@@ -28,7 +28,7 @@ export const GUIDES = [
         title: "How to Use ChatGPT: Complete 2025 Guide",
         description:
           "Master ChatGPT from scratch with our step-by-step tutorial. Learn how to use ChatGPT for productivity, content creation, coding, and more in 2025.",
-        url: "https://how-to-guides-gamma.vercel.app/guides/chatgpt",
+        url: "https://www.how-toguides.com/guides/chatgpt",
         type: "article",
         images: [
           {

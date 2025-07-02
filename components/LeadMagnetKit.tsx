@@ -71,7 +71,7 @@ export default function LeadMagnetKit() {
         process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!, // Template ID do EmailJS
         {
           to_email: email,
-          attachment_url: 'https://how-to-guides.vercel.app/chat.pdf',
+          attachment_url: 'https://www.how-toguides.com/chat.pdf/chat.pdf',
         },
         process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
       );

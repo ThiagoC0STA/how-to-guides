@@ -20,7 +20,7 @@ const defaultMetadata: Metadata = {
     title: "AI Guide Platform",
     description:
       "Discover the best guides and tutorials about artificial intelligence, ChatGPT, and AI tools.",
-    url: "https://how-to-guides-gamma.vercel.app",
+    url: "https://www.how-toguides.com",
     type: "website",
     images: [
       {
@@ -139,7 +139,7 @@ export async function generateMetadata({
     openGraph: {
       title: guide.title,
       description: guide.description,
-      url: `https://how-to-guides-kappa.vercel.app/guide/${params.id}`,
+      url: `https://www.how-toguides.com/guide/${params.id}`,
       type: "article",
       images: [
         {
