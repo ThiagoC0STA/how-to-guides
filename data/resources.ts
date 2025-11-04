@@ -45,26 +45,4 @@ export const resources: Resource[] = [
     details:
       "Our comprehensive AI Model Comparison helps you choose the right tool for your needs. Compare features, pricing, strengths, and limitations of leading AI models including ChatGPT, Gemini AI, Claude, Midjourney, DALL-E, and more.",
   },
-  {
-    id: "learning",
-    title: "AI Learning Paths",
-    description: "Structured learning journeys for mastering AI tools",
-    iconName: "graduation-cap",
-    color: "#9b59b6",
-    comingSoon: true,
-    link: "/resources/learning-paths",
-    details:
-      "AI Learning Paths provide step-by-step guidance for mastering specific AI tools and techniques. Each path includes beginner, intermediate, and advanced content to help you progress from novice to expert.",
-  },
-  {
-    id: "faq",
-    title: "AI Tools FAQ",
-    description: "Answers to frequently asked questions about AI tools",
-    iconName: "question-circle",
-    color: "#f39c12",
-    comingSoon: true,
-    link: "/resources/ai-faq",
-    details:
-      "Our AI Tools FAQ addresses common questions and challenges users face when working with AI tools. Find solutions to technical issues, understand limitations, and learn best practices for getting the most out of AI.",
-  },
 ];
