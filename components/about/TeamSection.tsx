@@ -7,6 +7,7 @@ const teamMembers = [
     bio: "With over 10 years of experience in technology education, John founded How-ToGuides.com to help bridge the gap between powerful AI tools and everyday users.",
     initials: "JD",
     color: "#134CCD",
+    image: "/p1.jpg",
   },
   {
     name: "Jane Smith",
@@ -14,6 +15,7 @@ const teamMembers = [
     bio: "Jane brings her expertise in machine learning and natural language processing to ensure our guides are technically accurate and reflect best practices in AI usage.",
     initials: "JS",
     color: "#7c3aed",
+    image: "/p2.jpeg",
   },
   {
     name: "Michael Johnson",
@@ -21,6 +23,7 @@ const teamMembers = [
     bio: "Michael ensures our guides are clear, accessible, and user-friendly. His background in UX design helps us create tutorials that are easy to follow and visually engaging.",
     initials: "MJ",
     color: "#059669",
+    image: "/p3.jpeg",
   },
 ];
 
@@ -92,6 +95,8 @@ export default function TeamSection() {
             >
               <Avatar
                 className="member-avatar"
+                src={member.image}
+                alt={member.name}
                 sx={{
                   width: 120,
                   height: 120,
